@@ -1,0 +1,112 @@
+/* ---------------------------
+   🎨 Elegant Gallery CSS Reset
+---------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  font-family: "Poppins", "Segoe UI", sans-serif;
+  background-color: var(--bg, #f5f5f5);
+  color: var(--text, #1a1a1a);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+a {
+  color: var(--accent, #9254de);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: #7c3aed;
+}
+
+/* Layout balance */
+.ant-layout {
+  background: transparent !important;
+}
+
+/* Fancy card style */
+.card-art {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.card-art:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  transform: translateY(-4px);
+}
+
+/* Custom Scrollbar (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #e0f2fe;
+  /* Soft pastel blue */
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #a5d8ff, #6bb5ff);
+  /* Gradient blue shades */
+  border-radius: 12px;
+  border: 3px solid #e0f2fe;
+  /* Light blue track border */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #82caff, #4da3ff);
+  /* Darker blue on hover */
+}
+
+/* Firefox Custom Scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #a5d8ff #e0f2fe;
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(0);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(100%);
+    opacity: 1;
+  }
+}
+
+.slide-in {
+  animation: slideInFromRight 0.5s ease-out forwards;
+}
+
+.fade-out {
+  opacity: 0;
+  transition: opacity 300ms ease;
+}
+
+@keyframes galleryWalk {
+  from {
+    transform: translateX(60px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0px);
+    opacity: 1;
+  }
+}
