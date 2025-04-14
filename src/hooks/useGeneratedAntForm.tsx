@@ -1,3 +1,4 @@
+// useGeneratedAntForm.tsx
 import { UploadOutlined } from "@ant-design/icons";
 import {
   Button,
@@ -76,7 +77,6 @@ export const useGeneratedAntForm = ({
             <Input placeholder={field.placeholder} />
           </Form.Item>
         );
-
       case "textarea":
         return (
           <Form.Item
@@ -88,7 +88,6 @@ export const useGeneratedAntForm = ({
             <TextArea rows={field.rows || 4} placeholder={field.placeholder} />
           </Form.Item>
         );
-
       case "password":
         return (
           <Form.Item
@@ -100,7 +99,6 @@ export const useGeneratedAntForm = ({
             <Input.Password placeholder={field.placeholder} />
           </Form.Item>
         );
-
       case "number":
         return (
           <Form.Item
@@ -112,7 +110,6 @@ export const useGeneratedAntForm = ({
             <InputNumber style={{ width: "100%" }} />
           </Form.Item>
         );
-
       case "select":
         return (
           <Form.Item
@@ -124,7 +121,6 @@ export const useGeneratedAntForm = ({
             <Select options={field.options} placeholder={field.placeholder} />
           </Form.Item>
         );
-
       case "multiSelect":
         return (
           <Form.Item
@@ -141,7 +137,6 @@ export const useGeneratedAntForm = ({
             />
           </Form.Item>
         );
-
       case "date":
         return (
           <Form.Item
@@ -153,7 +148,6 @@ export const useGeneratedAntForm = ({
             <DatePicker style={{ width: "100%" }} />
           </Form.Item>
         );
-
       case "switch":
         return (
           <Form.Item
@@ -166,7 +160,6 @@ export const useGeneratedAntForm = ({
             <Switch />
           </Form.Item>
         );
-
       case "checkbox":
         return (
           <Form.Item
@@ -179,7 +172,6 @@ export const useGeneratedAntForm = ({
             <Checkbox />
           </Form.Item>
         );
-
       case "radio":
         return (
           <Form.Item
@@ -197,7 +189,6 @@ export const useGeneratedAntForm = ({
             </Radio.Group>
           </Form.Item>
         );
-
       case "upload":
         return (
           <Form.Item
@@ -218,35 +209,45 @@ export const useGeneratedAntForm = ({
             </Upload>
           </Form.Item>
         );
-
       default:
         return null;
     }
   };
 
+  // The container is now fully responsive by using 100% width and height.
   const GeneratedForm = () => (
-    <Form
-      form={form}
-      layout="vertical"
-      onFinish={(values) => {
-        onSubmit({ ...values, file: fileList[0] });
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        overflowY: "auto",
+        boxSizing: "border-box",
+        paddingRight: "1rem",
       }}
     >
-      <Row gutter={16}>
-        {fields.map((field) => (
-          <Col span={24} key={field.name}>
-            {renderField(field)}
-          </Col>
-        ))}
-      </Row>
-      {withButton && (
-        <Form.Item style={{ marginTop: "1rem", textAlign: "right" }}>
-          <Button type="primary" htmlType="submit">
-            {buttonLabel || "Submit"}
-          </Button>
-        </Form.Item>
-      )}
-    </Form>
+      <Form
+        form={form}
+        layout="vertical"
+        onFinish={(values) => {
+          onSubmit({ ...values, file: fileList[0] });
+        }}
+      >
+        <Row gutter={16}>
+          {fields.map((field) => (
+            <Col span={24} key={field.name}>
+              {renderField(field)}
+            </Col>
+          ))}
+        </Row>
+        {withButton && (
+          <Form.Item style={{ marginTop: "1rem", textAlign: "right" }}>
+            <Button type="primary" htmlType="submit">
+              {buttonLabel || "Submit"}
+            </Button>
+          </Form.Item>
+        )}
+      </Form>
+    </div>
   );
 
   return { form, GeneratedForm };

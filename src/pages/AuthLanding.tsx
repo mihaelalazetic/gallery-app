@@ -1,7 +1,8 @@
+// AuthLanding.tsx
 import { Card, Col, Layout, Row, Space, Typography } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import LanguageSwitcher from "../components/LanguageSwitcher";
-import PictureFrame from "../components/PictureFrame";
+import GallerySlideshow from "../components/GallerySlideshow";
 import ThemeToggle from "../components/ThemeToggle";
 import AuthForm from "./AuthForm";
 
@@ -19,14 +20,6 @@ const images = [pic, fish, landscape];
 const AuthLanding = () => {
   const { darkMode } = useThemeToggle();
   const [mode, setMode] = useState<"login" | "signup">("login");
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % images.length);
-    }, 8000);
-    return () => clearInterval(interval);
-  }, []);
 
   return (
     <Layout>
@@ -46,14 +39,13 @@ const AuthLanding = () => {
             zIndex: 1000,
             display: "flex",
             gap: "0.5rem",
-            justifyContent: "center",
-            alignContent: "center",
             alignItems: "center",
           }}
         >
           <LanguageSwitcher />
           <ThemeToggle />
         </div>
+
         <Row
           justify="center"
           align="middle"
@@ -63,57 +55,76 @@ const AuthLanding = () => {
             padding: 16,
           }}
         >
-          {/* 👈 Left Panel */}
-          <Col xs={24} md={12} lg={10}>
+          {/* Left Panel - Auth Form */}
+          <Col
+            xs={24}
+            md={12}
+            lg={10}
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <Card
               bordered={false}
               style={{
-                padding: 32,
+                padding: 0, // Remove Card's inner padding.
                 borderRadius: 12,
+                overflow: "hidden", // This ensures the rounded corners are preserved.
                 backgroundColor: darkMode ? "#2a2a3b" : "#ffffff",
                 boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
+                maxHeight: "90vh",
               }}
             >
-              <Space
-                direction="vertical"
-                size="large"
-                style={{ width: "100%" }}
+              {/* Inner container with fixed height & scroll */}
+              <div
+                style={{
+                  maxHeight: "90vh", // Force the inner container to match Card's max height.
+                  overflowY: "auto",
+                  padding: 32,
+                  paddingTop: 0,
+                  boxSizing: "border-box",
+                }}
               >
-                <Title
-                  level={3}
-                  style={{
-                    textAlign: "center",
-                    color: darkMode ? "#fff" : "#1a1a1a",
-                  }}
+                <Space
+                  direction="vertical"
+                  size="small"
+                  style={{ width: "100%" }}
                 >
-                  {mode === "login"
-                    ? "Welcome Back 👋"
-                    : "Join the E-Gallery 🎨"}
-                </Title>
+                  <Title
+                    level={3}
+                    style={{
+                      textAlign: "center",
+                      color: darkMode ? "#fff" : "#1a1a1a",
+                    }}
+                  >
+                    {mode === "login"
+                      ? t("welcomeBack") + " 👋"
+                      : t("joinEgallery") + " 🎨"}
+                  </Title>
 
-                <AuthForm
-                  isLogin={mode === "login"}
-                  onSubmit={(values) => console.log(values)}
-                />
+                  <AuthForm isLogin={mode === "login"} />
 
-                <div style={{ textAlign: "center" }}>
-                  {mode === "login" ? (
-                    <>
-                      Don't have an account?{" "}
-                      <a onClick={() => setMode("signup")}>{t("signup")}</a>
-                    </>
-                  ) : (
-                    <>
-                      Already registered?{" "}
-                      <a onClick={() => setMode("login")}>{t("login")}</a>
-                    </>
-                  )}
-                </div>
-              </Space>
+                  <div style={{ textAlign: "center" }}>
+                    {mode === "login" ? (
+                      <>
+                        Don't have an account?{" "}
+                        <a onClick={() => setMode("signup")}>{t("signup")}</a>
+                      </>
+                    ) : (
+                      <>
+                        Already registered?{" "}
+                        <a onClick={() => setMode("login")}>{t("login")}</a>
+                      </>
+                    )}
+                  </div>
+                </Space>
+              </div>
             </Card>
           </Col>
 
-          {/* 👉 Right Panel - Museum Walk Slideshow */}
+          {/* Right Panel - Slideshow */}
           <Col
             xs={0}
             md={12}
@@ -124,42 +135,10 @@ const AuthLanding = () => {
               alignItems: "center",
               justifyContent: "center",
               height: "100%",
-              overflow: "hidden",
+              //   overflow: "hidden",
             }}
           >
-            <div
-              style={{
-                width: "90%",
-                maxWidth: 500,
-                height: "100%",
-                position: "relative",
-              }}
-            >
-              {images.map((img, idx) => {
-                const position = idx - currentIndex;
-                return (
-                  <div
-                    key={idx}
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      transform: `translateX(${position * 120}%) scale(${
-                        idx === currentIndex ? 1 : 0.75
-                      })`,
-                      opacity: idx === currentIndex ? 1 : 0,
-                      transition: "transform 1.5s ease, opacity 1.5s ease",
-                      width: "100%",
-                      height: "100%",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <PictureFrame src={img} alt={`Gallery art ${idx + 1}`} />
-                  </div>
-                );
-              })}
-            </div>
+            <GallerySlideshow images={images} />
           </Col>
         </Row>
       </Content>

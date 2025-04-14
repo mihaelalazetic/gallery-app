@@ -1,44 +1,49 @@
+// GallerySlideshow.tsx
+import React, { useEffect, useState } from "react";
 import { Box } from "@mui/material";
-import { useEffect, useState } from "react";
 import PictureFrame from "./PictureFrame";
+import { useThemeToggle } from "../providers/AppThemeProvider";
 
-type Props = {
+interface GallerySlideshowProps {
   images: string[];
-};
+}
 
-export const GallerySlideshow = ({ images }: Props) => {
+const GallerySlideshow: React.FC<GallerySlideshowProps> = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const { darkMode } = useThemeToggle();
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((i) => (i + 1) % images.length);
+      setCurrentIndex((prev) => (prev + 1) % images.length);
     }, 8000);
-
     return () => clearInterval(interval);
   }, [images.length]);
+
+  // Updated spotlight with more transparency.
+  const spotlightBg = darkMode
+    ? "radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.18), transparent 70%)"
+    : "radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1), transparent 70%)";
 
   return (
     <Box
       sx={{
+        left: 50,
         width: "100%",
-        maxWidth: "45rem",
-        overflow: "hidden",
+        height: "100%",
         position: "relative",
-        height: "500px",
-        margin: "auto",
+        overflow: "hidden",
       }}
     >
       {images.map((img, idx) => {
         const position = idx - currentIndex;
-
         return (
           <Box
             key={idx}
             sx={{
               position: "absolute",
               top: 0,
-              left: "50%",
-              transform: `translateX(${position * 120}%) scale(${
+              // left: "55%", // Position container center horizontally
+              transform: `translateX(calc(${position * 120}% )) scale(${
                 idx === currentIndex ? 1 : 0.75
               })`,
               opacity: idx === currentIndex ? 1 : 0,
@@ -50,10 +55,34 @@ export const GallerySlideshow = ({ images }: Props) => {
               justifyContent: "center",
             }}
           >
-            <PictureFrame src={img} alt={`Art ${idx + 1}`} />
+            <PictureFrame src={img} alt={`Gallery art ${idx + 1}`} />
           </Box>
         );
       })}
+
+      {/* Spotlight overlay */}
+      <Box
+        sx={{
+          position: "absolute",
+          top: 0,
+          width: "100%",
+          height: "100%",
+          pointerEvents: "none",
+          background: spotlightBg,
+          animation: "spotlightMove 8s linear infinite",
+        }}
+      />
+      <style>
+        {`
+          @keyframes spotlightMove {
+            0% { background-position: 0% 0%; }
+            50% { background-position: 100% 0%; }
+            100% { background-position: 0% 0%; }
+          }
+        `}
+      </style>
     </Box>
   );
 };
+
+export default GallerySlideshow;
