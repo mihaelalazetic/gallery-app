@@ -1,16 +1,17 @@
 // AuthLanding.tsx
-import { Card, Col, Layout, Row, Space, Typography } from "antd";
+import { Card, Col, Layout, Row, Typography } from "antd";
 import { useState } from "react";
-import LanguageSwitcher from "../components/LanguageSwitcher";
 import GallerySlideshow from "../components/GallerySlideshow";
+import LanguageChanger from "../components/LanguageChanger";
 import ThemeToggle from "../components/ThemeToggle";
 import AuthForm from "./AuthForm";
 
+import { useTranslation } from "react-i18next";
+import logo from "../assets/logo3.png";
 import fish from "../assets/moving-fish.webp";
 import landscape from "../assets/moving-landscape.gif";
 import pic from "../assets/moving-pic.gif";
 import { useThemeToggle } from "../providers/AppThemeProvider";
-import { t } from "i18next";
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -20,7 +21,7 @@ const images = [pic, fish, landscape];
 const AuthLanding = () => {
   const { darkMode } = useThemeToggle();
   const [mode, setMode] = useState<"login" | "signup">("login");
-
+  const { t } = useTranslation();
   return (
     <Layout>
       <Content
@@ -42,7 +43,7 @@ const AuthLanding = () => {
             alignItems: "center",
           }}
         >
-          <LanguageSwitcher />
+          <LanguageChanger />
           <ThemeToggle />
         </div>
 
@@ -87,39 +88,36 @@ const AuthLanding = () => {
                   boxSizing: "border-box",
                 }}
               >
-                <Space
-                  direction="vertical"
-                  size="small"
-                  style={{ width: "100%" }}
+                <Title
+                  level={3}
+                  style={{
+                    textAlign: "center",
+                    color: darkMode ? "#fff" : "#1a1a1a",
+                    margin: 0,
+                  }}
                 >
-                  <Title
-                    level={3}
-                    style={{
-                      textAlign: "center",
-                      color: darkMode ? "#fff" : "#1a1a1a",
-                    }}
-                  >
-                    {mode === "login"
+                  <img style={{ width: "200px" }} src={logo} />
+
+                  {/* {mode === "login"
                       ? t("welcomeBack") + " 👋"
-                      : t("joinEgallery") + " 🎨"}
-                  </Title>
+                      : t("joinEgallery") + " 🎨"} */}
+                </Title>
 
-                  <AuthForm isLogin={mode === "login"} />
+                <AuthForm isLogin={mode === "login"} />
 
-                  <div style={{ textAlign: "center" }}>
-                    {mode === "login" ? (
-                      <>
-                        Don't have an account?{" "}
-                        <a onClick={() => setMode("signup")}>{t("signup")}</a>
-                      </>
-                    ) : (
-                      <>
-                        Already registered?{" "}
-                        <a onClick={() => setMode("login")}>{t("login")}</a>
-                      </>
-                    )}
-                  </div>
-                </Space>
+                <div style={{ textAlign: "center" }}>
+                  {mode === "login" ? (
+                    <>
+                      Don't have an account?{" "}
+                      <a onClick={() => setMode("signup")}>{t("signup")}</a>
+                    </>
+                  ) : (
+                    <>
+                      Already registered?{" "}
+                      <a onClick={() => setMode("login")}>{t("login")}</a>
+                    </>
+                  )}
+                </div>
               </div>
             </Card>
           </Col>

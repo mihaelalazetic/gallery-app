@@ -1,14 +1,14 @@
+import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
+import { Button, Layout } from "antd";
 import React from "react";
-import { Layout, Button } from "antd";
-import { MenuUnfoldOutlined, MenuFoldOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
+import LanguageSwitcher from "./LanguageChanger";
 import ThemeToggle from "./ThemeToggle";
-import LanguageSwitcher from "./LanguageSwitcher";
 
 import { useThemeToggle } from "../providers/AppThemeProvider";
 import SearchBar from "./SearchBar";
 import UserProfile from "./UserProfile";
-
+import logo from "../assets/logo3.png";
 const { Header } = Layout;
 
 const AppHeader: React.FC<{
@@ -20,7 +20,12 @@ const AppHeader: React.FC<{
   return (
     <Header
       style={{
-        backgroundColor: darkMode ? "#1f1f1f" : "#f5f5f7",
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        zIndex: 1000,
+        backgroundColor: darkMode ? "#1e1e2f" : "#f5f5f7",
         padding: "0 16px",
         display: "flex",
         justifyContent: "space-between",
@@ -30,20 +35,24 @@ const AppHeader: React.FC<{
       }}
     >
       <div style={{ display: "flex", alignItems: "center" }}>
+        <Link to="/">
+          <img
+            src={logo}
+            alt="e-Gallery Logo"
+            style={{ width: "50px", verticalAlign: "middle" }}
+          />
+        </Link>
         <Button
           type="text"
           icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
           onClick={toggleCollapsed}
           style={{ fontSize: 16 }}
         />
-        <Link to="/" style={{ marginLeft: 16 }}>
-          <img src="/logo.png" alt="e-Gallery Logo" style={{ height: 40 }} />
-        </Link>
       </div>
       <SearchBar />
-      <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-        <LanguageSwitcher />
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
         <ThemeToggle />
+        <LanguageSwitcher />
         <UserProfile />
       </div>
     </Header>

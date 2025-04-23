@@ -19,6 +19,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <Layout
         style={{
           marginLeft: collapsed ? 80 : 200,
+          marginTop: 54,
           transition: "margin-left 0.3s ease",
         }}
       >
@@ -26,7 +27,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <Content
           style={{
             padding: 24,
-            backgroundColor: darkMode ? "#2a2a3b" : "#f3f4f6",
+            backgroundColor: darkMode ? "#2a2a3b" : "#f0f0f0",
             transition: "background-color 0.3s ease",
           }}
         >

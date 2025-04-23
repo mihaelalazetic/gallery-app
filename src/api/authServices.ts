@@ -7,8 +7,13 @@ export interface AuthResponse {
   token: string;
 }
 
-export const login = async (loginRequest: ILoginRequest): Promise<AuthResponse> => {
-  const response = await apiInstance.post<AuthResponse>(`${prefix}/login`, loginRequest);
+export const login = async (
+  loginRequest: ILoginRequest
+): Promise<AuthResponse> => {
+  const response = await apiInstance.post<AuthResponse>(
+    `${prefix}/login`,
+    loginRequest
+  );
   const token = response.data.token;
 
   if (!token) throw new Error("No token received");
@@ -17,14 +22,16 @@ export const login = async (loginRequest: ILoginRequest): Promise<AuthResponse> 
   return response.data;
 };
 
-export const signup = async (signupRequest: ISignupRequest): Promise<AuthResponse> => {
-  const response = await apiInstance.post<AuthResponse>(`${prefix}/signup`, signupRequest);
+export const signup = async (
+  signupRequest: ISignupRequest
+): Promise<AuthResponse> => {
+  const response = await apiInstance.post<AuthResponse>(
+    `${prefix}/signup`,
+    signupRequest
+  );
   return response.data;
 };
-
 
 export const logout = (): void => {
   localStorage.removeItem("token");
 };
-
-

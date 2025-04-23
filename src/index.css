@@ -1,6 +1,15 @@
-/* ---------------------------
-   🎨 Elegant Gallery CSS Reset
----------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap');
+
+.featured-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 2.5rem;
+}
+
+
+
 *,
 *::before,
 *::after {
@@ -54,28 +63,26 @@ a:hover {
 }
 
 ::-webkit-scrollbar-track {
-  background: #e0f2fe;
-  /* Soft pastel blue */
-  border-radius: 10px;
+  background: #f2e0fe;
+  margin: 4px 0;
+  border-radius: 12px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #a5d8ff, #6bb5ff);
-  /* Gradient blue shades */
+  background: linear-gradient(135deg, #d0a5ff, #a46bff);
   border-radius: 12px;
   border: 3px solid #e0f2fe;
-  /* Light blue track border */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #82caff, #4da3ff);
-  /* Darker blue on hover */
+  background: linear-gradient(135deg, #b282ff, #914dff);
+  border-radius: 12px;
 }
 
 /* Firefox Custom Scrollbar */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #a5d8ff #e0f2fe;
+  scrollbar-color: #c3a5ff #ece0fe;
 }
 
 @keyframes slideInFromRight {
@@ -109,4 +116,53 @@ a:hover {
     transform: translateX(0px);
     opacity: 1;
   }
+}
+
+
+/* LANGUAGE SELECT MENU */
+.languageSelect {
+  border: 0;
+  padding: 0;
+}
+
+.languageSelect button {
+  border: 0;
+  padding: 0 5px 0 0;
+}
+
+.languageSelect ul {
+  overflow: hidden;
+  padding: 0;
+  line-height: 3;
+  margin: 0;
+}
+
+.languageSelect ul li {
+  margin: 0;
+}
+
+@keyframes spotlightMove {
+  0% {
+    background-position: 0% 0%;
+  }
+
+  50% {
+    background-position: 100% 0%;
+  }
+
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+/* in your global .css or .less */
+.ant-input-dark::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.ant-input-dark:focus,
+.ant-input-dark-focused {
+  border-color: #666 !important;
+  box-shadow: 0 0 0 2px rgba(100, 100, 100, 0.2) !important;
+  background-color: #2a2a3b !important;
 }

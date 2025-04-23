@@ -27,7 +27,7 @@ const AppSider: React.FC<{ collapsed: boolean }> = ({ collapsed }) => {
         height: "100vh",
         position: "fixed",
         left: 0,
-        top: 0,
+        top: 64,
         bottom: 0,
         zIndex: 1000,
         backgroundColor: darkMode ? undefined : "#e6e9ef",

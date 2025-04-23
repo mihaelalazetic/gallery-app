@@ -2,18 +2,25 @@ import { Button, Card, Carousel, Col, List, Row, Tag, Typography } from "antd";
 import { useTranslation } from "react-i18next";
 import { useThemeToggle } from "../providers/AppThemeProvider";
 
-const { Title, Paragraph } = Typography;
+import { useEffect, useState } from "react";
+import { getFeaturedArtworks } from "../api/artworkServices";
+import person from "../assets/person.jfif";
+import person2 from "../assets/person2.jfif";
+import reactlogo from "../assets/react.svg";
+import PictureFrame from "../components/PictureFrame";
 
-const featuredArt = [
-  { id: 1, title: "Sunset Bloom", artist: "Eva K.", image: "/demo1.jpg" },
-  { id: 2, title: "Urban Mirage", artist: "Luka M.", image: "/demo2.jpg" },
-  { id: 3, title: "Fluid Emotion", artist: "Anja R.", image: "/demo3.jpg" },
-];
+const { Title } = Typography;
+
+// const featuredArt = [
+//   { id: 1, title: "Sunset Bloom", artist: "Eva K.", image: color },
+//   { id: 2, title: "Urban Mirage", artist: "Luka M.", image: imrs },
+//   { id: 3, title: "Fluid Emotion", artist: "Anja R.", image: wallswap },
+// ];
 
 const topArtists = [
-  { id: 1, name: "Eva K.", avatar: "/artist1.jpg", likes: 120 },
-  { id: 2, name: "Luka M.", avatar: "/artist2.jpg", likes: 102 },
-  { id: 3, name: "Anja R.", avatar: "/artist3.jpg", likes: 98 },
+  { id: 1, name: "Eva K.", avatar: reactlogo, likes: 120 },
+  { id: 2, name: "Luka M.", avatar: person, likes: 102 },
+  { id: 3, name: "Anja R.", avatar: person2, likes: 98 },
 ];
 
 const upcomingExhibitions = [
@@ -35,33 +42,62 @@ const Home = () => {
   const { darkMode } = useThemeToggle();
   const { t } = useTranslation();
 
+  const [featuredArt, setArtworks] = useState<any[]>([]);
+  useEffect(() => {
+    getFeaturedArtworks().then((response) => {
+      setArtworks(response);
+    });
+  }, []);
   return (
-    <div style={{ maxWidth: 1280, margin: "0 auto", padding: "2rem 1rem" }}>
-      <section style={{ padding: "2rem 1rem" }}>
+    <div style={{ maxWidth: "90%", margin: "0 auto", padding: "2rem 1rem" }}>
+      {/* Featured Art Section */}
+      <section>
         <Title level={2} style={{ color: darkMode ? "#fff" : "#1c1c1e" }}>
           {t("featuredArt")}
         </Title>
-        <Row gutter={[16, 16]}>
+
+        <Row gutter={[48, 48]} justify="center" style={{ marginTop: "3rem" }}>
           {featuredArt.map((art) => (
             <Col xs={24} sm={12} md={8} key={art.id}>
-              <Card
-                hoverable
-                cover={
-                  <img
-                    src={art.image}
-                    alt={art.title}
-                    style={{ height: 240, objectFit: "cover" }}
-                  />
-                }
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                }}
               >
-                <Card.Meta title={art.title} description={`By ${art.artist}`} />
-              </Card>
+                {/* Painting in frame */}
+                <PictureFrame src={art.imageUrl} alt={art.title} />
+
+                {/* Info Meta Card under the painting */}
+                <Card
+                  size="small"
+                  bordered={false}
+                  style={{
+                    width: 200,
+                    marginTop: 16,
+                    background: darkMode ? "#2a2a3b" : "#fff",
+                    boxShadow: darkMode
+                      ? "0 2px 8px rgba(0,0,0,0.5)"
+                      : "0 2px 8px rgba(0,0,0,0.1)",
+                  }}
+                >
+                  <Card.Meta
+                    title={<strong>{art.title}</strong>}
+                    description={<em>By {art?.artist.fullName}</em>}
+                  />
+                </Card>
+              </div>
             </Col>
           ))}
         </Row>
       </section>
+
+      {/* Top Artists Section */}
       <section style={{ padding: "2rem 1rem" }}>
-        <Title level={2}>{t("topArtists")}</Title>
+        <Title level={2} style={{ color: darkMode ? "#fff" : "#1c1c1e" }}>
+          {t("topArtists")}
+        </Title>
         <Row gutter={[16, 16]}>
           {topArtists.map((artist) => (
             <Col xs={24} sm={12} md={8} key={artist.id}>
@@ -87,6 +123,8 @@ const Home = () => {
           ))}
         </Row>
       </section>
+
+      {/* Categories Section */}
       <section style={{ padding: "2rem 1rem" }}>
         <Title level={2}>{t("exploreByCategory")}</Title>
         <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
@@ -101,6 +139,8 @@ const Home = () => {
           ))}
         </div>
       </section>
+
+      {/* New This Week Carousel */}
       <section style={{ padding: "2rem 1rem" }}>
         <Title level={2}>New This Week</Title>
         <Carousel autoplay dotPosition="bottom">
@@ -123,6 +163,8 @@ const Home = () => {
           ))}
         </Carousel>
       </section>
+
+      {/* Upcoming Exhibitions */}
       <section style={{ padding: "2rem 1rem" }}>
         <Title level={2}>Upcoming Exhibitions</Title>
         <List

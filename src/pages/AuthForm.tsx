@@ -1,19 +1,19 @@
 // AuthForm.tsx
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { FieldConfig, useGeneratedAntForm } from "../hooks/useGeneratedAntForm";
 import { t } from "i18next";
 import { notification } from "antd";
 import { login, signup } from "../api/authServices";
 import { uploadToSupabase } from "../api/uploadToSupabase";
-
-// Import your authentication service functions and file upload helper.
+import { getCurrentUser } from "../api/usersService";
 
 type Props = {
   isLogin?: boolean;
 };
 
 const AuthForm: React.FC<Props> = ({ isLogin = true }) => {
-  // Define common fields for both login and signup.
+  const navigate = useNavigate(); // ← grab navigate
   const fields: FieldConfig[] = [
     {
       name: "username",
@@ -31,7 +31,6 @@ const AuthForm: React.FC<Props> = ({ isLogin = true }) => {
     },
   ];
 
-  // For signup, append extra fields.
   if (!isLogin) {
     fields.push(
       {
@@ -75,7 +74,6 @@ const AuthForm: React.FC<Props> = ({ isLogin = true }) => {
     );
   }
 
-  // onSubmit handler uses our authentication services.
   const onSubmit = async (values: any) => {
     if (isLogin) {
       try {
@@ -84,7 +82,10 @@ const AuthForm: React.FC<Props> = ({ isLogin = true }) => {
           message: "Login Successful",
           description: "You have been logged in.",
         });
-        // Redirect or refresh the page as required.
+
+        const user = await getCurrentUser();
+        localStorage.setItem("user", JSON.stringify(user));
+        navigate("/", { replace: true }); // ← redirect home
       } catch (error: any) {
         notification.error({
           message: "Login Failed",
@@ -95,9 +96,7 @@ const AuthForm: React.FC<Props> = ({ isLogin = true }) => {
       try {
         let profilePictureUrl: string | undefined = undefined;
         if (values.profile_picture) {
-          profilePictureUrl = await uploadToSupabase(
-            values.profile_picture
-          );
+          profilePictureUrl = await uploadToSupabase(values.profile_picture);
         }
         await signup({
           ...values,
@@ -107,7 +106,7 @@ const AuthForm: React.FC<Props> = ({ isLogin = true }) => {
           message: "Signup Successful",
           description: "Your account has been created.",
         });
-        // Redirect, reload, or transition to a different page if needed.
+        navigate("/", { replace: true }); // ← also redirect after signup if you wish
       } catch (error: any) {
         notification.error({
           message: "Signup Failed",

@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useGeneratedAntForm, FieldConfig } from "../hooks/useGeneratedAntForm";
 import { useThemeToggle } from "../providers/AppThemeProvider";
 import ThemeToggle from "../components/ThemeToggle";
-import LanguageSwitcher from "../components/LanguageSwitcher";
+import LanguageSwitcher from "../components/LanguageChanger";
 
 const { Title, Text } = Typography;
 const { useBreakpoint } = Grid;

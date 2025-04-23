@@ -53,6 +53,7 @@ const GallerySlideshow: React.FC<GallerySlideshowProps> = ({ images }) => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              zIndex: 2,
             }}
           >
             <PictureFrame src={img} alt={`Gallery art ${idx + 1}`} />
@@ -72,15 +73,6 @@ const GallerySlideshow: React.FC<GallerySlideshowProps> = ({ images }) => {
           animation: "spotlightMove 8s linear infinite",
         }}
       />
-      <style>
-        {`
-          @keyframes spotlightMove {
-            0% { background-position: 0% 0%; }
-            50% { background-position: 100% 0%; }
-            100% { background-position: 0% 0%; }
-          }
-        `}
-      </style>
     </Box>
   );
 };
