@@ -1,20 +1,18 @@
-import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons";
-import { Button, Layout } from "antd";
+import { Layout } from "antd";
 import React from "react";
 import { Link } from "react-router-dom";
 import LanguageSwitcher from "./LanguageChanger";
 import ThemeToggle from "./ThemeToggle";
 
+import logo from "../assets/logo3.png";
 import { useThemeToggle } from "../providers/AppThemeProvider";
 import SearchBar from "./SearchBar";
 import UserProfile from "./UserProfile";
-import logo from "../assets/logo3.png";
 const { Header } = Layout;
 
 const AppHeader: React.FC<{
   collapsed: boolean;
-  toggleCollapsed: () => void;
-}> = ({ collapsed, toggleCollapsed }) => {
+}> = () => {
   const { darkMode } = useThemeToggle();
 
   return (
@@ -42,12 +40,6 @@ const AppHeader: React.FC<{
             style={{ width: "50px", verticalAlign: "middle" }}
           />
         </Link>
-        <Button
-          type="text"
-          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-          onClick={toggleCollapsed}
-          style={{ fontSize: 16 }}
-        />
       </div>
       <SearchBar />
       <div style={{ display: "flex", alignItems: "center", gap: 10 }}>

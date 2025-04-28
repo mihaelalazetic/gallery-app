@@ -1,11 +1,13 @@
 import React from "react";
-import { Layout, Menu } from "antd";
+import { Button, Layout, Menu } from "antd";
 import {
   HomeOutlined,
   PictureOutlined,
   UserOutlined,
   CalendarOutlined,
   AppstoreOutlined,
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -13,7 +15,10 @@ import { useThemeToggle } from "../providers/AppThemeProvider";
 
 const { Sider } = Layout;
 
-const AppSider: React.FC<{ collapsed: boolean }> = ({ collapsed }) => {
+const AppSider: React.FC<{
+  collapsed: boolean;
+  toggleCollapsed: () => void;
+}> = ({ collapsed, toggleCollapsed }) => {
   const { t } = useTranslation();
   const { darkMode } = useThemeToggle();
   const isAuthenticated = false; // Replace with actual authentication check
@@ -32,6 +37,14 @@ const AppSider: React.FC<{ collapsed: boolean }> = ({ collapsed }) => {
         zIndex: 1000,
         backgroundColor: darkMode ? undefined : "#e6e9ef",
       }}
+      trigger={
+        <Button
+          type="text"
+          icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          onClick={toggleCollapsed}
+          style={{ fontSize: 16, width: "100%" }}
+        />
+      }
     >
       <Menu
         mode="inline"

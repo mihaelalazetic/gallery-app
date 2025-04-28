@@ -4,14 +4,14 @@ export interface IUser {
   fullName: string;
   email: string;
   roles: Array<{ name: string }>;
-  
-  profilePictureUrl :string;
+
+  profilePictureUrl: string;
   bio?: string;
 }
 
 export interface ILoginRequest {
   username: string;
-  password: string; 
+  password: string;
 }
 
 export interface ISignupRequest {
@@ -19,27 +19,19 @@ export interface ISignupRequest {
   email: string;
   fullName: string;
   confirmPassword: string;
-  password: string; 
+  password: string;
   role: string;
-  profilePictureUrl?: string; 
+  profilePictureUrl?: string;
   bio?: string;
   accountType?: string;
 }
 
-
-export interface IComment {
-  key: string;
-  user: string;
-  comment: string;
-  date: string;
-}
-
-export interface Comment {
-  user: {
-    fullName: string;
-    profilePictureUrl: string;
-  };
+export interface CommentDto {
+  id: string;
+  author: string;
+  user: Artist;
   text: string;
+  createdAt: string;
 }
 
 export interface Artist {
@@ -51,7 +43,6 @@ export interface Artist {
   totalLikes: number;
   totalComments: number;
 }
-
 
 export interface Artwork {
   id: string;

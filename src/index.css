@@ -1,15 +1,11 @@
+/*──────────────────────────────────────────────────────────────────────────
+  1) External Fonts
+──────────────────────────────────────────────────────────────────────────*/
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap');
 
-.featured-title {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  font-size: 2.5rem;
-}
-
-
-
+/*──────────────────────────────────────────────────────────────────────────
+  2) CSS RESET & BASE
+──────────────────────────────────────────────────────────────────────────*/
 *,
 *::before,
 *::after {
@@ -39,12 +35,33 @@ a:hover {
   color: #7c3aed;
 }
 
-/* Layout balance */
+/*──────────────────────────────────────────────────────────────────────────
+  3) TYPOGRAPHY
+──────────────────────────────────────────────────────────────────────────*/
+.featured-title {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 2.5rem;
+}
+
+/*──────────────────────────────────────────────────────────────────────────
+  4) LAYOUT OVERRIDES
+──────────────────────────────────────────────────────────────────────────*/
+/* make Ant Layout transparent so your bg shows through */
 .ant-layout {
   background: transparent !important;
 }
 
-/* Fancy card style */
+/* remove default sider trigger background */
+.ant-layout-sider-trigger {
+  background: none !important;
+}
+
+/*──────────────────────────────────────────────────────────────────────────
+  5) CARD STYLES
+──────────────────────────────────────────────────────────────────────────*/
 .card-art {
   background: white;
   border-radius: 12px;
@@ -57,13 +74,36 @@ a:hover {
   transform: translateY(-4px);
 }
 
-/* Custom Scrollbar (Chrome, Edge, Safari) */
+.featured-art-card {
+  transition: transform 0.3s ease !important;
+}
+
+.featured-art-card:hover {
+  transform: scale(1.05) !important;
+}
+
+/*──────────────────────────────────────────────────────────────────────────
+  6) TAGS & BUTTONS
+──────────────────────────────────────────────────────────────────────────*/
+.category-tag {
+  transition: transform 0.2s;
+}
+
+.category-tag:hover {
+  transform: scale(1.05);
+}
+
+/*──────────────────────────────────────────────────────────────────────────
+  7) SCROLLBAR (LIGHT & DARK‐FRIENDLY)
+──────────────────────────────────────────────────────────────────────────*/
+/* WebKit browsers */
 ::-webkit-scrollbar {
   width: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f2e0fe;
+  background: transparent;
+  /* no bg in dark or light */
   margin: 4px 0;
   border-radius: 12px;
 }
@@ -71,20 +111,38 @@ a:hover {
 ::-webkit-scrollbar-thumb {
   background: linear-gradient(135deg, #d0a5ff, #a46bff);
   border-radius: 12px;
-  border: 3px solid #e0f2fe;
+  border: 3px solid transparent;
+  /* allows bg to show through */
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(135deg, #b282ff, #914dff);
-  border-radius: 12px;
 }
 
-/* Firefox Custom Scrollbar */
+/* Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: #c3a5ff #ece0fe;
+  scrollbar-color: #a46bff transparent;
 }
 
+/*──────────────────────────────────────────────────────────────────────────
+  8) ANTD INPUT DARK THEME
+──────────────────────────────────────────────────────────────────────────*/
+.ant-input-dark::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.ant-input-dark:focus,
+.ant-input-dark-focused {
+  border-color: #666 !important;
+  box-shadow: 0 0 0 2px rgba(100, 100, 100, 0.2) !important;
+  background-color: #2a2a3b !important;
+}
+
+/*──────────────────────────────────────────────────────────────────────────
+  9) ANIMATIONS
+──────────────────────────────────────────────────────────────────────────*/
+/* slide-in / fade-out */
 @keyframes slideInFromRight {
   from {
     transform: translateX(0);
@@ -106,6 +164,7 @@ a:hover {
   transition: opacity 300ms ease;
 }
 
+/* gallery walk */
 @keyframes galleryWalk {
   from {
     transform: translateX(60px);
@@ -113,34 +172,12 @@ a:hover {
   }
 
   to {
-    transform: translateX(0px);
+    transform: translateX(0);
     opacity: 1;
   }
 }
 
-
-/* LANGUAGE SELECT MENU */
-.languageSelect {
-  border: 0;
-  padding: 0;
-}
-
-.languageSelect button {
-  border: 0;
-  padding: 0 5px 0 0;
-}
-
-.languageSelect ul {
-  overflow: hidden;
-  padding: 0;
-  line-height: 3;
-  margin: 0;
-}
-
-.languageSelect ul li {
-  margin: 0;
-}
-
+/* spotlight gradient movement */
 @keyframes spotlightMove {
   0% {
     background-position: 0% 0%;
@@ -155,14 +192,29 @@ a:hover {
   }
 }
 
-/* in your global .css or .less */
-.ant-input-dark::placeholder {
-  color: rgba(255, 255, 255, 0.5);
+/*──────────────────────────────────────────────────────────────────────────
+ 10) COMPONENT-SPECIFIC (Drawer popHighlightUp animation)
+──────────────────────────────────────────────────────────────────────────*/
+/* in src/components/ImagePreviewDrawer.css */
+@keyframes popHighlightUp {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    transform: translateY(-12px) scale(1.08);
+  }
+
+  100% {
+    transform: translateY(0) scale(1);
+  }
 }
 
-.ant-input-dark:focus,
-.ant-input-dark-focused {
-  border-color: #666 !important;
-  box-shadow: 0 0 0 2px rgba(100, 100, 100, 0.2) !important;
-  background-color: #2a2a3b !important;
+.comments--jump {
+  transform-origin: top center;
+  animation: popHighlightUp 0.5s ease-out forwards;
+}
+
+.ReactFlagsSelect-module_selectBtn__19wW7 {
+  border: none !important;
 }

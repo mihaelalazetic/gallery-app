@@ -1,26 +1,60 @@
-import { Button, Card, Carousel, Col, List, Row, Tag, Typography } from "antd";
+// src/pages/Home.tsx
+
+import React, { useEffect, useState } from "react";
+import { Carousel, List, Typography, Space, Image } from "antd";
+import Masonry from "@mui/lab/Masonry";
 import { useTranslation } from "react-i18next";
 import { useThemeToggle } from "../providers/AppThemeProvider";
 
-import { useEffect, useState } from "react";
+import FeaturedArtCard, {
+  ArtworkWithLike,
+} from "../components/FeaturedArtCard";
+import FeaturedArtists, { FeaturedArtist } from "../components/FeaturedArtists";
+import CategoryTag from "../components/CategoryTag";
+
 import { getFeaturedArtworks } from "../api/artworkServices";
+
+import reactlogo from "../assets/react.svg";
 import person from "../assets/person.jfif";
 import person2 from "../assets/person2.jfif";
-import reactlogo from "../assets/react.svg";
-import PictureFrame from "../components/PictureFrame";
+import ImagePreviewDrawer from "../components/ImagePreviewDrawer";
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
-// const featuredArt = [
-//   { id: 1, title: "Sunset Bloom", artist: "Eva K.", image: color },
-//   { id: 2, title: "Urban Mirage", artist: "Luka M.", image: imrs },
-//   { id: 3, title: "Fluid Emotion", artist: "Anja R.", image: wallswap },
-// ];
-
-const topArtists = [
-  { id: 1, name: "Eva K.", avatar: reactlogo, likes: 120 },
-  { id: 2, name: "Luka M.", avatar: person, likes: 102 },
-  { id: 3, name: "Anja R.", avatar: person2, likes: 98 },
+// dummy top‐artists data
+export const featuredArtists: FeaturedArtist[] = [
+  {
+    id: 1,
+    fullName: "Eva K.",
+    avatarUrl: reactlogo,
+    followers: 120,
+    rating: 4.5,
+    featuredArtCount: 12,
+  },
+  {
+    id: 2,
+    fullName: "Luka M.",
+    avatarUrl: person,
+    followers: 102,
+    rating: 4.2,
+    featuredArtCount: 9,
+  },
+  {
+    id: 3,
+    fullName: "Anja R.",
+    avatarUrl: person2,
+    followers: 98,
+    rating: 4.8,
+    featuredArtCount: 7,
+  },
+  {
+    id: 4,
+    fullName: "Mira T.",
+    avatarUrl: person2,
+    followers: 88,
+    rating: 4.0,
+    featuredArtCount: 5,
+  },
 ];
 
 const upcomingExhibitions = [
@@ -37,128 +71,98 @@ const upcomingExhibitions = [
 ];
 
 const categories = ["Acrylic", "Oil", "Digital", "Mixed Media"];
+const categoryStyles: Record<string, { gradient: string; color: string }> = {
+  Acrylic: {
+    gradient: "linear-gradient(45deg,#FF9F1C,#FFBF69)",
+    color: "#fff",
+  },
+  Oil: { gradient: "linear-gradient(45deg,#2EC4B6,#98DFD6)", color: "#fff" },
+  Digital: {
+    gradient: "linear-gradient(45deg,#E71D36,#FF5964)",
+    color: "#fff",
+  },
+  "Mixed Media": {
+    gradient: "linear-gradient(45deg,#011627,#3D5A80)",
+    color: "#fff",
+  },
+};
 
-const Home = () => {
+const Home: React.FC = () => {
   const { darkMode } = useThemeToggle();
   const { t } = useTranslation();
 
-  const [featuredArt, setArtworks] = useState<any[]>([]);
+  const [arts, setArts] = useState<ArtworkWithLike[]>([]);
+  const [previewArt, setPreviewArt] = useState<ArtworkWithLike | null>(null);
+
   useEffect(() => {
-    getFeaturedArtworks().then((response) => {
-      setArtworks(response);
-    });
+    getFeaturedArtworks().then((data) => setArts(data));
   }, []);
+
+  const contentStyle: React.CSSProperties = {
+    height: "30rem",
+    padding: "0 2rem",
+    alignItems: "center",
+    justifySelf: "center",
+  };
+
   return (
-    <div style={{ maxWidth: "90%", margin: "0 auto", padding: "2rem 1rem" }}>
-      {/* Featured Art Section */}
+    <div style={{ maxWidth: "95%", margin: "0 auto", padding: "1rem" }}>
+      {/* Featured Art */}
       <section>
         <Title level={2} style={{ color: darkMode ? "#fff" : "#1c1c1e" }}>
           {t("featuredArt")}
         </Title>
-
-        <Row gutter={[48, 48]} justify="center" style={{ marginTop: "3rem" }}>
-          {featuredArt.map((art) => (
-            <Col xs={24} sm={12} md={8} key={art.id}>
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                }}
-              >
-                {/* Painting in frame */}
-                <PictureFrame src={art.imageUrl} alt={art.title} />
-
-                {/* Info Meta Card under the painting */}
-                <Card
-                  size="small"
-                  bordered={false}
-                  style={{
-                    width: 200,
-                    marginTop: 16,
-                    background: darkMode ? "#2a2a3b" : "#fff",
-                    boxShadow: darkMode
-                      ? "0 2px 8px rgba(0,0,0,0.5)"
-                      : "0 2px 8px rgba(0,0,0,0.1)",
-                  }}
-                >
-                  <Card.Meta
-                    title={<strong>{art.title}</strong>}
-                    description={<em>By {art?.artist.fullName}</em>}
-                  />
-                </Card>
-              </div>
-            </Col>
+        <Masonry
+          columns={{ xs: 1, sm: 2, md: 3 }}
+          spacing={5}
+          style={{ marginTop: "3rem" }}
+        >
+          {arts.map((art) => (
+            <FeaturedArtCard
+              key={art.id}
+              art={art}
+              darkMode={darkMode}
+              onClick={() => setPreviewArt(art)}
+            />
           ))}
-        </Row>
+        </Masonry>
       </section>
 
-      {/* Top Artists Section */}
+      {/* Preview Drawer */}
+      <ImagePreviewDrawer
+        art={previewArt}
+        visible={!!previewArt}
+        onClose={() => setPreviewArt(null)}
+        darkMode={darkMode}
+      />
+
+      {/* Top Artists */}
       <section style={{ padding: "2rem 1rem" }}>
-        <Title level={2} style={{ color: darkMode ? "#fff" : "#1c1c1e" }}>
-          {t("topArtists")}
-        </Title>
-        <Row gutter={[16, 16]}>
-          {topArtists.map((artist) => (
-            <Col xs={24} sm={12} md={8} key={artist.id}>
-              <Card
-                hoverable
-                cover={
-                  <img
-                    src={artist.avatar}
-                    alt={artist.name}
-                    style={{ height: 240, objectFit: "cover" }}
-                  />
-                }
-              >
-                <Card.Meta
-                  title={artist.name}
-                  description={`Likes: ${artist.likes}`}
-                />
-                <Button type="link" style={{ padding: 0, marginTop: 8 }}>
-                  View Portfolio
-                </Button>
-              </Card>
-            </Col>
-          ))}
-        </Row>
+        <FeaturedArtists artists={featuredArtists} />
       </section>
 
-      {/* Categories Section */}
+      {/* Explore by Category */}
       <section style={{ padding: "2rem 1rem" }}>
         <Title level={2}>{t("exploreByCategory")}</Title>
-        <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
+        <Space wrap style={{ marginTop: 16 }}>
           {categories.map((cat) => (
-            <Tag
+            <CategoryTag
               key={cat}
-              color="purple"
-              style={{ padding: "0.5rem 1rem", fontSize: "1rem" }}
-            >
-              {cat}
-            </Tag>
+              name={cat}
+              gradient={categoryStyles[cat].gradient}
+              color={categoryStyles[cat].color}
+            />
           ))}
-        </div>
+        </Space>
       </section>
 
-      {/* New This Week Carousel */}
+      {/* New This Week */}
       <section style={{ padding: "2rem 1rem" }}>
-        <Title level={2}>New This Week</Title>
-        <Carousel autoplay dotPosition="bottom">
-          {featuredArt.map((art) => (
-            <div key={art.id} style={{ padding: "0 1rem" }}>
-              <Card
-                hoverable
-                cover={
-                  <img
-                    src={art.image}
-                    alt={art.title}
-                    style={{ height: 400, objectFit: "cover", borderRadius: 8 }}
-                  />
-                }
-                style={{ maxWidth: 600, margin: "0 auto" }}
-              >
-                <Card.Meta title={art.title} description={`By ${art.artist}`} />
-              </Card>
+        <Title level={3}>New This Week</Title>
+        <Carousel autoplay speed={500} arrows style={{ padding: "2rem" }}>
+          {arts.map((art) => (
+            <div key={art.id}>
+              <img src={art.imageUrl} alt={art.title} style={contentStyle} />
             </div>
           ))}
         </Carousel>
@@ -166,17 +170,17 @@ const Home = () => {
 
       {/* Upcoming Exhibitions */}
       <section style={{ padding: "2rem 1rem" }}>
-        <Title level={2}>Upcoming Exhibitions</Title>
+        <Title level={3}>Upcoming Exhibitions</Title>
         <List
           itemLayout="vertical"
           dataSource={upcomingExhibitions}
-          renderItem={(event) => (
+          renderItem={(ev) => (
             <List.Item>
               <List.Item.Meta
-                title={<strong>{event.title}</strong>}
-                description={<em>{event.date}</em>}
+                title={<strong>{ev.title}</strong>}
+                description={<em>{ev.date}</em>}
               />
-              <div>{event.description}</div>
+              <Text>{ev.description}</Text>
             </List.Item>
           )}
         />

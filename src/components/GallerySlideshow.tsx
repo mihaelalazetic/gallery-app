@@ -56,7 +56,11 @@ const GallerySlideshow: React.FC<GallerySlideshowProps> = ({ images }) => {
               zIndex: 2,
             }}
           >
-            <PictureFrame src={img} alt={`Gallery art ${idx + 1}`} />
+            <PictureFrame
+              src={img}
+              alt={`Gallery art ${idx + 1}`}
+              source="auth"
+            />
           </Box>
         );
       })}
