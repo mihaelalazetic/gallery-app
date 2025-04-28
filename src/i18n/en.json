@@ -29,5 +29,8 @@
   "signupSuccess": "Registration successful! Please check your email to verify your account.",
   "signupFailed": "Registration failed. Please try again later.",
   "noAccount": "Don't have an account?",
-  "featuredArt": "Featured Art"
+  "featuredArt": "Featured Art",
+  "explore": "Explore",
+  "exhibition": "Exhibition",
+  "exhibitions": "Exhibitions"
 }

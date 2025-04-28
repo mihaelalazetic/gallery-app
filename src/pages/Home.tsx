@@ -1,61 +1,22 @@
 // src/pages/Home.tsx
 
-import React, { useEffect, useState } from "react";
-import { Carousel, List, Typography, Space, Image } from "antd";
 import Masonry from "@mui/lab/Masonry";
+import { Carousel, List, Space, Typography } from "antd";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useThemeToggle } from "../providers/AppThemeProvider";
 
+import CategoryTag from "../components/CategoryTag";
 import FeaturedArtCard, {
   ArtworkWithLike,
 } from "../components/FeaturedArtCard";
-import FeaturedArtists, { FeaturedArtist } from "../components/FeaturedArtists";
-import CategoryTag from "../components/CategoryTag";
+import FeaturedArtists from "../components/FeaturedArtists";
 
 import { getFeaturedArtworks } from "../api/artworkServices";
 
-import reactlogo from "../assets/react.svg";
-import person from "../assets/person.jfif";
-import person2 from "../assets/person2.jfif";
 import ImagePreviewDrawer from "../components/ImagePreviewDrawer";
 
 const { Title, Text } = Typography;
-
-// dummy top‐artists data
-export const featuredArtists: FeaturedArtist[] = [
-  {
-    id: 1,
-    fullName: "Eva K.",
-    avatarUrl: reactlogo,
-    followers: 120,
-    rating: 4.5,
-    featuredArtCount: 12,
-  },
-  {
-    id: 2,
-    fullName: "Luka M.",
-    avatarUrl: person,
-    followers: 102,
-    rating: 4.2,
-    featuredArtCount: 9,
-  },
-  {
-    id: 3,
-    fullName: "Anja R.",
-    avatarUrl: person2,
-    followers: 98,
-    rating: 4.8,
-    featuredArtCount: 7,
-  },
-  {
-    id: 4,
-    fullName: "Mira T.",
-    avatarUrl: person2,
-    followers: 88,
-    rating: 4.0,
-    featuredArtCount: 5,
-  },
-];
 
 const upcomingExhibitions = [
   {
@@ -98,6 +59,14 @@ const Home: React.FC = () => {
     getFeaturedArtworks().then((data) => setArts(data));
   }, []);
 
+  const handleLikeChange = (id: string, liked: boolean, newCount: number) => {
+    setArts((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, liked, likes: newCount } : a))
+    );
+    if (previewArt?.id === id) {
+      setPreviewArt({ ...previewArt, liked, likes: newCount });
+    }
+  };
   const contentStyle: React.CSSProperties = {
     height: "30rem",
     padding: "0 2rem",
@@ -123,6 +92,7 @@ const Home: React.FC = () => {
               art={art}
               darkMode={darkMode}
               onClick={() => setPreviewArt(art)}
+              onLikeChange={handleLikeChange}
             />
           ))}
         </Masonry>
@@ -138,7 +108,7 @@ const Home: React.FC = () => {
 
       {/* Top Artists */}
       <section style={{ padding: "2rem 1rem" }}>
-        <FeaturedArtists artists={featuredArtists} />
+        <FeaturedArtists />
       </section>
 
       {/* Explore by Category */}

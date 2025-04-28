@@ -23,17 +23,19 @@ interface FeaturedArtCardProps {
   art: ArtworkWithLike;
   darkMode: boolean;
   onClick?(): void;
+  onLikeChange: (id: string, liked: boolean, newCount: number) => void;
 }
 
 const FeaturedArtCard: React.FC<FeaturedArtCardProps> = ({
   art,
   darkMode,
   onClick,
+  onLikeChange,
 }) => (
   <Card
     hoverable
     cover={<PictureFrame src={art.imageUrl} alt={art.title} />}
-    className="featured-art-card"
+    // className="featured-art-card"
     style={{
       border: "none",
       background: "none",
@@ -51,6 +53,9 @@ const FeaturedArtCard: React.FC<FeaturedArtCardProps> = ({
             artworkId={art.id}
             initialCount={art.likes}
             initialLiked={art.liked}
+            onLikeChange={(liked, newCount) =>
+              onLikeChange(art.id, liked, newCount)
+            }
           />
           <CommentOutlined
             style={{ color: "#40a9ff", fontSize: 18, marginLeft: 16 }}

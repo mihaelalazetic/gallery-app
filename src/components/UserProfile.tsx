@@ -1,33 +1,46 @@
-// src/components/UserProfile.tsx
 import React, { useState, useEffect } from "react";
-import { Avatar, Button, Dropdown, Menu, Space, Typography } from "antd";
-import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
+import {
+  Avatar,
+  Button,
+  Popover,
+  Typography,
+  Divider,
+  Space,
+  Flex,
+} from "antd";
+import {
+  UserOutlined,
+  LogoutOutlined,
+  ProfileOutlined,
+} from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { useThemeToggle } from "../providers/AppThemeProvider";
 
-const { Text } = Typography;
+const { Title, Text } = Typography;
 
 interface StoredUser {
+  username: string;
+  fullName: string;
+  email: string;
   profilePictureUrl?: string;
-  // …add more fields if you store them
+  roles: string[];
 }
 
 const UserProfile: React.FC = () => {
   const navigate = useNavigate();
+  const { darkMode } = useThemeToggle();
   const [user, setUser] = useState<StoredUser | null>(null);
 
-  // Pull stored user info once on mount
   useEffect(() => {
     const raw = localStorage.getItem("user");
     if (raw) {
       try {
         setUser(JSON.parse(raw));
-      } catch {
-        setUser(null);
-      }
+      } catch {}
     }
   }, []);
 
-  const isLoggedIn = Boolean(localStorage.getItem("token"));
+  const isLoggedIn = Boolean(localStorage.getItem("token") && user);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -35,60 +48,76 @@ const UserProfile: React.FC = () => {
     navigate("/", { replace: true });
   };
 
-  const menu = (
-    <Menu>
-      <Menu.Item
-        key="profile"
-        icon={<UserOutlined />}
-        onClick={() => navigate("/profile")}
-      >
-        Profile
-      </Menu.Item>
-      <Menu.Item key="my-art" onClick={() => navigate("/my-art")}>
-        My Art
-      </Menu.Item>
-      <Menu.Item
-        key="my-exhibitions"
-        onClick={() => navigate("/my-exhibitions")}
-      >
-        My Exhibitions
-      </Menu.Item>
-      <Menu.Item key="my-events" onClick={() => navigate("/my-events")}>
-        My Events
-      </Menu.Item>
-      <Menu.Divider />
-      <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
-        Logout
-      </Menu.Item>
-    </Menu>
-  );
-
-  // Logged‑in state
-  if (isLoggedIn && user) {
+  if (!isLoggedIn) {
     return (
-      <Dropdown overlay={menu} placement="bottomRight" arrow>
-        <Avatar
-          size="large"
-          src={user.profilePictureUrl}
-          icon={<UserOutlined />}
-          style={{ cursor: "pointer" }}
-        />
-      </Dropdown>
+      <Button type="link" onClick={() => navigate("/auth")}>
+        Login / Sign Up
+      </Button>
     );
   }
 
-  // Not logged in
-  return (
-    <Space size="middle">
-      <Button>
-        <Text
-          style={{ cursor: "pointer", color: "#1890ff" }}
-          onClick={() => navigate("/auth")}
+  const popoverContent = (
+    <Space
+      direction="vertical"
+      size="middle"
+      style={{
+        display: "block",
+        width: 220,
+        color: darkMode ? "#e6e9ef" : undefined,
+      }}
+    >
+      <Title
+        level={5}
+        style={{ margin: 0, color: darkMode ? "#e6e9ef" : undefined }}
+      >
+        {user!.fullName}
+      </Title>
+      <Text type="secondary">@{user!.username}</Text>
+      <Text type="secondary">{user!.email}</Text>
+      <Text type="secondary">{user!.roles}</Text>
+
+      <Divider
+        style={{ margin: "8px 0", borderColor: darkMode ? "#444" : "#f0f0f0" }}
+      />
+      <Flex justify="space-between" align="center">
+        <Button
+          type="default"
+          block
+          icon={<ProfileOutlined />}
+          onClick={() => navigate("/profile")}
         >
-          Login / Sign Up
-        </Text>
-      </Button>
+          My Profile
+        </Button>
+        <Button
+          danger
+          block
+          icon={<LogoutOutlined />}
+          onClick={handleLogout}
+          style={{ marginLeft: 8 }}
+        >
+          Logout
+        </Button>
+      </Flex>
     </Space>
+  );
+
+  return (
+    <Popover
+      content={popoverContent}
+      placement="bottomRight"
+      trigger="hover"
+      overlayStyle={{
+        background: darkMode ? "#e6e9ef" : "#fff",
+        borderRadius: 8,
+      }}
+    >
+      <Avatar
+        size="large"
+        src={user!.profilePictureUrl}
+        icon={<UserOutlined />}
+        style={{ cursor: "pointer" }}
+      />
+    </Popover>
   );
 };
 

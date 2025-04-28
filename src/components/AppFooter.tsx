@@ -16,7 +16,7 @@ const AppFooter: React.FC = () => {
         color: darkMode ? "#aaa" : "#555",
       }}
     >
-      e-Gallery ©{new Date().getFullYear()} Created by You
+      e-Gallery ©{new Date().getFullYear()} Created by Mihaela Lazetic
     </Footer>
   );
 };

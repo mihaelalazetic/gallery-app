@@ -1,8 +1,8 @@
 import { supabase } from "./supabase";
 
-export const uploadToSupabase = async (file: File): Promise<string> => {
+export const uploadArtworkToSupabase = async (file: File): Promise<string> => {
   const fileName = `${Date.now()}-${file.name}`;
-  const { data, error } = await supabase.storage
+  const { error } = await supabase.storage
     .from("artworks")
     .upload(fileName, file);
 

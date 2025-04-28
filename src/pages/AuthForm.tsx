@@ -5,14 +5,15 @@ import { FieldConfig, useGeneratedAntForm } from "../hooks/useGeneratedAntForm";
 import { t } from "i18next";
 import { notification } from "antd";
 import { login, signup } from "../api/authServices";
-import { uploadToSupabase } from "../api/uploadToSupabase";
+import { uploadProfilePictureToSupabase } from "../api/uploadProfilePictureToSupabase";
 import { getCurrentUser } from "../api/usersService";
 
 type Props = {
   isLogin?: boolean;
+  onAfterSignup?: () => void;
 };
 
-const AuthForm: React.FC<Props> = ({ isLogin = true }) => {
+const AuthForm: React.FC<Props> = ({ isLogin = true, onAfterSignup }) => {
   const navigate = useNavigate(); // ← grab navigate
   const fields: FieldConfig[] = [
     {
@@ -34,14 +35,14 @@ const AuthForm: React.FC<Props> = ({ isLogin = true }) => {
   if (!isLogin) {
     fields.push(
       {
-        name: "confirm_password",
+        name: "confirmPassword",
         label: "Confirm Password",
         type: "password",
         required: true,
         placeholder: "Confirm your password",
       },
       {
-        name: "full_name",
+        name: "fullName",
         label: "Full Name",
         type: "input",
         required: true,
@@ -55,7 +56,7 @@ const AuthForm: React.FC<Props> = ({ isLogin = true }) => {
         placeholder: "you@example.com",
       },
       {
-        name: "account_type",
+        name: "accountType",
         label: "Account Type",
         type: "select",
         required: true,
@@ -69,7 +70,7 @@ const AuthForm: React.FC<Props> = ({ isLogin = true }) => {
         name: "profile_picture",
         label: "Profile Picture",
         type: "upload",
-        required: true,
+        required: false,
       }
     );
   }
@@ -96,17 +97,20 @@ const AuthForm: React.FC<Props> = ({ isLogin = true }) => {
       try {
         let profilePictureUrl: string | undefined = undefined;
         if (values.profile_picture) {
-          profilePictureUrl = await uploadToSupabase(values.profile_picture);
+          profilePictureUrl = await uploadProfilePictureToSupabase(
+            values.profile_picture.file
+          );
         }
         await signup({
           ...values,
-          profile_picture_url: profilePictureUrl,
+          profilePictureUrl: profilePictureUrl,
         });
         notification.success({
           message: "Signup Successful",
           description: "Your account has been created.",
         });
-        navigate("/", { replace: true }); // ← also redirect after signup if you wish
+        onAfterSignup?.();
+        // navigate("/", { replace: true }); // ← also redirect after signup if you wish
       } catch (error: any) {
         notification.error({
           message: "Signup Failed",

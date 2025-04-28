@@ -1,33 +1,39 @@
 // src/components/LikeButton.tsx
-
-import { useState } from "react";
-import { likeArtwork } from "../api/artworkServices";
+import React, { useState } from "react";
 import { HeartFilled, HeartOutlined } from "@ant-design/icons";
+import { likeArtwork } from "../api/artworkServices";
 
-interface LikeButtonProps {
+export interface LikeButtonProps {
   artworkId: string;
-  initialLiked: boolean;
   initialCount: number;
+  initialLiked: boolean;
+  onLikeChange?: (liked: boolean, newCount: number) => void; // <-- new
 }
 
 export const LikeButton: React.FC<LikeButtonProps> = ({
   artworkId,
   initialCount,
   initialLiked,
+  onLikeChange,
 }) => {
   const [liked, setLiked] = useState(initialLiked);
   const [count, setCount] = useState(initialCount);
 
   const handleClick = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    // toggle
     const next = !liked;
+    const delta = next ? +1 : -1;
     setLiked(next);
-    setCount((c) => c + (next ? 1 : -1));
+    setCount((c) => c + delta);
+
     try {
-      await likeArtwork(artworkId); // POST /api/likes/like or unlike
+      // this toggles on the server, returns new total count
+      const serverCount = await likeArtwork(artworkId);
+      setCount(serverCount);
+      setLiked(next);
+      onLikeChange?.(next, serverCount); // <-- notify parent
     } catch {
-      // rollback on error
+      // rollback
       setLiked(liked);
       setCount(initialCount);
     }

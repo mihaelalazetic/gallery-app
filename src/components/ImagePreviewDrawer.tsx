@@ -1,17 +1,17 @@
 // src/components/ImagePreviewDrawer.tsx
 
-import React, { useEffect, useRef, useState } from "react";
-import { Drawer, Typography, Divider, Image, Button, Input, Flex } from "antd";
 import {
   CloseOutlined,
   CommentOutlined,
   SendOutlined,
 } from "@ant-design/icons";
-import { ArtworkWithLike } from "./FeaturedArtCard";
-import { LikeButton } from "./LikeButton";
-import CommentsThread from "./CommentsThread";
+import { Button, Divider, Drawer, Image, Input, Typography } from "antd";
+import React, { useEffect, useRef, useState } from "react";
 import { createComment, getComments } from "../api/artworkServices";
 import { CommentDto } from "../types/IObjectTypes";
+import CommentsThread from "./CommentsThread";
+import { ArtworkWithLike } from "./FeaturedArtCard";
+import { LikeButton } from "./LikeButton";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -39,6 +39,7 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
   useEffect(() => {
     if (art && visible) {
       getComments(art.id).then(setComments);
+      setNewText("");
     }
   }, [art, visible]);
 

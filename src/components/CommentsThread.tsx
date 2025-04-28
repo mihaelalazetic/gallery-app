@@ -24,25 +24,34 @@ const CommentsThread: React.FC<CommentsThreadProps> = ({ comments }) => (
     itemLayout="horizontal"
     dataSource={comments}
     renderItem={(c) => {
+      const timeAgoString = formatDistanceToNow(new Date(c.createdAt), {
+        addSuffix: true,
+      });
+
       const timeAgo = (
         <Tooltip title={new Date(c.createdAt).toLocaleString()}>
-          <Text type="secondary">
-            {formatDistanceToNow(new Date(c.createdAt), { addSuffix: true })}
-          </Text>
+          <Text type="secondary">{timeAgoString}</Text>
         </Tooltip>
       );
 
       return (
-        <List.Item>
+        <List.Item style={{ padding: "12px 0" }}>
           <List.Item.Meta
             avatar={<Avatar src={c.user.profilePictureUrl} />}
-            title={c.user.fullName}
-            description={
-              <>
-                <Text>{c.text}</Text>
-                <div style={{ marginTop: 4 }}>{timeAgo}</div>
-              </>
+            title={
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                }}
+              >
+                <Text strong>{c.user.fullName}</Text>
+                <Text type="secondary">•</Text>
+                {timeAgo}
+              </div>
             }
+            description={<Text>{c.text}</Text>}
           />
         </List.Item>
       );

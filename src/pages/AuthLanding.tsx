@@ -103,7 +103,10 @@ const AuthLanding = () => {
                       : t("joinEgallery") + " 🎨"} */}
                 </Title>
 
-                <AuthForm isLogin={mode === "login"} />
+                <AuthForm
+                  isLogin={mode === "login"}
+                  onAfterSignup={() => setMode("login")}
+                />
 
                 <div style={{ textAlign: "center" }}>
                   {mode === "login" ? (
