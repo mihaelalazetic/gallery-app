@@ -3,8 +3,8 @@ import { Card, Typography, Grid, Flex, Space } from "antd";
 import { useNavigate } from "react-router-dom";
 import { useGeneratedAntForm, FieldConfig } from "../hooks/useGeneratedAntForm";
 import { useThemeToggle } from "../providers/AppThemeProvider";
-import ThemeToggle from "../components/ThemeToggle";
-import LanguageSwitcher from "../components/LanguageChanger";
+import ThemeToggle from "../components/utils/ThemeToggle";
+import LanguageSwitcher from "../components/utils/LanguageChanger";
 
 const { Title, Text } = Typography;
 const { useBreakpoint } = Grid;

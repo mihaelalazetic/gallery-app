@@ -9,7 +9,9 @@ import { createContext, useContext, useState } from "react";
 const ThemeToggleContext = createContext({
   darkMode: false,
   toggleTheme: () => {},
+  colorPrimary: "#9254de", // 💜 default purple
 });
+
 
 export const useThemeToggle = () => useContext(ThemeToggleContext);
 
@@ -43,7 +45,7 @@ const AppThemeProvider = ({ children }: { children: ReactNode }) => {
     : antdTheme.defaultAlgorithm;
 
   return (
-    <ThemeToggleContext.Provider value={{ darkMode, toggleTheme }}>
+    <ThemeToggleContext.Provider value={{ darkMode, toggleTheme, colorPrimary: "#9254de" }}>
       <ConfigProvider
         theme={{
           algorithm: antdAlgorithm,

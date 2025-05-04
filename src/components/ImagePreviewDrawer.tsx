@@ -10,7 +10,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { createComment, getComments } from "../api/artworkServices";
 import { CommentDto } from "../types/IObjectTypes";
 import CommentsThread from "./CommentsThread";
-import { ArtworkWithLike } from "./FeaturedArtCard";
+import { ArtworkWithLike } from "./featured/FeaturedArtCard";
 import { LikeButton } from "./LikeButton";
 
 const { Title, Text } = Typography;

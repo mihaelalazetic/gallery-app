@@ -1,0 +1,151 @@
+/* Root: two main columns */
+.featured-artist-grid {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 2rem;
+    padding: 2rem;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    max-width: 1200px;
+    margin: 2rem auto;
+    overflow: hidden;
+    color: #1a1a1a;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  .artist-stats {
+    display: flex;
+    gap: 1rem;
+    margin: 1rem 0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: inherit;
+  }
+  
+  .artist-stats span {
+    display: flex;
+    align-items: center;
+  }
+  
+  /* 🌙 DARK MODE OVERRIDES */
+  .featured-artist-grid.dark {
+    background: #2a2a3b;
+    color: #f3f3f3;
+    box-shadow: 0 8px 24px rgba(182, 94, 255, 0.08);
+
+  }
+  
+  /* Artist Info Column */
+  .artist-info-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding-right: 1rem;
+  }
+  
+  .artist-info-column h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: inherit;
+  }
+  
+  .subtitle {
+    font-size: 0.85rem;
+    color: #666;
+    margin-bottom: 0.4rem;
+  }
+  
+  /* Dark mode subtitle override */
+  .featured-artist-grid.dark .subtitle {
+    color: #aaa;
+  }
+  
+  .learn-more {
+    color: #1a73e8;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  
+  .featured-artist-grid.dark .learn-more {
+    color: #bb86fc;
+  }
+  
+  /* Art Layout */
+  .art-collage-zone {
+    display: grid;
+    grid-template-areas:
+      "a b b"
+      "a c d";
+    grid-template-columns: 2fr 1fr 2fr;
+    grid-template-rows: auto auto;
+    gap: 1rem;
+    position: relative;
+  }
+  
+  /* Art Blocks */
+  .art-block {
+    background-size: cover;
+    background-position: center;
+    border-radius: 8px;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Dark theme: boost contrast on shadows */
+  .featured-artist-grid.dark .art-block {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  }
+  
+  /* Art piece transforms */
+  .g-art-0 {
+    grid-area: a;
+    aspect-ratio: 2 / 3;
+    transform: scale(0.8);
+  }
+  
+  .g-art-1 {
+    grid-area: b;
+    aspect-ratio: 3 / 2;
+    transform: scale(1);
+  }
+  
+  .g-art-2 {
+    grid-area: c;
+    aspect-ratio: 1 / 1;
+    transform: scale(0.8);
+  }
+  
+  .g-art-3 {
+    grid-area: d;
+    aspect-ratio: 1 / 1;
+    transform: scale(0.9);
+  }
+  
+  /* Responsive Mobile Layout */
+  @media (max-width: 768px) {
+    .featured-artist-grid {
+      grid-template-columns: 1fr;
+      grid-template-rows: auto auto;
+    }
+  
+    .art-collage-zone {
+      grid-template-areas:
+        "a"
+        "b"
+        "c"
+        "d";
+      grid-template-columns: 1fr;
+    }
+  
+    .g-art-0,
+    .g-art-1,
+    .g-art-2,
+    .g-art-3 {
+      aspect-ratio: auto;
+      height: 160px;
+      transform: none;
+    }
+  }
+  

@@ -42,6 +42,9 @@ export interface Artist {
   profileImage: string;
   totalLikes: number;
   totalComments: number;
+  followerCount: number;
+  artCount: number;
+  artworks: ArtworkDto[];
 }
 
 export interface Artwork {
@@ -50,5 +53,26 @@ export interface Artwork {
   imageUrl: string;
   artist: Artist;
   likes: number;
+  liked: boolean;
+  price: number;
+  dimensions: string;
+  description: string;
   comments: Comment[];
+  category: string;
+}
+
+// src/api/types.ts
+export interface FeaturedArtistDTO {
+  id: string;
+  fullName: string;
+  profilePictureUrl: string;
+  birthYear: number;
+  bio: string;
+}
+
+export interface ArtworkDto {
+  id: string;
+  title: string;
+  imageUrl: string;
+  likes: number;
 }

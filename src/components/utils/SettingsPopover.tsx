@@ -1,7 +1,7 @@
 import React from "react";
 import { Popover, Space, Divider, Button } from "antd";
 import { SettingOutlined } from "@ant-design/icons";
-import { useThemeToggle } from "../providers/AppThemeProvider";
+import { useThemeToggle } from "../../providers/AppThemeProvider";
 import ThemeToggle from "./ThemeToggle";
 import LanguageChanger from "./LanguageChanger";
 

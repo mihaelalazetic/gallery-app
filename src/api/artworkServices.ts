@@ -74,3 +74,10 @@ export const createComment = async (
 export const deleteComment = async (commentId: string): Promise<void> => {
   return apiInstance.delete(`/api/comments/${commentId}`).then(() => {});
 };
+
+
+export const getTopLikedArtworks = async (artworkId: string): Promise<CommentDto[]> => {
+  return apiInstance
+    .get<CommentDto[]>(`/api/comments?targetId=${artworkId}&targetType=ARTWORK`)
+    .then((res) => res.data);
+};

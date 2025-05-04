@@ -1,7 +1,7 @@
 // src/pages/Home.tsx
 
 import Masonry from "@mui/lab/Masonry";
-import { Carousel, List, Space, Typography } from "antd";
+import { Carousel, Col, List, Row, Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useThemeToggle } from "../providers/AppThemeProvider";
@@ -9,12 +9,24 @@ import { useThemeToggle } from "../providers/AppThemeProvider";
 import CategoryTag from "../components/CategoryTag";
 import FeaturedArtCard, {
   ArtworkWithLike,
-} from "../components/FeaturedArtCard";
-import FeaturedArtists from "../components/FeaturedArtists";
+} from "../components/featured/FeaturedArtCard";
 
 import { getFeaturedArtworks } from "../api/artworkServices";
 
 import ImagePreviewDrawer from "../components/ImagePreviewDrawer";
+import FeaturedArtists from "../components/featured/FeaturedArtists";
+import {
+  FaBolt,
+  FaCamera,
+  FaCubes,
+  FaEye,
+  FaLightbulb,
+  FaMinus,
+  FaMobileAlt,
+  FaPaintBrush,
+  FaSprayCan,
+  FaTabletAlt,
+} from "react-icons/fa";
 
 const { Title, Text } = Typography;
 
@@ -31,22 +43,18 @@ const upcomingExhibitions = [
   },
 ];
 
-const categories = ["Acrylic", "Oil", "Digital", "Mixed Media"];
-const categoryStyles: Record<string, { gradient: string; color: string }> = {
-  Acrylic: {
-    gradient: "linear-gradient(45deg,#FF9F1C,#FFBF69)",
-    color: "#fff",
-  },
-  Oil: { gradient: "linear-gradient(45deg,#2EC4B6,#98DFD6)", color: "#fff" },
-  Digital: {
-    gradient: "linear-gradient(45deg,#E71D36,#FF5964)",
-    color: "#fff",
-  },
-  "Mixed Media": {
-    gradient: "linear-gradient(45deg,#011627,#3D5A80)",
-    color: "#fff",
-  },
-};
+const categories = [
+  { name: "Abstract Expressionism", Icon: FaPaintBrush },
+  { name: "Pop Art", Icon: FaBolt },
+  { name: "Minimalism", Icon: FaMinus },
+  { name: "Digital Illustration", Icon: FaTabletAlt },
+  { name: "Street Art", Icon: FaSprayCan },
+  { name: "Surrealism", Icon: FaEye },
+  { name: "Photorealism", Icon: FaCamera },
+  { name: "Conceptual Art", Icon: FaLightbulb },
+  { name: "Installation Art", Icon: FaCubes },
+  { name: "New Media Art", Icon: FaMobileAlt },
+];
 
 const Home: React.FC = () => {
   const { darkMode } = useThemeToggle();
@@ -56,35 +64,59 @@ const Home: React.FC = () => {
   const [previewArt, setPreviewArt] = useState<ArtworkWithLike | null>(null);
 
   useEffect(() => {
-    getFeaturedArtworks().then((data) => setArts(data));
+    getFeaturedArtworks().then(setArts);
   }, []);
 
-  const handleLikeChange = (id: string, liked: boolean, newCount: number) => {
+  // update both grid and drawer on like
+  const handleLikeChange = (id: string, liked: boolean, likes: number) => {
     setArts((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, liked, likes: newCount } : a))
+      prev.map((a) => (a.id === id ? { ...a, liked, likes } : a))
     );
     if (previewArt?.id === id) {
-      setPreviewArt({ ...previewArt, liked, likes: newCount });
+      setPreviewArt({ ...previewArt, liked, likes });
     }
   };
-  const contentStyle: React.CSSProperties = {
-    height: "30rem",
-    padding: "0 2rem",
-    alignItems: "center",
-    justifySelf: "center",
-  };
+
+  // Decide how many columns to show at 'md' width:
+  //  1 item → 1 col
+  //  4 items → 2 cols
+  //  any other count → up to 3 cols (but never more than number of items)
+  const colsAtMd = (() => {
+    const n = arts.length;
+    if (n <= 1) return 1;
+    if (n === 4) return 2;
+    return Math.min(3, n);
+  })();
 
   return (
     <div style={{ maxWidth: "95%", margin: "0 auto", padding: "1rem" }}>
+      {/* Explore by Category */}
+      <section style={{ padding: "2rem 1rem" }}>
+        <Row gutter={[16, 16]} justify="center">
+          {categories.map(({ name, Icon }) => (
+            <Col key={name} xs={12} sm={8} md={6} lg={4}>
+              <CategoryTag name={name} Icon={Icon} />
+            </Col>
+          ))}
+        </Row>
+      </section>
+
       {/* Featured Art */}
       <section>
         <Title level={2} style={{ color: darkMode ? "#fff" : "#1c1c1e" }}>
           {t("featuredArt")}
         </Title>
         <Masonry
-          columns={{ xs: 1, sm: 2, md: 3 }}
+          // always 1 col on extra-small,
+          // up to 2 cols on small (but never more than our md-count),
+          // and 'colsAtMd' on medium+.
+          columns={{
+            xs: 1,
+            sm: Math.min(2, colsAtMd),
+            md: colsAtMd,
+          }}
           spacing={5}
-          style={{ marginTop: "3rem" }}
+          style={{ marginTop: "1rem" }}
         >
           {arts.map((art) => (
             <FeaturedArtCard
@@ -109,21 +141,7 @@ const Home: React.FC = () => {
       {/* Top Artists */}
       <section style={{ padding: "2rem 1rem" }}>
         <FeaturedArtists />
-      </section>
-
-      {/* Explore by Category */}
-      <section style={{ padding: "2rem 1rem" }}>
-        <Title level={2}>{t("exploreByCategory")}</Title>
-        <Space wrap style={{ marginTop: 16 }}>
-          {categories.map((cat) => (
-            <CategoryTag
-              key={cat}
-              name={cat}
-              gradient={categoryStyles[cat].gradient}
-              color={categoryStyles[cat].color}
-            />
-          ))}
-        </Space>
+        {/* <OnThisDateFeaturedArtists /> */}
       </section>
 
       {/* New This Week */}
@@ -132,7 +150,15 @@ const Home: React.FC = () => {
         <Carousel autoplay speed={500} arrows style={{ padding: "2rem" }}>
           {arts.map((art) => (
             <div key={art.id}>
-              <img src={art.imageUrl} alt={art.title} style={contentStyle} />
+              <img
+                src={art.imageUrl}
+                alt={art.title}
+                style={{
+                  height: "30rem",
+                  width: "100%",
+                  objectFit: "cover",
+                }}
+              />
             </div>
           ))}
         </Carousel>

@@ -12,9 +12,9 @@ import {
   getFollowerCount,
   getFollowingStatus,
   toggleFollow,
-} from "../api/artists";
-import { getMostLikedArtists } from "../api/usersService";
-import { useThemeToggle } from "../providers/AppThemeProvider";
+} from "../../api/artists";
+import { getMostLikedArtists } from "../../api/usersService";
+import { useThemeToggle } from "../../providers/AppThemeProvider";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -29,7 +29,7 @@ export interface FeaturedArtist {
   bio: string;
 }
 
-const FeaturedArtists: React.FC = () => {
+const FeaturedArtists2: React.FC = () => {
   const { darkMode } = useThemeToggle();
   const [artists, setArtists] = useState<FeaturedArtist[]>([]);
   const [followingMap, setFollowingMap] = useState<Record<string, boolean>>({});
@@ -204,4 +204,4 @@ const FeaturedArtists: React.FC = () => {
   );
 };
 
-export default FeaturedArtists;
+export default FeaturedArtists2;

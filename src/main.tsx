@@ -5,11 +5,16 @@ import AppThemeProvider from "./providers/AppThemeProvider";
 import { router } from "./routes";
 import "./index.css"; // ✅ OR './app.css' — depending where your global styles live
 import "./i18n/i18n";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <AppThemeProvider>
-      <RouterProvider router={router} />
-    </AppThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <AppThemeProvider>
+        <RouterProvider router={router} />
+      </AppThemeProvider>
+    </QueryClientProvider>
   </React.StrictMode>
 );

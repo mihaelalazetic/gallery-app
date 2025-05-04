@@ -2,7 +2,7 @@
 import React from "react";
 import { Input } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
-import { useThemeToggle } from "../providers/AppThemeProvider";
+import { useThemeToggle } from "../../providers/AppThemeProvider";
 
 const SearchBar: React.FC = () => {
   const { darkMode } = useThemeToggle();

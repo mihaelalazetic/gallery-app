@@ -14,7 +14,8 @@ import {
   ProfileOutlined,
 } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { useThemeToggle } from "../providers/AppThemeProvider";
+import { useThemeToggle } from "../../providers/AppThemeProvider";
+import LanguageSwitcher from "./LanguageChanger";
 
 const { Title, Text } = Typography;
 
@@ -62,15 +63,18 @@ const UserProfile: React.FC = () => {
       size="middle"
       style={{
         display: "block",
-        width: 220,
-        color: darkMode ? "#e6e9ef" : undefined,
+        width: 250,
+        // color: darkMode ? "#e6e9ef" : undefined,
       }}
     >
       <Title
         level={5}
         style={{ margin: 0, color: darkMode ? "#e6e9ef" : undefined }}
       >
-        {user!.fullName}
+        <Flex justify="space-between" align="center">
+          {user!.fullName}
+          <LanguageSwitcher />
+        </Flex>
       </Title>
       <Text type="secondary">@{user!.username}</Text>
       <Text type="secondary">{user!.email}</Text>
@@ -107,7 +111,7 @@ const UserProfile: React.FC = () => {
       placement="bottomRight"
       trigger="hover"
       overlayStyle={{
-        background: darkMode ? "#e6e9ef" : "#fff",
+        // background: darkMode ? "#e6e9ef" : "#fff",
         borderRadius: 8,
       }}
     >

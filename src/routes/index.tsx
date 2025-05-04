@@ -1,9 +1,10 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
 import Home from "../pages/Home";
-import Gallery from "../pages/Gallery";
+import Explore from "../pages/Explore";
 import LoginPage from "../pages/Login";
 import AuthLanding from "../pages/AuthLanding";
+import ArtworkUploadPage from "../forms/ArtworkUploadForm";
 
 const router = createBrowserRouter([
   {
@@ -14,12 +15,17 @@ const router = createBrowserRouter([
     path: "/auth", // 👉 Standalone route
     element: <AuthLanding />,
   },
+
   {
     path: "/",
     element: <App />,
     children: [
       { path: "", element: <Home /> },
-      { path: "gallery", element: <Gallery /> },
+      { path: "explore", element: <Explore /> },
+      {
+        path: "/upload-artwork", // 👉 Standalone route
+        element: <ArtworkUploadPage />,
+      },
     ],
   },
 ]);

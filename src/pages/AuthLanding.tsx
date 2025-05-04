@@ -2,8 +2,8 @@
 import { Card, Col, Layout, Row, Typography } from "antd";
 import { useState } from "react";
 import GallerySlideshow from "../components/GallerySlideshow";
-import LanguageChanger from "../components/LanguageChanger";
-import ThemeToggle from "../components/ThemeToggle";
+import LanguageChanger from "../components/utils/LanguageChanger";
+import ThemeToggle from "../components/utils/ThemeToggle";
 import AuthForm from "./AuthForm";
 
 import { useTranslation } from "react-i18next";
@@ -111,7 +111,7 @@ const AuthLanding = () => {
                 <div style={{ textAlign: "center" }}>
                   {mode === "login" ? (
                     <>
-                      Don't have an account?{" "}
+                      {t("noAccount") + " "}
                       <a onClick={() => setMode("signup")}>{t("signup")}</a>
                     </>
                   ) : (

@@ -5,15 +5,19 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   PictureOutlined,
+  PlusCircleOutlined,
+  PlusOutlined,
+  PlusSquareOutlined,
+  PlusSquareTwoTone,
   ProfileOutlined,
   TeamOutlined,
 } from "@ant-design/icons";
 import { Button, Divider, Layout, Menu } from "antd";
+import SubMenu from "antd/es/menu/SubMenu";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useThemeToggle } from "../providers/AppThemeProvider";
-import ThemeToggle from "./ThemeToggle";
+import { useThemeToggle } from "../../providers/AppThemeProvider";
 
 const { Sider } = Layout;
 
@@ -22,7 +26,7 @@ const AppSider: React.FC<{
   toggleCollapsed: () => void;
 }> = ({ collapsed, toggleCollapsed }) => {
   const { t } = useTranslation();
-  const { darkMode } = useThemeToggle();
+  const { darkMode, colorPrimary } = useThemeToggle();
   const location = useLocation();
   const navigate = useNavigate();
   const isLoggedIn = Boolean(localStorage.getItem("token"));
@@ -43,7 +47,7 @@ const AppSider: React.FC<{
       }}
       trigger={
         <div style={{ position: "absolute", bottom: 16, width: "100%" }}>
-          <ThemeToggle />
+          {/* <ThemeToggle /> */}
           <Button
             type="text"
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -83,6 +87,32 @@ const AppSider: React.FC<{
             <Menu.Item key="/my-events" icon={<TeamOutlined />}>
               <Link to="/my-events">My Events</Link>
             </Menu.Item>
+            <SubMenu
+              key="new"
+              title={
+                <>
+                  {!collapsed ? (
+                    <>
+                      {" "}
+                      <PlusOutlined style={{ color: colorPrimary }} />
+                      <span style={{ marginLeft: 8 }}>Add</span>
+                    </>
+                  ) : (
+                    <PlusSquareTwoTone
+                      type="primary"
+                      twoToneColor={colorPrimary}
+                    />
+                  )}
+                </>
+              }
+            >
+              <Menu.Item key="/upload-artwork" icon={<PictureOutlined />}>
+                <Link to="/upload-artwork">Artwork</Link>
+              </Menu.Item>
+              <Menu.Item key="/create-exhibition" icon={<CalendarOutlined />}>
+                <Link to="/create-exhibition">Exhibition</Link>
+              </Menu.Item>
+            </SubMenu>
           </>
         )}
       </Menu>

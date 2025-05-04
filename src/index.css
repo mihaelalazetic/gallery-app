@@ -223,3 +223,53 @@ a:hover {
 
   line-height: 0 !important;
 }
+
+/* Align arrows vertically centered and style them */
+.featured-carousel .slick-prev,
+.featured-carousel .slick-next {
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  color: #1890ff;
+  /* Change to your primary theme color */
+  font-size: 24px;
+  background: rgba(255, 255, 255, 0.7);
+  /* Light background for visibility */
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Add hover effect */
+.featured-carousel .slick-prev:hover,
+.featured-carousel .slick-next:hover {
+  background: #1890ff;
+  color: white;
+}
+
+/* Optional: spacing from edges */
+.featured-carousel .slick-prev {
+  left: -40px;
+}
+
+.featured-carousel .slick-next {
+  right: -40px;
+}
+
+:where(.css-dev-only-do-not-override-ec6tkc).ant-carousel .slick-prev::after,
+:where(.css-dev-only-do-not-override-ec6tkc).ant-carousel .slick-next::after {
+  position: initial !important;
+}
+
+/* styles.css */
+.category-tag {
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.category-tag:hover {
+  background-color: #f0f0f0;
+  transform: translateY(-5px);
+}

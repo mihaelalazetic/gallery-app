@@ -1,6 +1,6 @@
 import React from "react";
 import { Layout } from "antd";
-import { useThemeToggle } from "../providers/AppThemeProvider";
+import { useThemeToggle } from "../../providers/AppThemeProvider";
 
 const { Footer } = Layout;
 

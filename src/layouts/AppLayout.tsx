@@ -2,9 +2,9 @@
 
 import { Layout, theme as antdTheme } from "antd";
 import React, { useState } from "react";
-import AppFooter from "../components/AppFooter";
-import AppHeader from "../components/AppHeader";
-import AppSider from "../components/AppSider";
+import AppFooter from "../components/layout/AppFooter";
+import AppSider from "../components/layout/AppSider";
+import AppHeader from "../components/layout/AppHeader";
 
 const { Content } = Layout;
 const { useToken } = antdTheme;

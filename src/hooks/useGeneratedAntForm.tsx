@@ -1,5 +1,5 @@
 // useGeneratedAntForm.tsx
-import { UploadOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import {
   Button,
   Checkbox,
@@ -13,9 +13,11 @@ import {
   Select,
   Switch,
   Upload,
+  Image,
 } from "antd";
 import type { UploadFile } from "antd/es/upload/interface";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { ColProps } from "antd";
 
 const { TextArea } = Input;
 
@@ -44,11 +46,24 @@ export type FieldConfig = {
   rows?: number;
 };
 
+interface ColumnConfig {
+  key: string;
+  span: ColProps;
+}
+
+interface LayoutConfig {
+  columns: ColumnConfig[];
+  fieldGroups: {
+    [key: string]: string[];
+  };
+}
+
 type UseGeneratedAntFormProps = {
   fields: FieldConfig[];
   buttonLabel?: string;
   onSubmit: (values: any) => void;
   withButton?: boolean;
+  layoutConfig?: LayoutConfig;
 };
 
 export const useGeneratedAntForm = ({
@@ -56,9 +71,24 @@ export const useGeneratedAntForm = ({
   buttonLabel,
   onSubmit,
   withButton = true,
+  layoutConfig,
 }: UseGeneratedAntFormProps) => {
   const [form] = Form.useForm();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [previewImage, setPreviewImage] = useState<string>("");
+  const [previewOpen, setPreviewOpen] = useState<boolean>(false);
+
+  const getBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+    });
+
+  useEffect(() => {
+    form.setFieldsValue({ imageFile: fileList });
+  }, [fileList, form]);
 
   const renderField = (field: FieldConfig) => {
     const rules = field.required
@@ -195,50 +225,84 @@ export const useGeneratedAntForm = ({
             key={field.name}
             name={field.name}
             label={field.label}
-            valuePropName="file"
-            rules={rules}
+            valuePropName="fileList"
+            getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
+            rules={[
+              {
+                validator: (_, value) =>
+                  value && value.length > 0
+                    ? Promise.resolve()
+                    : Promise.reject(new Error(`${field.label} is required`)),
+              },
+            ]}
           >
-            <Upload
-              beforeUpload={() => false}
-              listType="picture"
-              fileList={fileList}
-              onChange={({ fileList }) => setFileList(fileList)}
-              accept="image/*"
-            >
-              <Button icon={<UploadOutlined />}>Upload Image</Button>
-            </Upload>
+            <>
+              <Upload
+                listType="picture-card"
+                beforeUpload={() => false}
+                fileList={fileList}
+                onChange={({ fileList: newFileList }) => {
+                  setFileList(newFileList);
+                  form.setFieldsValue({ [field.name]: newFileList }); // <- 🔑 this syncs with form
+                }}
+                onPreview={async (file) => {
+                  if (!file.url && !file.preview && file.originFileObj) {
+                    const base64 = await getBase64(file.originFileObj as File);
+                    file.preview = base64;
+                  }
+                  setPreviewImage(file.url || (file.preview as string));
+                  setPreviewOpen(true);
+                }}
+                accept="image/*"
+              >
+                {fileList.length >= 1 ? null : (
+                  <div>
+                    <PlusOutlined />
+                    <div style={{ marginTop: 8 }}>Upload</div>
+                  </div>
+                )}
+              </Upload>
+
+              <Image
+                wrapperStyle={{ display: "none" }}
+                preview={{
+                  visible: previewOpen,
+                  onVisibleChange: (visible) => setPreviewOpen(visible),
+                  afterOpenChange: (visible) => !visible && setPreviewImage(""),
+                }}
+                src={previewImage}
+              />
+            </>
           </Form.Item>
         );
+
       default:
         return null;
     }
   };
 
-  // The container is now fully responsive by using 100% width and height.
   const GeneratedForm = () => (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        overflowY: "auto",
-        boxSizing: "border-box",
-        paddingRight: "1rem",
-      }}
-    >
+    <div style={{ width: "100%", height: "100%", boxSizing: "border-box" }}>
       <Form
         form={form}
         layout="vertical"
         onFinish={(values) => {
-          onSubmit({ ...values, file: fileList[0] });
+          onSubmit({ ...values, file: values.imageFile?.[0] });
         }}
       >
         <Row gutter={16}>
-          {fields.map((field) => (
-            <Col span={24} key={field.name}>
-              {renderField(field)}
+          {layoutConfig?.columns.map((col: { key: string; span: ColProps }) => (
+            <Col key={col.key} {...col.span} style={{ padding: "0 1rem" }}>
+              {layoutConfig.fieldGroups[col.key]?.map((fieldName) => {
+                const field = fields.find((f) => f.name === fieldName);
+                return field ? (
+                  <div key={field.name}>{renderField(field)}</div>
+                ) : null;
+              })}
             </Col>
           ))}
         </Row>
+
         {withButton && (
           <Form.Item style={{ marginTop: "1rem", textAlign: "right" }}>
             <Button type="primary" htmlType="submit">

@@ -9,7 +9,7 @@ interface PictureFrameProps {
   source?: string; // Optional prop for the source of the image
 }
 
-const PictureFrame: React.FC<PictureFrameProps> = ({ src, alt, source }) => {
+const PictureFrame: React.FC<PictureFrameProps> = ({ src, alt ,source}) => {
   const { darkMode } = useThemeToggle();
 
   // Define colors for light and dark modes

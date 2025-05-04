@@ -18,14 +18,14 @@ const AuthForm: React.FC<Props> = ({ isLogin = true, onAfterSignup }) => {
   const fields: FieldConfig[] = [
     {
       name: "username",
-      label: "Username",
+      label: t("username"),
       type: "input",
       required: true,
       placeholder: "Pick a username",
     },
     {
       name: "password",
-      label: "Password",
+      label: t("password"),
       type: "password",
       required: true,
       placeholder: "Your password",
@@ -36,13 +36,13 @@ const AuthForm: React.FC<Props> = ({ isLogin = true, onAfterSignup }) => {
     fields.push(
       {
         name: "confirmPassword",
-        label: "Confirm Password",
+        label: t("confirm Password"),
         type: "password",
         required: true,
         placeholder: "Confirm your password",
       },
       {
-        name: "fullName",
+        name: t("fullName"),
         label: "Full Name",
         type: "input",
         required: true,

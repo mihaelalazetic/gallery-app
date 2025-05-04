@@ -22,7 +22,7 @@ const GallerySlideshow: React.FC<GallerySlideshowProps> = ({ images }) => {
   // Updated spotlight with more transparency.
   const spotlightBg = darkMode
     ? "radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.18), transparent 70%)"
-    : "radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1), transparent 70%)";
+    : "radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.2), transparent 70%)";
 
   return (
     <Box
@@ -53,7 +53,7 @@ const GallerySlideshow: React.FC<GallerySlideshowProps> = ({ images }) => {
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              zIndex: 2,
+              zIndex: 100,
             }}
           >
             <PictureFrame
