@@ -5,6 +5,7 @@ import Explore from "../pages/Explore";
 import LoginPage from "../pages/Login";
 import AuthLanding from "../pages/AuthLanding";
 import ArtworkUploadPage from "../forms/ArtworkUploadForm";
+import CategoryUploadForm from "../forms/CategoryUploadForm";
 
 const router = createBrowserRouter([
   {
@@ -23,8 +24,12 @@ const router = createBrowserRouter([
       { path: "", element: <Home /> },
       { path: "explore", element: <Explore /> },
       {
-        path: "/upload-artwork", // 👉 Standalone route
+        path: "upload-artwork", // 👉 Standalone route
         element: <ArtworkUploadPage />,
+      },
+      {
+        path: "upload-category", // 👉 Standalone route
+        element: <CategoryUploadForm />,
       },
     ],
   },

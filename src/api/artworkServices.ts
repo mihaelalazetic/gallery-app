@@ -8,6 +8,11 @@ export const uploadArtwork = async (artData: any): Promise<any> => {
   return response.data;
 };
 
+export const getArtwork = async (id: any): Promise<any> => {
+  const response = await apiInstance.get(`${prefix}/getById/${id}`);
+  return response.data;
+};
+
 export const getAllArtworks = async (): Promise<any> => {
   const response = await apiInstance.get(`${prefix}`);
   return response.data;
@@ -18,29 +23,20 @@ export const getLimitedArtworks = async (limit: number): Promise<any> => {
   return response.data;
 };
 
-export const getPaginatedArtworks = async (
-  page = 0,
-  size = 20
-): Promise<any> => {
-  const response = await apiInstance.get(`${prefix}?page=${page}&size=${size}`);
+// Example API call
+export const getPaginatedArtworks = async (params: any) => {
+  const query = new URLSearchParams(params).toString();
+  const response = await apiInstance.get(`${prefix}?${query}`);
+  if (response.status < 200 || response.status >= 300)
+    throw new Error("Failed to fetch artworks");
   return response.data;
 };
 
-export const getFeaturedArtworks = async (page = 0, size = 6): Promise<any> => {
-  // ✅ call the /featured endpoint, not the root list
-  const response = await apiInstance.get(
-    `${prefix}/featured?page=${page}&size=${size}`
-  );
-  return response.data.content;
-};
-
-export const getArtworks = async (isAuthenticated: boolean): Promise<any> => {
-  if (isAuthenticated) {
-    return getPaginatedArtworks(); // or pass page/size
-  } else {
-    return getLimitedArtworks(3);
-  }
-};
+// export const getArtworks = async (isAuthenticated: boolean) => {
+//   return isAuthenticated
+//     ? await getPaginatedArtworks()
+//     : await getLimitedArtworks(3);
+// };
 
 export const likeArtwork = async (artworkId: string): Promise<any> => {
   // InteractionTargetType.ARTWORK
@@ -75,8 +71,9 @@ export const deleteComment = async (commentId: string): Promise<void> => {
   return apiInstance.delete(`/api/comments/${commentId}`).then(() => {});
 };
 
-
-export const getTopLikedArtworks = async (artworkId: string): Promise<CommentDto[]> => {
+export const getTopLikedArtworks = async (
+  artworkId: string
+): Promise<CommentDto[]> => {
   return apiInstance
     .get<CommentDto[]>(`/api/comments?targetId=${artworkId}&targetType=ARTWORK`)
     .then((res) => res.data);

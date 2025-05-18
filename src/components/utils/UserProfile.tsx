@@ -104,23 +104,30 @@ const UserProfile: React.FC = () => {
       </Flex>
     </Space>
   );
-
   return (
     <Popover
       content={popoverContent}
       placement="bottomRight"
       trigger="hover"
       overlayStyle={{
-        // background: darkMode ? "#e6e9ef" : "#fff",
         borderRadius: 8,
       }}
     >
-      <Avatar
-        size="large"
-        src={user!.profilePictureUrl}
-        icon={<UserOutlined />}
-        style={{ cursor: "pointer" }}
-      />
+      <div className="user-profile-wrapper">
+        <Avatar
+          size={40}
+          src={user!.profilePictureUrl}
+          icon={<UserOutlined />}
+          draggable={false}
+          style={{ marginRight: 10 }}
+        />
+        <Title
+          level={5}
+          style={{ margin: 0, color: darkMode ? "#e6e9ef" : undefined }}
+        >
+          {user!.fullName}
+        </Title>
+      </div>
     </Popover>
   );
 };

@@ -1,5 +1,3 @@
-// src/components/ImagePreviewDrawer.tsx
-
 import {
   CloseOutlined,
   CommentOutlined,
@@ -7,28 +5,28 @@ import {
 } from "@ant-design/icons";
 import { Button, Divider, Drawer, Image, Input, Typography } from "antd";
 import React, { useEffect, useRef, useState } from "react";
-import { createComment, getComments } from "../api/artworkServices";
+import { createComment, getComments, getArtwork } from "../api/artworkServices";
 import { CommentDto } from "../types/IObjectTypes";
 import CommentsThread from "./CommentsThread";
-import { ArtworkWithLike } from "./featured/FeaturedArtCard";
 import { LikeButton } from "./LikeButton";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
 
 interface ImagePreviewDrawerProps {
-  art: ArtworkWithLike | null;
+  id: string; // UUID now
   visible: boolean;
   onClose(): void;
   darkMode: boolean;
 }
 
 const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
-  art,
+  id,
   visible,
   onClose,
   darkMode,
 }) => {
+  const [art, setArt] = useState<any>(null);
   const [comments, setComments] = useState<CommentDto[]>([]);
   const [newText, setNewText] = useState("");
   const [posting, setPosting] = useState(false);
@@ -37,17 +35,19 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
   const commentsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (art && visible) {
-      getComments(art.id).then(setComments);
-      setNewText("");
+    if (id && visible) {
+      getArtwork(id).then((response) => {
+        setArt(response);
+        getComments(id).then(setComments);
+        setNewText("");
+      });
     }
-  }, [art, visible]);
+  }, [id, visible]);
 
   const scrollToComments = () => {
     if (!commentsRef.current) return;
     commentsRef.current.scrollIntoView({ behavior: "smooth" });
     setIsJumping(true);
-    // clear the animation class after it runs
     setTimeout(() => setIsJumping(false), 400);
   };
 
@@ -86,9 +86,7 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
         <CloseOutlined style={{ color: darkMode ? "#fff" : undefined }} />
       }
     >
-      {/* Scrollable Content */}
       <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
-        {/* Image */}
         <div style={{ textAlign: "center", marginBottom: 16 }}>
           <Image
             src={art.imageUrl}
@@ -100,16 +98,16 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
             }}
           />
         </div>
-
-        {/* Title / Author */}
         <Title level={4} style={{ margin: 0 }}>
           {art.title}
         </Title>
         <Text type="secondary" style={{ display: "block", marginBottom: 16 }}>
           By {art.artist.fullName}
         </Text>
+        <Text type="secondary" style={{ display: "block", marginBottom: 16 }}>
+          {art.dimensions} • {art.price} EUR
+        </Text>
 
-        {/* Likes / Comments Count */}
         <div
           style={{ display: "flex", alignItems: "center", marginBottom: 16 }}
         >
@@ -128,13 +126,12 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
             }}
           />
           <Text style={{ marginLeft: 8, color: darkMode ? "#eee" : "#555" }}>
-            {art.comments}
+            {comments.length}
           </Text>
         </div>
 
         <Divider style={{ margin: "8px 0" }} />
 
-        {/* Comments */}
         <div
           ref={commentsRef}
           className={isJumping ? "comments--jump" : ""}
@@ -147,7 +144,6 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
         </div>
       </div>
 
-      {/* Sticky Add-Comment Form */}
       <div
         style={{
           padding: 12,
@@ -167,15 +163,6 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
             value={newText}
             onChange={(e) => setNewText(e.target.value)}
             autoSize={{ minRows: 1, maxRows: 4 }}
-            style={{
-              flex: 1,
-              borderRadius: 24,
-              padding: "8px 16px",
-              border: "1px solid",
-              borderColor: darkMode ? "#444" : "#d9d9d9",
-              background: darkMode ? "#2a2a3b" : "#fafafa",
-              color: darkMode ? "#fff" : "#000",
-            }}
           />
           <Button
             type="primary"
@@ -185,10 +172,6 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
             onClick={handleAdd}
             loading={posting}
             disabled={!newText.trim()}
-            style={{
-              background: darkMode ? "#722ed1" : undefined,
-              borderColor: darkMode ? "#722ed1" : undefined,
-            }}
           />
         </div>
       </div>

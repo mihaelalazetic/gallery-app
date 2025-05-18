@@ -9,7 +9,7 @@ interface PictureFrameProps {
   source?: string; // Optional prop for the source of the image
 }
 
-const PictureFrame: React.FC<PictureFrameProps> = ({ src, alt ,source}) => {
+const PictureFrame: React.FC<PictureFrameProps> = ({ src, alt, source }) => {
   const { darkMode } = useThemeToggle();
 
   // Define colors for light and dark modes
@@ -103,7 +103,7 @@ const PictureFrame: React.FC<PictureFrameProps> = ({ src, alt ,source}) => {
               width: "100%",
               height: "100%",
               maxHeight: source == "auth" ? "400px" : "100%",
-              objectFit: "contain",
+              objectFit: "cover",
             }}
           />
         </Box>

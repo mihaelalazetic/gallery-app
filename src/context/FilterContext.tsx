@@ -4,8 +4,8 @@ import React, { createContext, useState, useContext } from "react";
 interface FilterContextProps {
   searchQuery: string;
   setSearchQuery: (value: string) => void;
-  selectedCategories: string[];
-  setSelectedCategories: (value: string[]) => void;
+  selectedCategories: number[];
+  setSelectedCategories: (value: number[]) => void;
   priceRange: [number, number];
   setPriceRange: (value: [number, number]) => void;
   dimensions: string;
@@ -14,9 +14,11 @@ interface FilterContextProps {
 
 const FilterContext = createContext<FilterContextProps | undefined>(undefined);
 
-export const FilterProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
+export const FilterProvider: React.FC<React.PropsWithChildren<{}>> = ({
+  children,
+}) => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
   const [dimensions, setDimensions] = useState("");
 

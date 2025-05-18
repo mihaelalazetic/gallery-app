@@ -1,5 +1,4 @@
 // src/components/LanguageSwitcher.tsx
-
 import { DownOutlined } from "@ant-design/icons";
 import { Select } from "antd";
 import ReactCountryFlag from "react-country-flag";
@@ -12,7 +11,6 @@ const LANGS = [
 
 export default function LanguageSwitcher() {
   const { i18n } = useTranslation();
-  // default to 'en' if nothing else
   const current = LANGS.find((l) => l.code === i18n.language)?.code || "en";
 
   const handleChange = (val: string) => {
@@ -25,23 +23,16 @@ export default function LanguageSwitcher() {
       onChange={handleChange}
       suffixIcon={<DownOutlined />}
       dropdownMatchSelectWidth={false}
-      style={{
-        // width: 120,
-        border: "none",
-        background: "transparent",
-        color: "inherit",
-      }}
+      bordered={false}
+      style={{ background: "transparent" }}
     >
-      {LANGS.map(({ code, name, countryCode }) => (
+      {LANGS.map(({ code, countryCode }) => (
         <Select.Option key={code} value={code}>
-          <span>
-            <ReactCountryFlag
-              countryCode={countryCode}
-              svg
-              style={{ width: "1.2em", height: "1.2em" }}
-            />
-          </span>
-          {/* {name} */}
+          <ReactCountryFlag
+            countryCode={countryCode}
+            svg
+            style={{ width: "1.2em", height: "1.2em" }}
+          />
         </Select.Option>
       ))}
     </Select>

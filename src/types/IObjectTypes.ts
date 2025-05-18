@@ -58,7 +58,8 @@ export interface Artwork {
   dimensions: string;
   description: string;
   comments: Comment[];
-  category: string;
+  commentCount: number;
+  categories: string[];
 }
 
 // src/api/types.ts

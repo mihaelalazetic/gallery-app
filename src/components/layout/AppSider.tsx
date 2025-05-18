@@ -5,12 +5,9 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   PictureOutlined,
-  PlusCircleOutlined,
   PlusOutlined,
-  PlusSquareOutlined,
   PlusSquareTwoTone,
-  ProfileOutlined,
-  TeamOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import { Button, Divider, Layout, Menu } from "antd";
 import SubMenu from "antd/es/menu/SubMenu";
@@ -75,7 +72,7 @@ const AppSider: React.FC<{
         {/* Authenticated Links */}
         {isLoggedIn && (
           <>
-            <Menu.Item key="/profile" icon={<ProfileOutlined />}>
+            <Menu.Item key="/profile" icon={<UserOutlined />}>
               <Link to="/profile">My Profile</Link>
             </Menu.Item>
             <Menu.Item key="/my-art" icon={<PictureOutlined />}>
@@ -84,9 +81,7 @@ const AppSider: React.FC<{
             <Menu.Item key="/my-exhibitions" icon={<CalendarOutlined />}>
               <Link to="/my-exhibitions">My Exhibitions</Link>
             </Menu.Item>
-            <Menu.Item key="/my-events" icon={<TeamOutlined />}>
-              <Link to="/my-events">My Events</Link>
-            </Menu.Item>
+
             <SubMenu
               key="new"
               title={

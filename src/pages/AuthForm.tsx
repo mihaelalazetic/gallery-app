@@ -1,12 +1,12 @@
-// AuthForm.tsx
+import { Grid, notification } from "antd";
+import { t } from "i18next";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { FieldConfig, useGeneratedAntForm } from "../hooks/useGeneratedAntForm";
-import { t } from "i18next";
-import { notification } from "antd";
+import { useMutation } from "@tanstack/react-query";
 import { login, signup } from "../api/authServices";
 import { uploadProfilePictureToSupabase } from "../api/uploadProfilePictureToSupabase";
 import { getCurrentUser } from "../api/usersService";
+import { FieldConfig, useGeneratedAntForm } from "../hooks/useGeneratedAntForm";
 
 type Props = {
   isLogin?: boolean;
@@ -14,7 +14,10 @@ type Props = {
 };
 
 const AuthForm: React.FC<Props> = ({ isLogin = true, onAfterSignup }) => {
-  const navigate = useNavigate(); // ← grab navigate
+  const navigate = useNavigate();
+  const screens = Grid.useBreakpoint();
+  const [api, contextHolder] = notification.useNotification();
+
   const fields: FieldConfig[] = [
     {
       name: "username",
@@ -36,14 +39,14 @@ const AuthForm: React.FC<Props> = ({ isLogin = true, onAfterSignup }) => {
     fields.push(
       {
         name: "confirmPassword",
-        label: t("confirm Password"),
+        label: t("confirmPassword"),
         type: "password",
         required: true,
         placeholder: "Confirm your password",
       },
       {
-        name: t("fullName"),
-        label: "Full Name",
+        name: "fullName",
+        label: t("fullName"),
         type: "input",
         required: true,
         placeholder: "Your full name",
@@ -75,58 +78,96 @@ const AuthForm: React.FC<Props> = ({ isLogin = true, onAfterSignup }) => {
     );
   }
 
-  const onSubmit = async (values: any) => {
-    if (isLogin) {
-      try {
-        await login(values);
-        notification.success({
-          message: "Login Successful",
-          description: "You have been logged in.",
-        });
+  const loginMutation = useMutation({
+    mutationFn: async (values: any) => {
+      await login(values);
+      const user = await getCurrentUser();
+      localStorage.setItem("user", JSON.stringify(user));
+    },
+    onSuccess: () => {
+      api.success({
+        message: "Login Successful",
+        description: "You have been logged in.",
+      });
+      setTimeout(() => navigate("/", { replace: true }), 500); // 👈 small delay to show toast
+    },
+    onError: (error: any) => {
+      api.error({
+        message: "Login Failed",
+        description: error.message || "An error occurred.",
+      });
+    },
+  });
 
-        const user = await getCurrentUser();
-        localStorage.setItem("user", JSON.stringify(user));
-        navigate("/", { replace: true }); // ← redirect home
-      } catch (error: any) {
-        notification.error({
-          message: "Login Failed",
-          description: error.message || "An error occurred during login.",
-        });
+  const signupMutation = useMutation({
+    mutationFn: async (values: any) => {
+      let profilePictureUrl;
+      console.log(values);
+      if (values.profile_picture) {
+        profilePictureUrl = await uploadProfilePictureToSupabase(
+          values.profile_picture[0].originFileObj
+        );
       }
+      return await signup({ ...values, profilePictureUrl });
+    },
+    onSuccess: () => {
+      api.success({
+        message: "Signup Successful",
+        description: "Your account has been created.",
+      });
+      onAfterSignup?.();
+    },
+    onError: (error: any) => {
+      api.error({
+        message: "Signup Failed",
+        description: error.message || "An error occurred.",
+      });
+    },
+  });
+
+  const onSubmit = (values: any) => {
+    if (isLogin) {
+      loginMutation.mutate(values);
     } else {
-      try {
-        let profilePictureUrl: string | undefined = undefined;
-        if (values.profile_picture) {
-          profilePictureUrl = await uploadProfilePictureToSupabase(
-            values.profile_picture.file
-          );
-        }
-        await signup({
-          ...values,
-          profilePictureUrl: profilePictureUrl,
-        });
-        notification.success({
-          message: "Signup Successful",
-          description: "Your account has been created.",
-        });
-        onAfterSignup?.();
-        // navigate("/", { replace: true }); // ← also redirect after signup if you wish
-      } catch (error: any) {
-        notification.error({
-          message: "Signup Failed",
-          description: error.message || "An error occurred during signup.",
-        });
-      }
+      signupMutation.mutate(values);
     }
   };
 
   const { GeneratedForm } = useGeneratedAntForm({
     fields,
+    layoutConfig: isLogin
+      ? {
+          columns: [{ key: "col1", span: { xs: 24, md: 24, xl: 24 } }],
+          fieldGroups: { col1: ["username", "password"] },
+        }
+      : {
+          columns: [
+            { key: "col1", span: { xs: 24, md: 12 } },
+            { key: "col2", span: { xs: 24, md: 12 } },
+          ],
+          fieldGroups: {
+            col1: ["username", "password", "confirmPassword", "accountType"],
+            col2: ["fullName", "email", "profile_picture"],
+          },
+        },
     buttonLabel: isLogin ? t("login") : t("signup"),
     onSubmit,
   });
 
-  return <GeneratedForm />;
+  const wrapperStyle: React.CSSProperties = isLogin
+    ? {
+        minWidth: screens.lg ? 400 : "100%",
+        maxWidth: screens.lg ? 600 : "100%",
+        margin: "0 auto",
+      }
+    : { width: "100%" };
+
+  return (
+    <div style={wrapperStyle}>
+      {contextHolder}
+      <GeneratedForm />
+    </div>
+  );
 };
 
 export default AuthForm;

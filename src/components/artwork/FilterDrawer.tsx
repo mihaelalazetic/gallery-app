@@ -1,7 +1,8 @@
 // src/components/FilterDrawer.tsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Drawer, Form, Input, Select, Slider, Button } from "antd";
 import { useFilterContext } from "../../context/FilterContext";
+import { getCategories } from "../../api/categoryServices";
 
 const FilterDrawer: React.FC<{ visible: boolean; onClose: () => void }> = ({
   visible,
@@ -18,8 +19,19 @@ const FilterDrawer: React.FC<{ visible: boolean; onClose: () => void }> = ({
     setDimensions,
   } = useFilterContext();
 
-  const categoryOptions = ["Abstract", "Modern", "Classic"]; // Replace with your categories
+  const [categories, setCategories] = useState<any[]>([]);
 
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
   const handleApply = () => {
     onClose();
   };
@@ -46,9 +58,9 @@ const FilterDrawer: React.FC<{ visible: boolean; onClose: () => void }> = ({
             value={selectedCategories}
             onChange={(value) => setSelectedCategories(value)}
           >
-            {categoryOptions.map((category) => (
-              <Select.Option key={category} value={category}>
-                {category}
+            {categories.map((category) => (
+              <Select.Option key={category.name} value={category.id}>
+                {category.name}
               </Select.Option>
             ))}
           </Select>

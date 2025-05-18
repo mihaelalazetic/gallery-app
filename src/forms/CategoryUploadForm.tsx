@@ -2,14 +2,13 @@ import { useMutation } from "@tanstack/react-query";
 import { Card, Col, notification, Row, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getCategories } from "../api/categoryServices";
-import { uploadArtwork } from "../api/artworkServices";
-import { uploadArtworkToSupabase } from "../api/uploadArtworkToSupabase";
+import { getCategories, uploadCategory } from "../api/categoryServices";
+import { uploadCategoryToSupabase } from "../api/uploadCategoryToSupabase";
 import { useGeneratedAntForm } from "../hooks/useGeneratedAntForm";
 
 const { Title } = Typography;
 
-export default function ArtworkUploadPage() {
+export default function CategoryUploadForm() {
   const [uploading, setUploading] = useState(false);
   const [artTypes, setArtTypes] = useState([]);
 
@@ -22,24 +21,20 @@ export default function ArtworkUploadPage() {
       const file = values.file?.originFileObj;
       if (!file) throw new Error("Please select an image file.");
 
-      const imageUrl = await uploadArtworkToSupabase(file);
+      const imageUrl = await uploadCategoryToSupabase(file);
 
-      return uploadArtwork({
-        title: values.title,
+      return uploadCategory({
+        name: values.name,
         description: values.description,
-        price: values.price,
-        dimensions: values.dimensions || "50x50cm",
-        visibility: "public",
         imageUrl,
-        categoryIds: values.artType?.map((id: any) => Number(id)) || [1],
       });
     },
     onMutate: () => {
-      notification.info({ message: "Uploading artwork...", duration: 2 });
+      notification.info({ message: "Uploading category...", duration: 2 });
       setUploading(true);
     },
     onSuccess: () => {
-      notification.success({ message: "Artwork uploaded successfully!" });
+      notification.success({ message: "Category uploaded successfully!" });
     },
     onError: (error: any) => {
       console.error(error);
@@ -52,17 +47,18 @@ export default function ArtworkUploadPage() {
   });
 
   useEffect(() => {
-    async function fetchArtists() {
-      const data = await getCategories();
-      setArtTypes(data);
-    }
-    fetchArtists();
+    fetchCategories();
   }, []);
+
+  async function fetchCategories() {
+    const data = await getCategories();
+    setArtTypes(data);
+  }
 
   const fields = [
     {
-      name: "title",
-      label: "Title",
+      name: "name",
+      label: "Name",
       type: "input" as const,
       required: true,
     },
@@ -70,29 +66,6 @@ export default function ArtworkUploadPage() {
       name: "description",
       label: "Description",
       type: "textarea" as const,
-      required: true,
-    },
-    {
-      name: "dimensions",
-      label: "Dimensions",
-      type: "select" as const,
-      options: ["30x40cm", "50x70cm", "60x90cm", "70x100cm", "100x150cm"].map(
-        (d) => ({ value: d, label: d })
-      ),
-    },
-    {
-      name: "artType",
-      label: "Type",
-      type: "multiSelect" as const,
-      options: artTypes.map((type: any) => ({
-        value: String(type.id),
-        label: type.name,
-      })),
-    },
-    {
-      name: "price",
-      label: "Price",
-      type: "number" as const,
       required: true,
     },
     {
@@ -109,7 +82,7 @@ export default function ArtworkUploadPage() {
       { key: "col2", span: { xs: 24, md: 8 } },
     ],
     fieldGroups: {
-      col1: ["title", "description", "dimensions", "artType", "price"],
+      col1: ["name", "description"],
       col2: ["imageFile"],
     },
   };
@@ -126,7 +99,7 @@ export default function ArtworkUploadPage() {
       <Col xs={24} sm={20} md={16} lg={24}>
         <Card bordered style={{ borderRadius: 12, padding: "0 2rem" }}>
           <Title level={2} style={{ textAlign: "start", marginBottom: "2rem" }}>
-            Upload New Artwork
+            Upload New Category
           </Title>
           <GeneratedForm />
         </Card>

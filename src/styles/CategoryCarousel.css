@@ -1,0 +1,42 @@
+/* === CategoryCarousel.css === */
+
+.carousel-wrapper {
+    position: relative;
+    max-width: 80vw;
+    margin: auto;
+    padding: 20px 0;
+}
+
+.carousel .slick-slide {
+    padding: 10px;
+}
+
+/* Arrows */
+.arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.arrow.left {
+    left: -5rem;
+}
+
+.arrow.right {
+    right: -5rem;
+}
+
+.arrow:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+}

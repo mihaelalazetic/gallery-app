@@ -91,9 +91,22 @@ export const useGeneratedAntForm = ({
   }, [fileList, form]);
 
   const renderField = (field: FieldConfig) => {
-    const rules = field.required
-      ? [{ required: true, message: `${field.label} is required` }]
-      : [];
+    // Base rules
+    const rules: any[] = [];
+    if (field.required) {
+      rules.push({ required: true, message: `${field.label} is required` });
+    }
+    // Confirm password validation
+    if (field.name === "confirmPassword") {
+      rules.push({
+        validator: (_: any, value: string) => {
+          if (!value || form.getFieldValue("password") === value) {
+            return Promise.resolve();
+          }
+          return Promise.reject(new Error("Passwords do not match"));
+        },
+      });
+    }
 
     switch (field.type) {
       case "input":
@@ -229,7 +242,7 @@ export const useGeneratedAntForm = ({
             getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
             rules={[
               {
-                validator: (_, value) =>
+                validator: (_: any, value: UploadFile[]) =>
                   value && value.length > 0
                     ? Promise.resolve()
                     : Promise.reject(new Error(`${field.label} is required`)),
@@ -243,7 +256,7 @@ export const useGeneratedAntForm = ({
                 fileList={fileList}
                 onChange={({ fileList: newFileList }) => {
                   setFileList(newFileList);
-                  form.setFieldsValue({ [field.name]: newFileList }); // <- 🔑 this syncs with form
+                  form.setFieldsValue({ [field.name]: newFileList });
                 }}
                 onPreview={async (file) => {
                   if (!file.url && !file.preview && file.originFileObj) {
@@ -267,15 +280,14 @@ export const useGeneratedAntForm = ({
                 wrapperStyle={{ display: "none" }}
                 preview={{
                   visible: previewOpen,
-                  onVisibleChange: (visible) => setPreviewOpen(visible),
-                  afterOpenChange: (visible) => !visible && setPreviewImage(""),
+                  onVisibleChange: (vis) => setPreviewOpen(vis),
+                  afterOpenChange: (vis) => !vis && setPreviewImage(""),
                 }}
                 src={previewImage}
               />
             </>
           </Form.Item>
         );
-
       default:
         return null;
     }

@@ -273,3 +273,21 @@ a:hover {
   background-color: #f0f0f0;
   transform: translateY(-5px);
 }
+
+
+/* === UserProfile.css === */
+
+.user-profile-wrapper {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.user-profile-wrapper:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+

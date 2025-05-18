@@ -1,9 +1,11 @@
-// src/components/FilterBar.tsx
-import React from "react";
-import { Popover, Button, Input, Space } from "antd";
+import React, { useEffect, useState } from "react";
+import { Popover, Button, Input, Space, Slider, Select } from "antd";
 import { FilterOutlined } from "@ant-design/icons";
 import { useFilterContext } from "../context/FilterContext";
 import { useThemeToggle } from "../providers/AppThemeProvider";
+import { getCategories } from "../api/categoryServices";
+
+const { Option } = Select;
 
 const FilterBar: React.FC<{ onOpenDrawer: () => void }> = ({
   onOpenDrawer,
@@ -15,15 +17,35 @@ const FilterBar: React.FC<{ onOpenDrawer: () => void }> = ({
     setSelectedCategories,
     priceRange,
     setPriceRange,
-    dimensions,
-    setDimensions,
   } = useFilterContext();
 
   const { darkMode } = useThemeToggle();
-
   const isDarkMode = darkMode;
+  const [categories, setCategories] = useState<any[]>([]);
 
-  const categoryOptions = ["Abstract", "Modern", "Classic"];
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getCategories();
+        setCategories(data);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  const handleFilterChange = () => {
+    // Trigger custom event to fetch the data
+    window.dispatchEvent(new CustomEvent("filterChange"));
+  };
+
+  const filterButtonStyle = {
+    backgroundColor: isDarkMode ? "#2a2a3b" : "#fff",
+    color: isDarkMode ? "#fff" : "#000",
+    border: isDarkMode ? "1px solid #444" : "1px solid #d9d9d9",
+    borderRadius: 8,
+  };
 
   return (
     <div
@@ -40,145 +62,67 @@ const FilterBar: React.FC<{ onOpenDrawer: () => void }> = ({
       }}
     >
       <Space>
+        {/* Search Input */}
         <Input
           placeholder="Search by title or artist"
           value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          style={{
-            width: 200,
-            backgroundColor: isDarkMode ? "#2a2a3b" : "#fff",
-            color: isDarkMode ? "#fff" : "#000",
-            border: isDarkMode ? "1px solid #444" : "1px solid #d9d9d9",
-            borderRadius: 8,
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
           }}
+          onKeyUp={handleFilterChange}
+          style={{ ...filterButtonStyle, width: 200 }}
         />
-        <Popover
-          content={
-            <div style={{ color: isDarkMode ? "#fff" : "#000" }}>
-              {categoryOptions.map((category) => (
-                <div key={category}>
-                  <input
-                    type="checkbox"
-                    checked={selectedCategories.includes(category)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        setSelectedCategories([
-                          ...selectedCategories,
-                          category,
-                        ]);
-                      } else {
-                        setSelectedCategories(
-                          selectedCategories.filter((c) => c !== category)
-                        );
-                      }
-                    }}
-                  />
-                  {category}
-                </div>
-              ))}
-            </div>
-          }
-          title="Categories"
-          trigger="click"
+
+        {/* Category Select */}
+        <Select
+          mode="multiple"
+          placeholder="Select Categories"
+          value={selectedCategories}
+          onChange={(value) => {
+            setSelectedCategories(value);
+            handleFilterChange();
+          }}
+          style={{ ...filterButtonStyle, minWidth: 200 }}
         >
-          <Button
-            style={{
-              backgroundColor: isDarkMode ? "#2a2a3b" : "#fff",
-              color: isDarkMode ? "#fff" : "#000",
-              border: isDarkMode ? "1px solid #444" : "1px solid #d9d9d9",
-              borderRadius: 8,
-            }}
-          >
-            Categories
-          </Button>
-        </Popover>
+          {categories.map((category) => (
+            <Option key={category.name} value={category.id}>
+              {category.name}
+            </Option>
+          ))}
+        </Select>
+
+        {/* Price Range Slider */}
         <Popover
           content={
-            <div>
-              <Input
-                placeholder="e.g., 20x30 cm"
-                value={dimensions}
-                onChange={(e) => setDimensions(e.target.value)}
-                style={{
-                  backgroundColor: isDarkMode ? "#2a2a3b" : "#fff",
-                  color: isDarkMode ? "#fff" : "#000",
-                  border: isDarkMode ? "1px solid #444" : "1px solid #d9d9d9",
-                  borderRadius: 8,
+            <div style={{ padding: "10px 20px" }}>
+              <Slider
+                range
+                defaultValue={[0, 10000]}
+                min={0}
+                max={10000}
+                step={50}
+                value={priceRange}
+                onChange={(value) => {
+                  setPriceRange(value as [number, number]);
                 }}
+                onChangeComplete={handleFilterChange}
               />
-            </div>
-          }
-          title="Dimensions"
-          trigger="click"
-        >
-          <Button
-            style={{
-              backgroundColor: isDarkMode ? "#2a2a3b" : "#fff",
-              color: isDarkMode ? "#fff" : "#000",
-              border: isDarkMode ? "1px solid #444" : "1px solid #d9d9d9",
-              borderRadius: 8,
-            }}
-          >
-            Dimensions
-          </Button>
-        </Popover>
-        <Popover
-          content={
-            <div>
-              <Input
-                type="number"
-                placeholder="Min Price"
-                value={priceRange[0]}
-                onChange={(e) =>
-                  setPriceRange([Number(e.target.value), priceRange[1]])
-                }
-                style={{
-                  backgroundColor: isDarkMode ? "#2a2a3b" : "#fff",
-                  color: isDarkMode ? "#fff" : "#000",
-                  border: isDarkMode ? "1px solid #444" : "1px solid #d9d9d9",
-                  borderRadius: 8,
-                }}
-              />
-              <Input
-                type="number"
-                placeholder="Max Price"
-                value={priceRange[1]}
-                onChange={(e) =>
-                  setPriceRange([priceRange[0], Number(e.target.value)])
-                }
-                style={{
-                  backgroundColor: isDarkMode ? "#2a2a3b" : "#fff",
-                  color: isDarkMode ? "#fff" : "#000",
-                  border: isDarkMode ? "1px solid #444" : "1px solid #d9d9d9",
-                  borderRadius: 8,
-                  marginTop: "5px",
-                }}
-              />
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span>${priceRange[0]}</span>
+                <span>${priceRange[1]}</span>
+              </div>
             </div>
           }
           title="Price Range"
           trigger="click"
         >
-          <Button
-            style={{
-              backgroundColor: isDarkMode ? "#2a2a3b" : "#fff",
-              color: isDarkMode ? "#fff" : "#000",
-              border: isDarkMode ? "1px solid #444" : "1px solid #d9d9d9",
-              borderRadius: 8,
-            }}
-          >
-            Price
-          </Button>
+          <Button style={filterButtonStyle}>Price</Button>
         </Popover>
+
         <Button
           icon={<FilterOutlined />}
           onClick={onOpenDrawer}
-          style={{
-            backgroundColor: isDarkMode ? "#2a2a3b" : "#fff",
-            color: isDarkMode ? "#fff" : "#000",
-            border: isDarkMode ? "1px solid #444" : "1px solid #d9d9d9",
-            borderRadius: 8,
-          }}
+          style={filterButtonStyle}
         >
           All Filters
         </Button>

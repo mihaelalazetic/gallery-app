@@ -89,15 +89,17 @@ const AuthLanding = () => {
                 }}
               >
                 <Title
-                  level={3}
+                  level={1}
                   style={{
                     textAlign: "center",
                     color: darkMode ? "#fff" : "#1a1a1a",
                     margin: 0,
                   }}
                 >
-                  <img style={{ width: "200px" }} src={logo} />
-
+                  <img style={{ width: "150px" }} src={logo} />
+                  {/* <i style={{ fontSize: "16px" }}>
+                    A space where passion meets purpouse
+                  </i> */}
                   {/* {mode === "login"
                       ? t("welcomeBack") + " 👋"
                       : t("joinEgallery") + " 🎨"} */}
@@ -131,7 +133,7 @@ const AuthLanding = () => {
             md={12}
             lg={12}
             style={{
-              position: "relative",
+              // position: "relative",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",

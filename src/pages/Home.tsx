@@ -1,32 +1,18 @@
 // src/pages/Home.tsx
 
 import Masonry from "@mui/lab/Masonry";
-import { Carousel, Col, List, Row, Typography } from "antd";
+import { Carousel, List, Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useThemeToggle } from "../providers/AppThemeProvider";
 
-import CategoryTag from "../components/CategoryTag";
-import FeaturedArtCard, {
-  ArtworkWithLike,
-} from "../components/featured/FeaturedArtCard";
+import FeaturedArtCard from "../components/featured/FeaturedArtCard";
 
-import { getFeaturedArtworks } from "../api/artworkServices";
-
+import CategoryCarousel from "../components/CategoryCarousel";
 import ImagePreviewDrawer from "../components/ImagePreviewDrawer";
 import FeaturedArtists from "../components/featured/FeaturedArtists";
-import {
-  FaBolt,
-  FaCamera,
-  FaCubes,
-  FaEye,
-  FaLightbulb,
-  FaMinus,
-  FaMobileAlt,
-  FaPaintBrush,
-  FaSprayCan,
-  FaTabletAlt,
-} from "react-icons/fa";
+import { Artwork } from "../types/IObjectTypes";
+import { getFeaturedArtworks } from "../api/featured";
 
 const { Title, Text } = Typography;
 
@@ -43,28 +29,22 @@ const upcomingExhibitions = [
   },
 ];
 
-const categories = [
-  { name: "Abstract Expressionism", Icon: FaPaintBrush },
-  { name: "Pop Art", Icon: FaBolt },
-  { name: "Minimalism", Icon: FaMinus },
-  { name: "Digital Illustration", Icon: FaTabletAlt },
-  { name: "Street Art", Icon: FaSprayCan },
-  { name: "Surrealism", Icon: FaEye },
-  { name: "Photorealism", Icon: FaCamera },
-  { name: "Conceptual Art", Icon: FaLightbulb },
-  { name: "Installation Art", Icon: FaCubes },
-  { name: "New Media Art", Icon: FaMobileAlt },
-];
-
 const Home: React.FC = () => {
   const { darkMode } = useThemeToggle();
   const { t } = useTranslation();
 
-  const [arts, setArts] = useState<ArtworkWithLike[]>([]);
-  const [previewArt, setPreviewArt] = useState<ArtworkWithLike | null>(null);
+  const [arts, setArts] = useState<Artwork[]>([]);
+  const [previewArt, setPreviewArt] = useState<Artwork | null>(null);
 
   useEffect(() => {
-    getFeaturedArtworks().then(setArts);
+    getFeaturedArtworks().then((data) =>
+      setArts(
+        data.map((art: Artwork) => ({
+          ...art,
+          comments: Array.isArray(art.comments) ? art.comments.length : 0,
+        }))
+      )
+    );
   }, []);
 
   // update both grid and drawer on like
@@ -91,14 +71,17 @@ const Home: React.FC = () => {
   return (
     <div style={{ maxWidth: "95%", margin: "0 auto", padding: "1rem" }}>
       {/* Explore by Category */}
+      <section>
+        <Title level={2} style={{ color: darkMode ? "#fff" : "#1c1c1e" }}>
+          {t("exploreByCategory")}
+        </Title>
+        <CategoryCarousel />
+      </section>
+
+      {/* Top Artists */}
       <section style={{ padding: "2rem 1rem" }}>
-        <Row gutter={[16, 16]} justify="center">
-          {categories.map(({ name, Icon }) => (
-            <Col key={name} xs={12} sm={8} md={6} lg={4}>
-              <CategoryTag name={name} Icon={Icon} />
-            </Col>
-          ))}
-        </Row>
+        <FeaturedArtists />
+        {/* <OnThisDateFeaturedArtists /> */}
       </section>
 
       {/* Featured Art */}
@@ -106,22 +89,14 @@ const Home: React.FC = () => {
         <Title level={2} style={{ color: darkMode ? "#fff" : "#1c1c1e" }}>
           {t("featuredArt")}
         </Title>
-        <Masonry
-          // always 1 col on extra-small,
-          // up to 2 cols on small (but never more than our md-count),
-          // and 'colsAtMd' on medium+.
-          columns={{
-            xs: 1,
-            sm: Math.min(2, colsAtMd),
-            md: colsAtMd,
-          }}
-          spacing={5}
-          style={{ marginTop: "1rem" }}
-        >
+        <Masonry className="gallery-grid">
           {arts.map((art) => (
             <FeaturedArtCard
               key={art.id}
-              art={art}
+              art={{
+                ...art,
+                comments: Array.isArray(art.comments) ? art.comments.length : 0,
+              }}
               darkMode={darkMode}
               onClick={() => setPreviewArt(art)}
               onLikeChange={handleLikeChange}
@@ -131,18 +106,14 @@ const Home: React.FC = () => {
       </section>
 
       {/* Preview Drawer */}
-      <ImagePreviewDrawer
-        art={previewArt}
-        visible={!!previewArt}
-        onClose={() => setPreviewArt(null)}
-        darkMode={darkMode}
-      />
-
-      {/* Top Artists */}
-      <section style={{ padding: "2rem 1rem" }}>
-        <FeaturedArtists />
-        {/* <OnThisDateFeaturedArtists /> */}
-      </section>
+      {previewArt && (
+        <ImagePreviewDrawer
+          id={previewArt.id}
+          visible={true}
+          onClose={() => setPreviewArt(null)}
+          darkMode={darkMode}
+        />
+      )}
 
       {/* New This Week */}
       <section style={{ padding: "2rem 1rem" }}>

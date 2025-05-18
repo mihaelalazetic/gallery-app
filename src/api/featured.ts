@@ -1,4 +1,3 @@
-import { ArtworkWithLike } from "../components/featured/FeaturedArtCard";
 import { apiInstance } from "./apiConfig";
 
 const prefix = "/api/featured";
@@ -15,3 +14,10 @@ export const getTopArtworksForArtist = async (
       params: { limit },
     })
     .then((r) => r.data);
+
+export const getFeaturedArtworks = async (page = 0, size = 6): Promise<any> => {
+  const response = await apiInstance.get(
+    `${prefix}/artworks?page=${page}&size=${size}`
+  );
+  return response.data.content;
+};
