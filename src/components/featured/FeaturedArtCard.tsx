@@ -1,11 +1,14 @@
 // src/components/FeaturedArtCard.tsx
 
 import { CommentOutlined } from "@ant-design/icons";
-import { Card, Typography } from "antd";
+import { Typography } from "antd";
 import React from "react";
-import { LikeButton } from "../LikeButton";
+import "../../styles/FeaturedArtCard.css"; // Assuming you have some CSS for styling
 import ArtImageOverlay from "../artwork/ArtImageOverlay";
 import FrameContainer from "../artwork/FrameContainer";
+import { LikeButton } from "../LikeButton";
+import PictureFrame2 from "../PictureFrame2";
+
 interface ArtworkWithLike {
   id: string;
   title: string;
@@ -52,33 +55,30 @@ const FeaturedArtCard: React.FC<FeaturedArtCardProps> = ({
   );
 
   return (
-    <Card
-      hoverable
-      bordered={false}
-      bodyStyle={{
-        padding: 0,
-        cursor: "pointer",
-        backgroundColor: "transparent",
-        border: "none",
-      }}
-      onClick={onClick}
-    >
-      <FrameContainer padding="0" boxShadow="none">
-        <ArtImageOverlay overlayContent={overlay}>
-          {/* here you can swap in <img> or a custom <SmartImage> */}
-          <img
-            src={art.imageUrl}
-            alt={art.title}
-            style={{
-              width: "100%",
-              height: "auto",
-              display: "block",
-              borderRadius: "1rem",
-            }}
-          />
-        </ArtImageOverlay>
-      </FrameContainer>
-    </Card>
+    <div style={{ paddingTop: "3rem" }}>
+      <PictureFrame2
+        children={
+          <div style={{ cursor: "pointer" }} onClick={onClick}>
+            <FrameContainer padding="0" boxShadow="none">
+              <ArtImageOverlay overlayContent={overlay}>
+                {/* here you can swap in <img> or a custom <SmartImage> */}
+                <img
+                  src={art.imageUrl}
+                  alt={art.title}
+                  style={{
+                    width: "100%",
+                    // height: "40vh",
+                    display: "block",
+                    objectFit: "cover",
+                    // borderRadius: "1rem",
+                  }}
+                />
+              </ArtImageOverlay>
+            </FrameContainer>
+          </div>
+        }
+      />
+    </div>
   );
 };
 

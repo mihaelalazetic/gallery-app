@@ -1,0 +1,36 @@
+.arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 2;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.175);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.8;
+    transition: opacity 0.2s ease-in-out;
+}
+
+.arrow:hover {
+    opacity: 0.9;
+}
+
+.arrow.left {
+    left: -0.5rem;
+}
+
+.arrow.right {
+    right: -0.5rem;
+}
+
+.carousel-wrapper {
+    position: relative;
+    max-width: 100%;
+    margin: auto;
+  }

@@ -1,15 +1,19 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Carousel } from "antd";
-import { getTopArtworksForArtist } from "../../api/featured";
-import { getMostLikedArtists } from "../../api/usersService";
-import { Artist, ArtworkDto } from "../../types/IObjectTypes";
 import FeaturedArtistCard from "./FeaturedArtistCard";
+import {
+  getMostLikedArtists,
+  getTopArtworksForArtist,
+} from "../../api/featured";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { Artist, ArtworkDto } from "../../types/IObjectTypes";
 
 const FeaturedArtists: React.FC = () => {
   const [artists, setArtists] = useState<Artist[]>([]);
   const [artworksMap, setArtworksMap] = useState<Record<string, ArtworkDto[]>>(
     {}
   );
+  const carouselRef = useRef<any>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -34,19 +38,43 @@ const FeaturedArtists: React.FC = () => {
     fetchData();
   }, []);
 
+  const next = () => {
+    carouselRef.current.next();
+  };
+
+  const prev = () => {
+    carouselRef.current.prev();
+  };
+
   return (
-    <Carousel autoplay arrows className="featured-carousel">
-      {artists.map((artist) => (
-        <div key={artist.id}>
+    <div className="carousel-wrapper">
+      <button className="arrow left" onClick={prev}>
+        <LeftOutlined />
+      </button>
+      <Carousel
+        dots={true}
+        infinite
+        autoplaySpeed={5000}
+        slidesToShow={1} // Display one per slide
+        slidesToScroll={1}
+        autoplay
+        ref={carouselRef}
+        className="carousel"
+      >
+        {artists.map((artist) => (
           <FeaturedArtistCard
+            key={artist.id}
             artist={{
               ...artist,
               artworks: artworksMap[artist.id] || [],
             }}
           />
-        </div>
-      ))}
-    </Carousel>
+        ))}
+      </Carousel>
+      <button className="arrow right" onClick={next}>
+        <RightOutlined />
+      </button>
+    </div>
   );
 };
 

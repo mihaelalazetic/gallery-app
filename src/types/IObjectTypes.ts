@@ -37,6 +37,8 @@ export interface CommentDto {
 export interface Artist {
   id: string;
   fullName: string;
+  slug: string;
+  username: string;
   profilePictureUrl: string;
   bio: string;
   profileImage: string;
@@ -45,12 +47,13 @@ export interface Artist {
   followerCount: number;
   artCount: number;
   artworks: ArtworkDto[];
+  isFollowing: boolean;
 }
 
 export interface Artwork {
   id: string;
   title: string;
-  imageUrl: string;
+  imageUrls: string[];
   artist: Artist;
   likes: number;
   liked: boolean;
@@ -72,8 +75,12 @@ export interface FeaturedArtistDTO {
 }
 
 export interface ArtworkDto {
+  artist: string;
+  liked: boolean;
+  price: number;
+  dimensions: string;
   id: string;
   title: string;
-  imageUrl: string;
+  imageUrls: string[];
   likes: number;
 }

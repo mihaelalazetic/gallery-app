@@ -1,8 +1,9 @@
-import React from "react";
-import { Card, Tag, Typography } from "antd";
 import { CommentOutlined } from "@ant-design/icons";
+import { Card, Tag, Typography } from "antd";
+import React from "react";
 import { Artwork } from "../../types/IObjectTypes";
 import { LikeButton } from "../LikeButton";
+import ArtworkCarousel from "./ArtworkCarousel";
 
 const { Text } = Typography;
 
@@ -20,40 +21,13 @@ const ArtworkCard: React.FC<{
         border: "none",
         borderRadius: "12px",
         overflow: "hidden",
-        // boxShadow: "0 4px 12px rgba(0, 0, 0, 0.1)",
         transition: "transform 0.2s ease-in-out",
         padding: 0,
       }}
     >
-      <div style={{ position: "relative" }}>
-        <img
-          alt={artwork.title}
-          src={artwork.imageUrl}
-          style={{
-            width: "100%",
-            // height: "300px",
-            objectFit: "cover",
-            borderRadius: "12px 12px 0 0",
-          }}
-        />
-        {/* Bottom-right corner for the price */}
-        <div
-          style={{
-            position: "absolute",
-            bottom: 10,
-            right: 10,
-            backgroundColor: "rgba(0, 0, 0, 0.6)",
-            color: "#ffffff",
-            padding: "4px 8px",
-            borderRadius: "4px",
-            fontSize: "12px",
-          }}
-        >
-          {artwork.price} €
-        </div>
-      </div>
+      <ArtworkCarousel imageUrls={artwork.imageUrls} price={artwork.price} />
 
-      <div style={{ padding: "16px" }}>
+      <div>
         <div
           style={{
             display: "flex",

@@ -23,7 +23,8 @@ const ArtImageOverlay: React.FC<ArtImageOverlayProps> = ({
         opacity: 1,
         transform: "translateY(0)",
       },
-      borderRadius: "1rem",
+      
+      // borderRadius: "1rem",
     }}
   >
     {children}

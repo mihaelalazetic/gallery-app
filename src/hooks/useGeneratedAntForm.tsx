@@ -44,6 +44,7 @@ export type FieldConfig = {
   required?: boolean;
   options?: OptionType[];
   rows?: number;
+  multiple?: boolean; // New property to allow multiple file uploads
 };
 
 interface ColumnConfig {
@@ -56,6 +57,7 @@ interface LayoutConfig {
   fieldGroups: {
     [key: string]: string[];
   };
+  fullWidthFields?: string[];
 }
 
 type UseGeneratedAntFormProps = {
@@ -254,6 +256,7 @@ export const useGeneratedAntForm = ({
                 listType="picture-card"
                 beforeUpload={() => false}
                 fileList={fileList}
+                multiple={field.multiple || false} // Allow multiple files if `multiple` is true
                 onChange={({ fileList: newFileList }) => {
                   setFileList(newFileList);
                   form.setFieldsValue({ [field.name]: newFileList });
@@ -268,7 +271,7 @@ export const useGeneratedAntForm = ({
                 }}
                 accept="image/*"
               >
-                {fileList.length >= 1 ? null : (
+                {fileList.length >= (field.multiple ? 5 : 1) ? null : ( // Limit file count
                   <div>
                     <PlusOutlined />
                     <div style={{ marginTop: 8 }}>Upload</div>
@@ -299,10 +302,25 @@ export const useGeneratedAntForm = ({
         form={form}
         layout="vertical"
         onFinish={(values) => {
-          onSubmit({ ...values, file: values.imageFile?.[0] });
+          const files =
+            Array.isArray(values.imageFile) && values.imageFile.length > 0
+              ? values.imageFile
+              : [];
+
+          onSubmit({
+            ...values,
+            imageFile: {
+              fileList: files.map((file: { originFileObj: any; name: any; uid: any; }) => ({
+                originFileObj: file.originFileObj,
+                name: file.name,
+                uid: file.uid,
+              })),
+            },
+          });
         }}
       >
         <Row gutter={16}>
+          {/* Render columns */}
           {layoutConfig?.columns.map((col: { key: string; span: ColProps }) => (
             <Col key={col.key} {...col.span} style={{ padding: "0 1rem" }}>
               {layoutConfig.fieldGroups[col.key]?.map((fieldName) => {
@@ -313,6 +331,16 @@ export const useGeneratedAntForm = ({
               })}
             </Col>
           ))}
+
+          {/* Render full-width fields */}
+          {layoutConfig?.fullWidthFields?.map((fieldName) => {
+            const field = fields.find((f) => f.name === fieldName);
+            return field ? (
+              <Col key={field.name} span={24} style={{ padding: "0 1rem" }}>
+                {renderField(field)}
+              </Col>
+            ) : null;
+          })}
         </Row>
 
         {withButton && (

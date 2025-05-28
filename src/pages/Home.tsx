@@ -13,6 +13,7 @@ import ImagePreviewDrawer from "../components/ImagePreviewDrawer";
 import FeaturedArtists from "../components/featured/FeaturedArtists";
 import { Artwork } from "../types/IObjectTypes";
 import { getFeaturedArtworks } from "../api/featured";
+import NewThisWeek from "../components/featured/NewThisWeek";
 
 const { Title, Text } = Typography;
 
@@ -89,13 +90,14 @@ const Home: React.FC = () => {
         <Title level={2} style={{ color: darkMode ? "#fff" : "#1c1c1e" }}>
           {t("featuredArt")}
         </Title>
-        <Masonry className="gallery-grid">
+        <Masonry className="gallery-grid" columns={3} spacing={3}>
           {arts.map((art) => (
             <FeaturedArtCard
               key={art.id}
               art={{
                 ...art,
-                comments: Array.isArray(art.comments) ? art.comments.length : 0,
+                imageUrl: art?.imageUrls[0],
+                comments: art?.commentCount,
               }}
               darkMode={darkMode}
               onClick={() => setPreviewArt(art)}
@@ -103,22 +105,22 @@ const Home: React.FC = () => {
             />
           ))}
         </Masonry>
+        {previewArt && (
+          <ImagePreviewDrawer
+            id={previewArt.id}
+            visible={true}
+            onClose={() => setPreviewArt(null)}
+            darkMode={darkMode}
+          />
+        )}
       </section>
 
       {/* Preview Drawer */}
-      {previewArt && (
-        <ImagePreviewDrawer
-          id={previewArt.id}
-          visible={true}
-          onClose={() => setPreviewArt(null)}
-          darkMode={darkMode}
-        />
-      )}
 
       {/* New This Week */}
       <section style={{ padding: "2rem 1rem" }}>
-        <Title level={3}>New This Week</Title>
-        <Carousel autoplay speed={500} arrows style={{ padding: "2rem" }}>
+        {/* <Title level={3}>New This Week</Title> */}
+        {/* <Carousel autoplay speed={500} arrows style={{ padding: "2rem" }}>
           {arts.map((art) => (
             <div key={art.id}>
               <img
@@ -132,7 +134,8 @@ const Home: React.FC = () => {
               />
             </div>
           ))}
-        </Carousel>
+        </Carousel> */}
+        <NewThisWeek />
       </section>
 
       {/* Upcoming Exhibitions */}

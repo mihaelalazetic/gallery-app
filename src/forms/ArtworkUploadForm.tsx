@@ -2,14 +2,14 @@ import { useMutation } from "@tanstack/react-query";
 import { Card, Col, notification, Row, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { getCategories } from "../api/categoryServices";
 import { uploadArtwork } from "../api/artworkServices";
+import { getCategories } from "../api/categoryServices";
 import { uploadArtworkToSupabase } from "../api/uploadArtworkToSupabase";
 import { useGeneratedAntForm } from "../hooks/useGeneratedAntForm";
 
 const { Title } = Typography;
 
-export default function ArtworkUploadPage() {
+export default function ArtworkUploadForm() {
   const [uploading, setUploading] = useState(false);
   const [artTypes, setArtTypes] = useState([]);
 
@@ -19,10 +19,18 @@ export default function ArtworkUploadPage() {
   });
   const mutation = useMutation({
     mutationFn: async (values: any) => {
-      const file = values.file?.originFileObj;
-      if (!file) throw new Error("Please select an image file.");
+      const files = values.imageFile?.fileList;
+      if (!files || files.length === 0) {
+        throw new Error("Please select image files.");
+      }
 
-      const imageUrl = await uploadArtworkToSupabase(file);
+      // 🔄 Upload all images to Supabase and get back the URLs
+      const imageUrls = await Promise.all(
+        files.map(async (file: any) => {
+          const imageUrl = await uploadArtworkToSupabase(file.originFileObj);
+          return imageUrl;
+        })
+      );
 
       return uploadArtwork({
         title: values.title,
@@ -30,7 +38,7 @@ export default function ArtworkUploadPage() {
         price: values.price,
         dimensions: values.dimensions || "50x50cm",
         visibility: "public",
-        imageUrl,
+        imageUrl: imageUrls, // Pass the array of URLs here
         categoryIds: values.artType?.map((id: any) => Number(id)) || [1],
       });
     },
@@ -100,6 +108,7 @@ export default function ArtworkUploadPage() {
       label: "Image File",
       type: "upload" as const,
       required: true,
+      multiple: true,
     },
   ];
 
@@ -122,7 +131,7 @@ export default function ArtworkUploadPage() {
   });
 
   return (
-    <Row justify="center" style={{ padding: "2rem" }}>
+    <Row justify="center" style={{}}>
       <Col xs={24} sm={20} md={16} lg={24}>
         <Card bordered style={{ borderRadius: 12, padding: "0 2rem" }}>
           <Title level={2} style={{ textAlign: "start", marginBottom: "2rem" }}>

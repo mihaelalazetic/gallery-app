@@ -1,45 +1,29 @@
-import React, { useState, useEffect } from "react";
+import {
+  LogoutOutlined,
+  ProfileOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
 import {
   Avatar,
   Button,
-  Popover,
-  Typography,
   Divider,
-  Space,
   Flex,
+  Popover,
+  Space,
+  Typography,
 } from "antd";
-import {
-  UserOutlined,
-  LogoutOutlined,
-  ProfileOutlined,
-} from "@ant-design/icons";
+import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import { useThemeToggle } from "../../providers/AppThemeProvider";
 import LanguageSwitcher from "./LanguageChanger";
 
 const { Title, Text } = Typography;
 
-interface StoredUser {
-  username: string;
-  fullName: string;
-  email: string;
-  profilePictureUrl?: string;
-  roles: string[];
-}
-
-const UserProfile: React.FC = () => {
+const UserProfilePopover: React.FC = () => {
   const navigate = useNavigate();
   const { darkMode } = useThemeToggle();
-  const [user, setUser] = useState<StoredUser | null>(null);
-
-  useEffect(() => {
-    const raw = localStorage.getItem("user");
-    if (raw) {
-      try {
-        setUser(JSON.parse(raw));
-      } catch {}
-    }
-  }, []);
+  const { user } = useAuth();
 
   const isLoggedIn = Boolean(localStorage.getItem("token") && user);
 
@@ -88,7 +72,7 @@ const UserProfile: React.FC = () => {
           type="default"
           block
           icon={<ProfileOutlined />}
-          onClick={() => navigate("/profile")}
+          onClick={() => navigate(`/profile/${user!.username}`)} // Navigate to the user's profile
         >
           My Profile
         </Button>
@@ -132,4 +116,4 @@ const UserProfile: React.FC = () => {
   );
 };
 
-export default UserProfile;
+export default UserProfilePopover;

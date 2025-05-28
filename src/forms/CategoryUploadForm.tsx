@@ -18,7 +18,8 @@ export default function CategoryUploadForm() {
   });
   const mutation = useMutation({
     mutationFn: async (values: any) => {
-      const file = values.file?.originFileObj;
+      console.log(values);
+      const file = values.imageFile?.fileList[0].originFileObj;
       if (!file) throw new Error("Please select an image file.");
 
       const imageUrl = await uploadCategoryToSupabase(file);

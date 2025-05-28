@@ -7,7 +7,7 @@ import logo from "../../assets/logo3.png";
 import { useThemeToggle } from "../../providers/AppThemeProvider";
 import SearchBar from "../utils/SearchBar";
 import ThemeToggle from "../utils/ThemeToggle";
-import UserProfile from "../utils/UserProfile";
+import UserProfilePopover from "../utils/UserProfilePopover";
 
 const { Header } = Layout;
 
@@ -58,7 +58,7 @@ const AppHeader: React.FC<Props> = () => {
       {/* Right: actions */}
       <Space align="center" size="middle" style={{ flex: "0 0 auto" }}>
         <ThemeToggle />
-        <UserProfile />
+        <UserProfilePopover />
       </Space>
     </Header>
   );

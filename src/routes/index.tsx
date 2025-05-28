@@ -4,17 +4,19 @@ import Home from "../pages/Home";
 import Explore from "../pages/Explore";
 import LoginPage from "../pages/Login";
 import AuthLanding from "../pages/AuthLanding";
-import ArtworkUploadPage from "../forms/ArtworkUploadForm";
+import ArtworkUploadForm from "../forms/ArtworkUploadForm";
 import CategoryUploadForm from "../forms/CategoryUploadForm";
+import UserProfile from "../pages/UserProfile";
+import { AuthProvider } from "../context/AuthContext";
 
 const router = createBrowserRouter([
   {
-    path: "/login", // 👉 Standalone route
-    element: <LoginPage />,
-  },
-  {
     path: "/auth", // 👉 Standalone route
-    element: <AuthLanding />,
+    element: (
+      <AuthProvider>
+        <AuthLanding />
+      </AuthProvider>
+    ),
   },
 
   {
@@ -24,12 +26,16 @@ const router = createBrowserRouter([
       { path: "", element: <Home /> },
       { path: "explore", element: <Explore /> },
       {
-        path: "upload-artwork", // 👉 Standalone route
-        element: <ArtworkUploadPage />,
+        path: "upload-artwork",
+        element: <ArtworkUploadForm />,
       },
       {
-        path: "upload-category", // 👉 Standalone route
+        path: "upload-category",
         element: <CategoryUploadForm />,
+      },
+      {
+        path: "profile/:slug",
+        element: <UserProfile />,
       },
     ],
   },

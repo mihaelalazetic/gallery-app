@@ -8,6 +8,7 @@ import "./i18n/i18n";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { App as AntdApp } from "antd";
 import { FilterProvider } from "./context/FilterContext";
+import { GlobalNotificationProvider } from "./providers/GlobalNotificationProvider";
 
 const queryClient = new QueryClient();
 
@@ -16,10 +17,12 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <FilterProvider>
         <AppThemeProvider>
-          <AntdApp>
-            {/* Wrap your application with AntdApp */}
-            <RouterProvider router={router} />
-          </AntdApp>
+          <GlobalNotificationProvider>
+            <AntdApp>
+              {/* Wrap your application with AntdApp */}
+              <RouterProvider router={router} />
+            </AntdApp>
+          </GlobalNotificationProvider>
         </AppThemeProvider>
       </FilterProvider>
     </QueryClientProvider>

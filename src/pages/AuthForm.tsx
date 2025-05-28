@@ -1,12 +1,13 @@
-import { Grid, notification } from "antd";
+import { useMutation } from "@tanstack/react-query";
+import { Grid } from "antd";
 import { t } from "i18next";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
-import { login, signup } from "../api/authServices";
+import { signup } from "../api/authServices";
 import { uploadProfilePictureToSupabase } from "../api/uploadProfilePictureToSupabase";
-import { getCurrentUser } from "../api/usersService";
+import { useAuth } from "../context/AuthContext";
 import { FieldConfig, useGeneratedAntForm } from "../hooks/useGeneratedAntForm";
+import { useGlobalNotification } from "../providers/GlobalNotificationProvider";
 
 type Props = {
   isLogin?: boolean;
@@ -16,7 +17,8 @@ type Props = {
 const AuthForm: React.FC<Props> = ({ isLogin = true, onAfterSignup }) => {
   const navigate = useNavigate();
   const screens = Grid.useBreakpoint();
-  const [api, contextHolder] = notification.useNotification();
+  const api = useGlobalNotification();
+  const { login } = useAuth();
 
   const fields: FieldConfig[] = [
     {
@@ -52,15 +54,22 @@ const AuthForm: React.FC<Props> = ({ isLogin = true, onAfterSignup }) => {
         placeholder: "Your full name",
       },
       {
+        name: "bio",
+        label: t("bio"),
+        type: "textarea",
+        required: false,
+        placeholder: "Enter a short bio",
+      },
+      {
         name: "email",
-        label: "Email",
+        label: t("email"),
         type: "input",
         required: true,
         placeholder: "you@example.com",
       },
       {
-        name: "accountType",
-        label: "Account Type",
+        name: "role",
+        label: t("accountType"),
         type: "select",
         required: true,
         placeholder: "e.g. Artist, User",
@@ -81,8 +90,6 @@ const AuthForm: React.FC<Props> = ({ isLogin = true, onAfterSignup }) => {
   const loginMutation = useMutation({
     mutationFn: async (values: any) => {
       await login(values);
-      const user = await getCurrentUser();
-      localStorage.setItem("user", JSON.stringify(user));
     },
     onSuccess: () => {
       api.success({
@@ -149,6 +156,7 @@ const AuthForm: React.FC<Props> = ({ isLogin = true, onAfterSignup }) => {
             col1: ["username", "password", "confirmPassword", "accountType"],
             col2: ["fullName", "email", "profile_picture"],
           },
+          fullWidthFields: ["bio"], // Add this to make 'bio' span across both columns
         },
     buttonLabel: isLogin ? t("login") : t("signup"),
     onSubmit,
@@ -164,7 +172,6 @@ const AuthForm: React.FC<Props> = ({ isLogin = true, onAfterSignup }) => {
 
   return (
     <div style={wrapperStyle}>
-      {contextHolder}
       <GeneratedForm />
     </div>
   );

@@ -3,12 +3,14 @@ import {
   CommentOutlined,
   SendOutlined,
 } from "@ant-design/icons";
-import { Button, Divider, Drawer, Image, Input, Typography } from "antd";
+import { Button, Carousel, Drawer, Image, Input, Typography } from "antd";
 import React, { useEffect, useRef, useState } from "react";
-import { createComment, getComments, getArtwork } from "../api/artworkServices";
+import { createComment, getArtwork, getComments } from "../api/artworkServices";
 import { CommentDto } from "../types/IObjectTypes";
 import CommentsThread from "./CommentsThread";
 import { LikeButton } from "./LikeButton";
+import { Link } from "react-router-dom";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -18,8 +20,7 @@ interface ImagePreviewDrawerProps {
   visible: boolean;
   onClose(): void;
   darkMode: boolean;
-}
-
+} // ... same imports as before
 const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
   id,
   visible,
@@ -31,8 +32,30 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
   const [newText, setNewText] = useState("");
   const [posting, setPosting] = useState(false);
   const [isJumping, setIsJumping] = useState(false);
-
   const commentsRef = useRef<HTMLDivElement>(null);
+  const [imageScale, setImageScale] = useState(1);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const carouselRef = useRef<any>(null);
+
+  const next = () => {
+    carouselRef.current?.next();
+  };
+
+  const prev = () => {
+    carouselRef.current?.prev();
+  };
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!scrollContainerRef.current) return;
+      const scrollTop = scrollContainerRef.current.scrollTop;
+      const scale = Math.max(0.1, 1 - scrollTop / 400); // Shrinks to 10% max
+      setImageScale(scale);
+    };
+
+    const el = scrollContainerRef.current;
+    el?.addEventListener("scroll", handleScroll);
+    return () => el?.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     if (id && visible) {
@@ -69,8 +92,62 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
 
   return (
     <Drawer
+      title={
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            width: "100%",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <Image
+              src={art.artist.profilePictureUrl}
+              alt={art.artist.fullName}
+              width={32}
+              height={32}
+              style={{ borderRadius: "50%", objectFit: "cover" }}
+              preview={false}
+            />
+            <div>
+              <Title
+                level={5}
+                style={{ margin: 0, color: darkMode ? "#fff" : undefined }}
+              >
+                {art.title}
+              </Title>
+              <Text type="secondary">
+                <Link
+                  to={`/profile/${art.artist.slug}`}
+                  style={{ color: darkMode ? "#ccc" : "gray" }}
+                >
+                  {art.artist.fullName}
+                </Link>
+              </Text>
+            </div>
+          </div>
+
+          {art.price && (
+            <div
+              style={{
+                backgroundColor: "#1890ff",
+                color: "#fff",
+                padding: "4px 12px",
+                borderRadius: 8,
+                fontWeight: 500,
+                fontSize: 14,
+                boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {art.price} EUR
+            </div>
+          )}
+        </div>
+      }
       placement="right"
-      width={window.innerWidth < 768 ? "100%" : "50%"}
+      width={window.innerWidth < 768 ? "100%" : "60%"}
       onClose={onClose}
       visible={visible}
       style={{ background: darkMode ? "#1f1f2e" : undefined }}
@@ -79,100 +156,182 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
         flexDirection: "column",
         padding: 0,
         height: "100%",
-        background: darkMode ? "#1f1f2e" : undefined,
+        background: darkMode ? "#1f1f2e" : "#fff",
         color: darkMode ? "#fff" : undefined,
       }}
       closeIcon={
         <CloseOutlined style={{ color: darkMode ? "#fff" : undefined }} />
       }
     >
-      <div style={{ flex: 1, overflowY: "auto", padding: 24 }}>
-        <div style={{ textAlign: "center", marginBottom: 16 }}>
-          <Image
-            src={art.imageUrl}
-            alt={art.title}
-            style={{
-              maxWidth: "100%",
-              maxHeight: "50vh",
-              objectFit: "contain",
-            }}
-          />
-        </div>
-        <Title level={4} style={{ margin: 0 }}>
-          {art.title}
-        </Title>
-        <Text type="secondary" style={{ display: "block", marginBottom: 16 }}>
-          By {art.artist.fullName}
-        </Text>
-        <Text type="secondary" style={{ display: "block", marginBottom: 16 }}>
-          {art.dimensions} • {art.price} EUR
-        </Text>
-
-        <div
-          style={{ display: "flex", alignItems: "center", marginBottom: 16 }}
-        >
-          <LikeButton
-            artworkId={art.id}
-            initialCount={art.likes}
-            initialLiked={art.liked}
-          />
-          <CommentOutlined
-            onClick={scrollToComments}
-            style={{
-              fontSize: 18,
-              marginLeft: 24,
-              color: "#40a9ff",
-              cursor: "pointer",
-            }}
-          />
-          <Text style={{ marginLeft: 8, color: darkMode ? "#eee" : "#555" }}>
-            {comments.length}
-          </Text>
-        </div>
-
-        <Divider style={{ margin: "8px 0" }} />
-
-        <div
-          ref={commentsRef}
-          className={isJumping ? "comments--jump" : ""}
-          style={{
-            scrollMarginTop: 80,
-            willChange: "transform",
-          }}
-        >
-          <CommentsThread comments={comments} />
-        </div>
-      </div>
-
       <div
         style={{
-          padding: 12,
-          borderTop: darkMode ? "1px solid #444" : "1px solid #f0f0f0",
-          background: darkMode ? "#1f1f2e" : "#fff",
+          flex: 1,
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
+        {/* Carousel Section */}
+        <div style={{ position: "relative", flexShrink: 0 }}>
+          {/* --- Carousel Section --- */}
+          <div
+            style={{ position: "relative", textAlign: "center", padding: 16 }}
+          >
+            <button
+              className="arrow left"
+              onClick={prev}
+              style={{
+                position: "absolute",
+                top: "50%",
+                left: 10,
+                transform: "translateY(-50%)",
+                zIndex: 10,
+                background: "rgba(0,0,0,0.5)",
+                color: "white",
+                border: "none",
+                borderRadius: "50%",
+                width: 40,
+                height: 40,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+              }}
+            >
+              <LeftOutlined />
+            </button>
+            <button
+              className="arrow right"
+              onClick={next}
+              style={{
+                position: "absolute",
+                top: "50%",
+                right: 10,
+                transform: "translateY(-50%)",
+                zIndex: 10,
+                background: "rgba(0,0,0,0.5)",
+                color: "white",
+                border: "none",
+                borderRadius: "50%",
+                width: 40,
+                height: 40,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: "pointer",
+              }}
+            >
+              <RightOutlined />
+            </button>
+
+            <Carousel ref={carouselRef} dots={false}>
+              {art.imageUrls.map((url: string, index: number) => (
+                <div key={index}>
+                  <div
+                    style={{
+                      transform: `scale(${imageScale})`,
+                      transition: "transform 0.2s ease-out",
+                      transformOrigin: "top center",
+                    }}
+                  >
+                    <Image
+                      src={url}
+                      alt={art.title}
+                      preview={true}
+                      style={{
+                        maxWidth: "100%",
+                        maxHeight: "50vh",
+                        objectFit: "contain",
+                        display: "block",
+                        margin: "0 auto",
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </Carousel>
+          </div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 16,
+              padding: "0 24px 16px",
+            }}
+          >
+            {art?.description}
+          </div>
+          {/* Likes and Comments */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 16,
+              padding: "0 24px 16px",
+            }}
+          >
+            <LikeButton
+              artworkId={art.id}
+              initialCount={art.likes}
+              initialLiked={art.liked}
+            />
+            <div
+              style={{
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+              }}
+              onClick={scrollToComments}
+            >
+              <CommentOutlined style={{ fontSize: 18, color: "#40a9ff" }} />
+              <Text style={{ marginLeft: 4 }}>{comments.length}</Text>
+            </div>
+          </div>
+        </div>
+
+        {/* Comments Scrollable Section */}
         <div
+          ref={scrollContainerRef}
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 8,
+            flex: 1,
+            overflowY: "auto",
+            padding: "16px 24px",
           }}
         >
-          <TextArea
-            placeholder="Write a comment…"
-            value={newText}
-            onChange={(e) => setNewText(e.target.value)}
-            autoSize={{ minRows: 1, maxRows: 4 }}
-          />
-          <Button
-            type="primary"
-            shape="circle"
-            size="large"
-            icon={<SendOutlined />}
-            onClick={handleAdd}
-            loading={posting}
-            disabled={!newText.trim()}
-          />
+          <div
+            ref={commentsRef}
+            className={isJumping ? "comments--jump" : ""}
+            style={{ scrollMarginTop: 80 }}
+          >
+            <CommentsThread comments={comments} />
+          </div>
+        </div>
+
+        {/* Comment Input */}
+        <div
+          style={{
+            padding: 12,
+            borderTop: darkMode ? "1px solid #444" : "1px solid #f0f0f0",
+            background: darkMode ? "#1f1f2e" : "#fff",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <TextArea
+              placeholder="Write a comment…"
+              value={newText}
+              onChange={(e) => setNewText(e.target.value)}
+              autoSize={{ minRows: 1, maxRows: 4 }}
+            />
+            <Button
+              type="primary"
+              shape="circle"
+              size="large"
+              icon={<SendOutlined />}
+              onClick={handleAdd}
+              loading={posting}
+              disabled={!newText.trim()}
+            />
+          </div>
         </div>
       </div>
     </Drawer>

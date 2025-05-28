@@ -3,7 +3,7 @@ import { Carousel } from "antd";
 import CategoryCard from "./CategoryCard";
 import "../styles/CategoryCarousel.css";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import { getCategories } from "../api/categoryServices";
+import { getCategories } from "../api/featured";
 
 const CategoryCarousel: React.FC = () => {
   const [categories, setCategories] = React.useState<any[]>([]);
@@ -45,6 +45,7 @@ const CategoryCarousel: React.FC = () => {
         {categories.map((category, index) => (
           <CategoryCard
             key={index}
+            id={category.id}
             imageUrl={category.imageUrl}
             name={category.name}
             description={category.description}
