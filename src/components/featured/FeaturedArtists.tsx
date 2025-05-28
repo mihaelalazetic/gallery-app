@@ -59,7 +59,6 @@ const FeaturedArtists: React.FC = () => {
         slidesToScroll={1}
         autoplay
         ref={carouselRef}
-        className="carousel"
       >
         {artists.map((artist) => (
           <FeaturedArtistCard
