@@ -1,19 +1,19 @@
 // src/pages/Home.tsx
 
 import Masonry from "@mui/lab/Masonry";
-import { Carousel, List, Typography } from "antd";
+import { List, Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useThemeToggle } from "../providers/AppThemeProvider";
 
 import FeaturedArtCard from "../components/featured/FeaturedArtCard";
 
+import { getFeaturedArtworks } from "../api/featured";
 import CategoryCarousel from "../components/CategoryCarousel";
 import ImagePreviewDrawer from "../components/ImagePreviewDrawer";
 import FeaturedArtists from "../components/featured/FeaturedArtists";
+import NewArtworks from "../components/featured/NewArtworks";
 import { Artwork } from "../types/IObjectTypes";
-import { getFeaturedArtworks } from "../api/featured";
-import NewThisWeek from "../components/featured/NewThisWeek";
 
 const { Title, Text } = Typography;
 
@@ -57,17 +57,6 @@ const Home: React.FC = () => {
       setPreviewArt({ ...previewArt, liked, likes });
     }
   };
-
-  // Decide how many columns to show at 'md' width:
-  //  1 item → 1 col
-  //  4 items → 2 cols
-  //  any other count → up to 3 cols (but never more than number of items)
-  const colsAtMd = (() => {
-    const n = arts.length;
-    if (n <= 1) return 1;
-    if (n === 4) return 2;
-    return Math.min(3, n);
-  })();
 
   return (
     <div style={{ maxWidth: "95%", margin: "0 auto", padding: "1rem" }}>
@@ -119,23 +108,10 @@ const Home: React.FC = () => {
 
       {/* New This Week */}
       <section style={{ padding: "2rem 1rem" }}>
-        {/* <Title level={3}>New This Week</Title> */}
-        {/* <Carousel autoplay speed={500} arrows style={{ padding: "2rem" }}>
-          {arts.map((art) => (
-            <div key={art.id}>
-              <img
-                src={art.imageUrl}
-                alt={art.title}
-                style={{
-                  height: "30rem",
-                  width: "100%",
-                  objectFit: "cover",
-                }}
-              />
-            </div>
-          ))}
-        </Carousel> */}
-        <NewThisWeek />
+        <NewArtworks
+          onArtClick={setPreviewArt}
+          onLikeChange={handleLikeChange}
+        />
       </section>
 
       {/* Upcoming Exhibitions */}

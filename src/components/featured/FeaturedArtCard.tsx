@@ -1,13 +1,12 @@
-// src/components/FeaturedArtCard.tsx
-
+import { Badge, Typography } from "antd";
 import { CommentOutlined } from "@ant-design/icons";
-import { Typography } from "antd";
-import React from "react";
-import "../../styles/FeaturedArtCard.css"; // Assuming you have some CSS for styling
+import React, { useState } from "react";
+import "../../styles/FeaturedArtCard.css";
 import ArtImageOverlay from "../artwork/ArtImageOverlay";
 import FrameContainer from "../artwork/FrameContainer";
 import { LikeButton } from "../LikeButton";
 import PictureFrame2 from "../PictureFrame2";
+import PriceTag from "../PriceTag";
 
 interface ArtworkWithLike {
   id: string;
@@ -16,6 +15,7 @@ interface ArtworkWithLike {
   likes: number;
   liked: boolean;
   comments: number;
+  price?: number;
   artist: {
     fullName: string;
   };
@@ -35,10 +35,14 @@ const FeaturedArtCard: React.FC<FeaturedArtCardProps> = ({
   onClick,
   onLikeChange,
 }) => {
+  const [hovered, setHovered] = useState(false);
+
   const overlay = (
     <>
       <strong style={{ fontSize: 16, marginBottom: 8 }}>{art.title}</strong>
-      <em style={{ marginBottom: 12 }}>By {art.artist.fullName}</em>
+      <em style={{ marginBottom: 12, display: "block" }}>
+        By {art.artist.fullName}
+      </em>
       <div style={{ display: "flex", alignItems: "center" }}>
         <LikeButton
           artworkId={art.id}
@@ -54,30 +58,40 @@ const FeaturedArtCard: React.FC<FeaturedArtCardProps> = ({
     </>
   );
 
+  const content = (
+    <div
+      style={{ cursor: "pointer" }}
+      onClick={onClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <FrameContainer padding="0" boxShadow="none">
+        <ArtImageOverlay overlayContent={overlay}>
+          <img
+            src={art.imageUrl}
+            alt={art.title}
+            style={{
+              width: "100%",
+              display: "block",
+              objectFit: "cover",
+            }}
+          />
+        </ArtImageOverlay>
+      </FrameContainer>
+    </div>
+  );
+
   return (
-    <div style={{ paddingTop: "3rem" }}>
-      <PictureFrame2
-        children={
-          <div style={{ cursor: "pointer" }} onClick={onClick}>
-            <FrameContainer padding="0" boxShadow="none">
-              <ArtImageOverlay overlayContent={overlay}>
-                {/* here you can swap in <img> or a custom <SmartImage> */}
-                <img
-                  src={art.imageUrl}
-                  alt={art.title}
-                  style={{
-                    width: "100%",
-                    // height: "40vh",
-                    display: "block",
-                    objectFit: "cover",
-                    // borderRadius: "1rem",
-                  }}
-                />
-              </ArtImageOverlay>
-            </FrameContainer>
-          </div>
-        }
-      />
+    <div style={{ paddingTop: "3rem", position: "relative" }}>
+      <PictureFrame2>
+        <div style={{ position: "relative" }}>
+          {/* Smooth transition wrapper */}
+          <PriceTag price={art.price ?? 0} visible={hovered && !!art.price} />
+
+          {/* Main image and overlay */}
+          {content}
+        </div>
+      </PictureFrame2>
     </div>
   );
 };

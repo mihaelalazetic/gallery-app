@@ -11,6 +11,7 @@ import CommentsThread from "./CommentsThread";
 import { LikeButton } from "./LikeButton";
 import { Link } from "react-router-dom";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import PriceTag from "./PriceTag";
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -33,7 +34,6 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
   const [posting, setPosting] = useState(false);
   const [isJumping, setIsJumping] = useState(false);
   const commentsRef = useRef<HTMLDivElement>(null);
-  const [imageScale, setImageScale] = useState(1);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const carouselRef = useRef<any>(null);
 
@@ -44,18 +44,6 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
   const prev = () => {
     carouselRef.current?.prev();
   };
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!scrollContainerRef.current) return;
-      const scrollTop = scrollContainerRef.current.scrollTop;
-      const scale = Math.max(0.1, 1 - scrollTop / 400); // Shrinks to 10% max
-      setImageScale(scale);
-    };
-
-    const el = scrollContainerRef.current;
-    el?.addEventListener("scroll", handleScroll);
-    return () => el?.removeEventListener("scroll", handleScroll);
-  }, []);
 
   useEffect(() => {
     if (id && visible) {
@@ -128,22 +116,7 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
             </div>
           </div>
 
-          {art.price && (
-            <div
-              style={{
-                backgroundColor: "#1890ff",
-                color: "#fff",
-                padding: "4px 12px",
-                borderRadius: 8,
-                fontWeight: 500,
-                fontSize: 14,
-                boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {art.price} EUR
-            </div>
-          )}
+          {art.price && <PriceTag price={art.price} visible={true} />}
         </div>
       }
       placement="right"
@@ -224,29 +197,23 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
               <RightOutlined />
             </button>
 
-            <Carousel ref={carouselRef} dots={false}>
+            <Carousel ref={carouselRef} dots={true}>
               {art.imageUrls.map((url: string, index: number) => (
                 <div key={index}>
-                  <div
+                  <Image
+                    src={url}
+                    alt={art.title}
+                    preview={true}
                     style={{
-                      transform: `scale(${imageScale})`,
-                      transition: "transform 0.2s ease-out",
-                      transformOrigin: "top center",
+                      maxWidth: "100%",
+                      maxHeight: "50vh",
+                      objectFit: "contain",
+                      display: "block",
+                      margin: "0 auto",
+                      justifyContent: "center",
+                      alignContent: "middle",
                     }}
-                  >
-                    <Image
-                      src={url}
-                      alt={art.title}
-                      preview={true}
-                      style={{
-                        maxWidth: "100%",
-                        maxHeight: "50vh",
-                        objectFit: "contain",
-                        display: "block",
-                        margin: "0 auto",
-                      }}
-                    />
-                  </div>
+                  />
                 </div>
               ))}
             </Carousel>
