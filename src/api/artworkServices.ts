@@ -1,4 +1,4 @@
-import { CommentDto } from "../types/IObjectTypes";
+import { Artwork, CommentDto } from "../types/IObjectTypes";
 import { apiInstance } from "./apiConfig";
 
 const prefix = "/api/artworks";
@@ -77,4 +77,9 @@ export const getTopLikedArtworks = async (
   return apiInstance
     .get<CommentDto[]>(`/api/comments?targetId=${artworkId}&targetType=ARTWORK`)
     .then((res) => res.data);
+};
+
+export const currentUserArtworks = async (): Promise<Artwork> => {
+  const response = await apiInstance.get(`${prefix}/currentUserArtworks`);
+  return response.data;
 };

@@ -8,6 +8,7 @@ import ArtworkUploadForm from "../forms/ArtworkUploadForm";
 import CategoryUploadForm from "../forms/CategoryUploadForm";
 import UserProfile from "../pages/UserProfile";
 import { AuthProvider } from "../context/AuthContext";
+import CreateEventExhibitionForm from "../forms/CreateEventExhibitionForm";
 
 const router = createBrowserRouter([
   {
@@ -36,6 +37,10 @@ const router = createBrowserRouter([
       {
         path: "profile/:slug",
         element: <UserProfile />,
+      },
+      {
+        path: "/create-event/:slug",
+        element: <CreateEventExhibitionForm />,
       },
     ],
   },

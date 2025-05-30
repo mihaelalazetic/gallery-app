@@ -2,6 +2,7 @@ import {
   AppstoreAddOutlined,
   AppstoreOutlined,
   CalendarOutlined,
+  CalendarTwoTone,
   HomeOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -98,7 +99,11 @@ const AppSider: React.FC<{
               <Menu.Item key="/my-exhibitions" icon={<CalendarOutlined />}>
                 <Link to="/my-exhibitions">{t("myExhibitions")}</Link>
               </Menu.Item>
-
+              <Menu.Item key="/create-event" icon={<CalendarTwoTone />}>
+                <Link to={`/create-event/${user?.slug}`}>
+                  {t("createEvent")}
+                </Link>
+              </Menu.Item>
               <SubMenu
                 key="new"
                 title={
@@ -139,18 +144,21 @@ const AppSider: React.FC<{
       <Modal
         visible={isModalVisible}
         onCancel={handleCancel}
-        footer={null} // No footer buttons
-        centered // Centers the modal on the page
-        width={"85%"} // Adjust width as needed
+        footer={null}
+        centered
+        width={"85%"}
         bodyStyle={{
-          maxHeight: "80vh", // Limit the height of the modal content
-          overflowY: "auto", // Enable scrolling inside the modal if content overflows
-          // padding: "20px", // Add padding for better spacing
+          maxHeight: "80vh",
+          overflowY: "auto",
           background: darkMode ? "#1c1c1e" : "#fff",
-          backgroundColor: darkMode ? "#1c1c1e" : "#fff",
         }}
       >
-        <ArtworkUploadForm />
+        <ArtworkUploadForm
+          onUploadSuccess={() => {
+            navigate("/profile/" + user?.slug);
+            setIsModalVisible(false);
+          }}
+        />
       </Modal>
     </>
   );

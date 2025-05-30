@@ -8,8 +8,11 @@ import { uploadArtworkToSupabase } from "../api/uploadArtworkToSupabase";
 import { useGeneratedAntForm } from "../hooks/useGeneratedAntForm";
 
 const { Title } = Typography;
-
-export default function ArtworkUploadForm() {
+export default function ArtworkUploadForm({
+  onUploadSuccess,
+}: {
+  onUploadSuccess?: () => void;
+}) {
   const [uploading, setUploading] = useState(false);
   const [artTypes, setArtTypes] = useState([]);
 
@@ -48,7 +51,9 @@ export default function ArtworkUploadForm() {
     },
     onSuccess: () => {
       notification.success({ message: "Artwork uploaded successfully!" });
+      onUploadSuccess?.(); // 👈 Close modal if callback is provided
     },
+
     onError: (error: any) => {
       console.error(error);
       notification.error({

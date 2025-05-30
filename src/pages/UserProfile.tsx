@@ -1,10 +1,12 @@
 import {
+  HeartFilled,
   PictureOutlined,
   TeamOutlined,
   UploadOutlined,
   UserAddOutlined,
   UserDeleteOutlined,
 } from "@ant-design/icons";
+import { useMutation } from "@tanstack/react-query";
 import {
   Avatar,
   Badge,
@@ -23,13 +25,14 @@ import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toggleFollow } from "../api/artists";
+import { currentUserArtworks } from "../api/artworkServices";
 import { uploadProfilePictureToSupabase } from "../api/uploadProfilePictureToSupabase";
 import { getUserBySlug, updateUserProfile } from "../api/usersService";
 import ArtworkCard from "../components/artwork/ArtworkCard";
 import { useAuth } from "../context/AuthContext";
 import { useThemeToggle } from "../providers/AppThemeProvider";
 import { Artwork } from "../types/IObjectTypes";
-import { useMutation } from "@tanstack/react-query";
+import { Skeleton } from "antd";
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -42,6 +45,7 @@ interface UserProfile {
   bio: string;
   artworks: Artwork[];
   isFollowing: boolean;
+  totalLikes?: number;
 }
 
 const UserProfile: React.FC = () => {
@@ -58,6 +62,9 @@ const UserProfile: React.FC = () => {
   const [previewProfilePic, setPreviewProfilePic] = useState<string | null>(
     null
   );
+
+  const [artworks, setArtworks] = useState<Artwork[]>([]);
+
   const updateProfileMutation = useMutation({
     mutationFn: async () => {
       let updatedProfilePictureUrl = userProfile?.profilePictureUrl || "";
@@ -128,16 +135,19 @@ const UserProfile: React.FC = () => {
     const fetchUserProfile = async () => {
       try {
         setLoading(true);
-        if (!slug) {
-          throw new Error("Slug is undefined");
-        }
+        if (!slug) throw new Error("Slug is undefined");
+
         const data = await getUserBySlug(slug);
         setEditableName(data.fullName);
         setEditableBio(data.bio);
-
         setUserProfile(data);
+
+        const fetchedArtworks = await currentUserArtworks(); // 🔁 Replace this with the correct service call
+        setArtworks(
+          Array.isArray(fetchedArtworks) ? fetchedArtworks : [fetchedArtworks]
+        );
       } catch (error) {
-        console.error("Failed to fetch user profile:", error);
+        console.error("Failed to fetch user profile or artworks:", error);
       } finally {
         setLoading(false);
       }
@@ -148,11 +158,44 @@ const UserProfile: React.FC = () => {
 
   if (loading) {
     return (
-      <div style={{ textAlign: "center", marginTop: "50px" }}>
-        <Spin size="large" />
-      </div>
+      <Layout>
+        <Content
+          style={{
+            padding: "24px",
+            width: "90%",
+            margin: "0 auto",
+            backgroundColor: darkMode ? "#1f1f1f" : "#f9f9f9",
+            color: darkMode ? "#ffffff" : "#000000",
+            borderRadius: "12px",
+            boxShadow: "0px 4px 10px rgba(0,0,0,0.15)",
+          }}
+        >
+          {/* Skeleton for profile section */}
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={8} md={6} style={{ textAlign: "center" }}>
+              <Skeleton.Avatar active size={150} shape="circle" />
+            </Col>
+            <Col xs={24} sm={16} md={18}>
+              <Skeleton active title={{ width: 200 }} paragraph={{ rows: 2 }} />
+            </Col>
+          </Row>
+
+          <Divider />
+
+          {/* Skeleton for artworks */}
+          <Row gutter={[16, 16]}>
+            {Array.from({ length: 8 }).map((_, i) => (
+              <Col xs={24} sm={12} md={8} lg={6} key={i}>
+                <Skeleton.Image active style={{}} />
+                <Skeleton active paragraph={{ rows: 1 }} />
+              </Col>
+            ))}
+          </Row>
+        </Content>
+      </Layout>
     );
   }
+
   if (!userProfile) {
     return (
       <div style={{ textAlign: "center", marginTop: "50px" }}>
@@ -272,26 +315,6 @@ const UserProfile: React.FC = () => {
                         {userProfile.fullName}
                       </Title>
                     )}
-
-                    <div style={{ display: "flex", gap: 8 }}>
-                      {userProfile.id === user?.id &&
-                        (editing ? (
-                          <>
-                            <Button
-                              type="primary"
-                              onClick={handleSave}
-                              loading={
-                                updateProfileMutation.status === "pending"
-                              }
-                            >
-                              Save
-                            </Button>
-                            <Button onClick={handleCancel}>Cancel</Button>
-                          </>
-                        ) : (
-                          <Button onClick={() => setEditing(true)}>Edit</Button>
-                        ))}
-                    </div>
                   </div>
 
                   <Button
@@ -372,43 +395,112 @@ const UserProfile: React.FC = () => {
                       </Title>
                     </motion.div>
                   </Col>
+                  <Col>
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      className="stat-card"
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}
+                    >
+                      <HeartFilled
+                        style={{ color: "#eb2f96", fontSize: "24px" }}
+                      />
+
+                      <Title
+                        level={4}
+                        style={{
+                          margin: 0,
+                          color: "#eb2f96",
+                        }}
+                      >
+                        {userProfile?.totalLikes || 0}
+                      </Title>
+                    </motion.div>
+                  </Col>
                 </Row>
               </Row>
 
-              <Divider />
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.4 }}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  gap: 16,
+                  flexWrap: "wrap",
+                }}
               >
-                {editing ? (
-                  <Input.TextArea
-                    value={editableBio}
-                    onChange={(e) => setEditableBio(e.target.value)}
-                    autoSize={{ minRows: 3 }}
-                    style={{
-                      fontSize: "16px",
-                      lineHeight: "1.6",
-                      backgroundColor: darkMode ? "#2a2a2a" : "#f3f3f3",
-                      color: darkMode ? "#fff" : "#000",
-                    }}
-                  />
-                ) : (
-                  <Paragraph
-                    style={{
-                      fontSize: "16px",
-                      lineHeight: "1.6",
-                      backgroundColor: darkMode ? "#2a2a2a" : "#f3f3f3",
-                      color: darkMode ? "#ffffff" : "#000000",
-                      padding: "10px",
-                      borderRadius: "8px",
-                      boxShadow: "inset 0px 2px 5px rgba(0,0,0,0.1)",
-                    }}
+                <div style={{ flex: 1, minWidth: 250 }}>
+                  {editing ? (
+                    <Input.TextArea
+                      value={editableBio}
+                      onChange={(e) => setEditableBio(e.target.value)}
+                      autoSize={{ minRows: 3 }}
+                      style={{
+                        fontSize: "16px",
+                        lineHeight: "1.6",
+                        backgroundColor: darkMode ? "#2a2a2a" : "#f3f3f3",
+                        color: darkMode ? "#fff" : "#000",
+                        width: "100%",
+                      }}
+                    />
+                  ) : (
+                    <Paragraph
+                      style={{
+                        fontSize: "16px",
+                        lineHeight: "1.6",
+                        color: darkMode ? "#ffffff" : "#000000",
+                        padding: "10px 0",
+                        borderRadius: "8px",
+                      }}
+                    >
+                      {userProfile.bio ||
+                        "This artist has not added a bio yet."}
+                    </Paragraph>
+                  )}
+                </div>
+
+                {/* Buttons on the right */}
+                {userProfile.id === user?.id && (
+                  <div
+                    style={{ display: "flex", flexDirection: "column", gap: 8 }}
                   >
-                    {userProfile.bio || "This artist has not added a bio yet."}
-                  </Paragraph>
+                    {editing ? (
+                      <>
+                        <Button
+                          type="primary"
+                          size="middle"
+                          onClick={handleSave}
+                          loading={updateProfileMutation.status === "pending"}
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          size="middle"
+                          style={{ background: "none" }}
+                          onClick={handleCancel}
+                        >
+                          Cancel
+                        </Button>
+                      </>
+                    ) : (
+                      <Button
+                        style={{ background: "none" }}
+                        size="middle"
+                        onClick={() => setEditing(true)}
+                      >
+                        Edit
+                      </Button>
+                    )}
+                  </div>
                 )}
               </motion.div>
+              <Divider />
             </Col>
           </Row>
         </motion.div>
@@ -418,14 +510,14 @@ const UserProfile: React.FC = () => {
           <Title level={3} style={{ color: darkMode ? "#ffffff" : "#000000" }}>
             Gallery
           </Title>
-          {userProfile.artworks.length > 0 ? (
+          {artworks.length > 0 ? (
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
               <Row gutter={[16, 16]}>
-                {userProfile.artworks.map((artwork) => (
+                {artworks.map((artwork) => (
                   <Col xs={24} sm={12} md={8} lg={6} key={artwork.id}>
                     <ArtworkCard
                       artwork={artwork}
