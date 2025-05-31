@@ -1,8 +1,7 @@
 import { ArrowUpOutlined } from "@ant-design/icons";
 import Masonry from "@mui/lab/Masonry";
 import { Button, Layout, Skeleton } from "antd";
-import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import { getPaginatedArtworks } from "../api/artworkServices";
 import ArtworkCard from "../components/artwork/ArtworkCard";
 import FilterDrawer from "../components/artwork/FilterDrawer";
@@ -20,23 +19,14 @@ const Explore: React.FC = () => {
   const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null);
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [page, setPage] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
   const [showScroll, setShowScroll] = useState(false);
   const { darkMode } = useThemeToggle();
-  const loaderRef = useRef<HTMLDivElement | null>(null);
-
   const { searchQuery, selectedCategories, priceRange } = useFilterContext();
 
-  // Debounce the search query to avoid excessive API calls
   const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
 
-  // Fetch artworks from the API
-  const fetchArtworks = useCallback(async () => {
-    if (loading) return; // Prevent overlapping API calls
-
+  const fetchArtworks = async () => {
     setLoading(true);
-
     try {
       const params: Record<string, any> = {
         search: debouncedSearchQuery || "",
@@ -44,69 +34,26 @@ const Explore: React.FC = () => {
           selectedCategories.length > 0 ? selectedCategories.join(",") : "",
         priceMin: priceRange[0],
         priceMax: priceRange[1],
-        page,
-        limit: 20,
+        size: "*", // fetch all
       };
 
       const data = await getPaginatedArtworks(params);
-
-      if (page === 0) {
-        setArtworks(data); // Replace results for a new search
-      } else {
-        setArtworks((prev) => [...prev, ...data]); // Append results for infinite scroll
-      }
-
-      if (data.length === 0) {
-        setHasMore(false); // Stop fetching if no more results
-      }
+      setArtworks(data || []);
     } catch (error) {
       console.error("Failed to load artworks:", error);
-    }
-
-    setLoading(false);
-  }, [page, debouncedSearchQuery, selectedCategories, priceRange, loading]);
-
-  // Trigger fetchArtworks when filters or search query change
-  useEffect(() => {
-    setPage(0); // Reset to the first page
-    setHasMore(true); // Allow fetching more results
-    setArtworks([]); // Clear the current results
-    fetchArtworks(); // Fetch new results based on updated filters
-  }, [debouncedSearchQuery, selectedCategories, priceRange]);
-
-  // Infinite scroll handler
-  const handleObserver = useCallback(
-    (entries: IntersectionObserverEntry[]) => {
-      const [entry] = entries;
-      if (entry.isIntersecting && !loading && hasMore) {
-        setPage((prev) => prev + 1);
-      }
-    },
-    [loading, hasMore]
-  );
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(handleObserver, {
-      root: null,
-      rootMargin: "20px",
-      threshold: 1.0,
-    });
-    if (loaderRef.current) observer.observe(loaderRef.current);
-    return () => {
-      if (loaderRef.current) observer.unobserve(loaderRef.current);
-    };
-  }, [handleObserver]);
-
-  // Back to Top Button
-  const handleScroll = () => {
-    if (window.scrollY > 100) {
-      setShowScroll(true);
-    } else {
-      setShowScroll(false);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
+    fetchArtworks();
+  }, [debouncedSearchQuery, selectedCategories, priceRange]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowScroll(window.scrollY > 100);
+    };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -127,7 +74,32 @@ const Explore: React.FC = () => {
             minHeight: "500px",
           }}
         >
-          {artworks.length > 0 ? (
+          {loading ? (
+            <Masonry
+              columns={{ xs: 2, sm: 2, md: 4, lg: 4, xl: 4 }}
+              spacing={1}
+            >
+              {Array.from({ length: 12 }).map((_, i) => (
+                <div
+                  key={i}
+                  style={{
+                    backgroundColor: darkMode ? "#1a1a1a" : "#ffffff",
+                    borderRadius: 12,
+                    padding: 16,
+                    boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
+                  }}
+                >
+                  <Skeleton.Image
+                    active
+                    style={{
+                      marginBottom: 12,
+                    }}
+                  />
+                  <Skeleton active title={false} paragraph={{ rows: 2 }} />
+                </div>
+              ))}
+            </Masonry>
+          ) : artworks.length > 0 ? (
             <Masonry
               columns={{ xs: 2, sm: 2, md: 4, lg: 4, xl: 4 }}
               spacing={1}
@@ -136,39 +108,24 @@ const Explore: React.FC = () => {
                 <ArtworkCard
                   key={artwork.id}
                   artwork={artwork}
-                  onLikeChange={(liked, newCount) => {}}
                   onClick={() => setSelectedArtwork(artwork)}
+                  onLikeChange={() => {}}
                 />
               ))}
-              {loading &&
-                hasMore &&
-                Array.from({ length: 10 }).map((_, idx) => (
-                  <Skeleton.Button
-                    active
-                    key={idx}
-                    style={{
-                      width: "1000px",
-                      height: "1000px",
-                      marginBottom: "10px",
-                    }}
-                  />
-                ))}
             </Masonry>
           ) : (
-            !loading && (
-              <div
-                style={{
-                  textAlign: "center",
-                  padding: "50px 0",
-                  color: darkMode ? "#ffffff" : "#000000",
-                }}
-              >
-                <h3>No artworks found</h3>
-              </div>
-            )
+            <div
+              style={{
+                textAlign: "center",
+                padding: "50px 0",
+                color: darkMode ? "#ffffff" : "#000000",
+              }}
+            >
+              <h3>No artworks found</h3>
+            </div>
           )}
         </div>
-        <div ref={loaderRef} style={{ height: 20 }} />
+
         {showScroll && (
           <Button
             type="primary"
@@ -185,10 +142,12 @@ const Explore: React.FC = () => {
           />
         )}
       </Content>
+
       <FilterDrawer
         visible={isDrawerVisible}
         onClose={() => setIsDrawerVisible(false)}
       />
+
       {selectedArtwork && (
         <ImagePreviewDrawer
           darkMode={darkMode}

@@ -19,6 +19,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import ArtworkUploadForm from "../../forms/ArtworkUploadForm";
 import { useThemeToggle } from "../../providers/AppThemeProvider";
+import CreateEventExhibitionForm from "../../forms/CreateEventExhibitionForm";
 
 const { Sider } = Layout;
 
@@ -37,6 +38,7 @@ const AppSider: React.FC<{
 
   // State for modal visibility
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [formType, setFormType] = useState<"artwork" | "event" | null>(null);
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -99,11 +101,7 @@ const AppSider: React.FC<{
               <Menu.Item key="/my-exhibitions" icon={<CalendarOutlined />}>
                 <Link to="/my-exhibitions">{t("myExhibitions")}</Link>
               </Menu.Item>
-              <Menu.Item key="/create-event" icon={<CalendarTwoTone />}>
-                <Link to={`/create-event/${user?.slug}`}>
-                  {t("createEvent")}
-                </Link>
-              </Menu.Item>
+
               <SubMenu
                 key="new"
                 title={
@@ -125,12 +123,23 @@ const AppSider: React.FC<{
                 <Menu.Item
                   key="/upload-artwork"
                   icon={<PictureOutlined />}
-                  onClick={showModal} // Open modal on click
+                  onClick={() => {
+                    setFormType("artwork");
+                    setIsModalVisible(true);
+                  }}
+                  // Open modal on click
                 >
                   Artwork
                 </Menu.Item>
-                <Menu.Item key="/create-exhibition" icon={<CalendarOutlined />}>
-                  <Link to="/create-exhibition">{t("exhibition")}</Link>
+                <Menu.Item
+                  key="/create-event"
+                  icon={<CalendarOutlined />}
+                  onClick={() => {
+                    setFormType("event");
+                    setIsModalVisible(true);
+                  }}
+                >
+                  {t("createEvent")}
                 </Menu.Item>
               </SubMenu>
               <Menu.Item key="/upload-category" icon={<AppstoreAddOutlined />}>
@@ -152,13 +161,18 @@ const AppSider: React.FC<{
           overflowY: "auto",
           background: darkMode ? "#1c1c1e" : "#fff",
         }}
+        destroyOnClose
       >
-        <ArtworkUploadForm
-          onUploadSuccess={() => {
-            navigate("/profile/" + user?.slug);
-            setIsModalVisible(false);
-          }}
-        />
+        {formType === "artwork" && (
+          <ArtworkUploadForm
+            onUploadSuccess={() => {
+              navigate("/profile/" + user?.slug);
+              setIsModalVisible(false);
+              setFormType(null);
+            }}
+          />
+        )}
+        {formType === "event" && <CreateEventExhibitionForm />}
       </Modal>
     </>
   );

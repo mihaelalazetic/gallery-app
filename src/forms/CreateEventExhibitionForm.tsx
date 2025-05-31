@@ -1,15 +1,16 @@
 // --- FILE: CreateEventExhibitionForm.tsx ---
 import { useMutation } from "@tanstack/react-query";
 import { Card, Col, Row, Typography } from "antd";
-import { useParams } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
 import { FieldConfig, useGeneratedAntForm } from "../hooks/useGeneratedAntForm";
 import { useGlobalNotification } from "../providers/GlobalNotificationProvider";
 
 const { Title } = Typography;
 
 export default function CreateEventExhibitionForm() {
-  const { slug } = useParams<{ slug: string }>();
   const notification = useGlobalNotification();
+  const { user } = useAuth();
+  const slug = user?.slug;
 
   const mutation = useMutation({
     mutationFn: async (formData: FormData) => {

@@ -38,10 +38,7 @@ const router = createBrowserRouter([
         path: "profile/:slug",
         element: <UserProfile />,
       },
-      {
-        path: "/create-event/:slug",
-        element: <CreateEventExhibitionForm />,
-      },
+
     ],
   },
 ]);

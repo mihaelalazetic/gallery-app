@@ -186,7 +186,12 @@ const UserProfile: React.FC = () => {
           <Row gutter={[16, 16]}>
             {Array.from({ length: 8 }).map((_, i) => (
               <Col xs={24} sm={12} md={8} lg={6} key={i}>
-                <Skeleton.Image active style={{}} />
+                <Skeleton.Image
+                  active
+                  style={{
+                    marginBottom: 12,
+                  }}
+                />
                 <Skeleton active paragraph={{ rows: 1 }} />
               </Col>
             ))}

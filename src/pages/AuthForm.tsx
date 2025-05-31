@@ -95,6 +95,7 @@ const AuthForm: React.FC<Props> = ({ isLogin = true, onAfterSignup }) => {
       api.success({
         message: "Login Successful",
         description: "You have been logged in.",
+        pauseOnHover: false,
       });
       setTimeout(() => navigate("/", { replace: true }), 500); // 👈 small delay to show toast
     },
@@ -102,6 +103,7 @@ const AuthForm: React.FC<Props> = ({ isLogin = true, onAfterSignup }) => {
       api.error({
         message: "Login Failed",
         description: error.message || "An error occurred.",
+        pauseOnHover: false,
       });
     },
   });

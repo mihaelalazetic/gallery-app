@@ -119,12 +119,20 @@ export default function ArtworkUploadForm({
 
   const layoutConfig = {
     columns: [
-      { key: "col1", span: { xs: 24, md: 16 } },
-      { key: "col2", span: { xs: 24, md: 8 } },
+      { key: "row1", span: { xs: 24, md: 12 } },
+      { key: "row1b", span: { xs: 24, md: 12 } },
+      { key: "row2", span: { xs: 24, md: 12 } },
+      { key: "row2b", span: { xs: 24, md: 12 } },
+      { key: "row3", span: { xs: 24, md: 12 } },
+      { key: "row3b", span: { xs: 24, md: 12 } },
     ],
     fieldGroups: {
-      col1: ["title", "description", "dimensions", "artType", "price"],
-      col2: ["imageFile"],
+      row1: ["title"],
+      row1b: ["dimensions"],
+      row2: ["price"],
+      row2b: ["artType"],
+      row3: ["description"],
+      row3b: ["imageFile"],
     },
   };
 
