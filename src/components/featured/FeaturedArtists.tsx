@@ -48,7 +48,7 @@ const FeaturedArtists: React.FC = () => {
 
   return (
     <div className="carousel-wrapper">
-      <button className="arrow left" onClick={prev}>
+      <button className="arrowc leftc" onClick={prev}>
         <LeftOutlined />
       </button>
       <Carousel
@@ -70,7 +70,7 @@ const FeaturedArtists: React.FC = () => {
           />
         ))}
       </Carousel>
-      <button className="arrow right" onClick={next}>
+      <button className="arrowc rightc" onClick={next}>
         <RightOutlined />
       </button>
     </div>

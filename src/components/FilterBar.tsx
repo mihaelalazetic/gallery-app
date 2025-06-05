@@ -20,7 +20,6 @@ const FilterBar: React.FC<{ onOpenDrawer: () => void }> = ({
   } = useFilterContext();
 
   const { darkMode } = useThemeToggle();
-  const isDarkMode = darkMode;
   const [categories, setCategories] = useState<any[]>([]);
 
   useEffect(() => {
@@ -35,15 +34,10 @@ const FilterBar: React.FC<{ onOpenDrawer: () => void }> = ({
     fetchCategories();
   }, []);
 
-  const handleFilterChange = () => {
-    // Trigger custom event to fetch the data
-    window.dispatchEvent(new CustomEvent("filterChange"));
-  };
-
   const filterButtonStyle = {
-    backgroundColor: isDarkMode ? "#2a2a3b" : "#fff",
-    color: isDarkMode ? "#fff" : "#000",
-    border: isDarkMode ? "1px solid #444" : "1px solid #d9d9d9",
+    backgroundColor: darkMode ? "#2a2a3b" : "#fff",
+    color: darkMode ? "#fff" : "#000",
+    border: darkMode ? "1px solid #444" : "1px solid #d9d9d9",
     borderRadius: 8,
   };
 
@@ -53,35 +47,26 @@ const FilterBar: React.FC<{ onOpenDrawer: () => void }> = ({
         position: "sticky",
         top: "65px",
         zIndex: 1000,
-        background: isDarkMode ? "#2a2a3b" : "#fff",
-        color: isDarkMode ? "#fff" : "#000",
+        background: darkMode ? "#2a2a3b" : "#fff",
         padding: "10px",
         overflowX: "auto",
         whiteSpace: "nowrap",
-        borderBottom: isDarkMode ? "1px solid #444" : "1px solid #d9d9d9",
+        borderBottom: darkMode ? "1px solid #444" : "1px solid #d9d9d9",
       }}
     >
       <Space>
-        {/* Search Input */}
         <Input
           placeholder="Search by title or artist"
           value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-          }}
-          onKeyUp={handleFilterChange}
+          onChange={(e) => setSearchQuery(e.target.value)}
           style={{ ...filterButtonStyle, width: 200 }}
         />
 
-        {/* Category Select */}
         <Select
           mode="multiple"
           placeholder="Select Categories"
           value={selectedCategories}
-          onChange={(value) => {
-            setSelectedCategories(value);
-            handleFilterChange();
-          }}
+          onChange={(value) => setSelectedCategories(value)}
           style={{ ...filterButtonStyle, minWidth: 200 }}
         >
           {categories.map((category) => (
@@ -91,21 +76,16 @@ const FilterBar: React.FC<{ onOpenDrawer: () => void }> = ({
           ))}
         </Select>
 
-        {/* Price Range Slider */}
         <Popover
           content={
             <div style={{ padding: "10px 20px" }}>
               <Slider
                 range
-                defaultValue={[0, 10000]}
+                value={priceRange}
+                onChange={(value) => setPriceRange(value as [number, number])}
                 min={0}
                 max={10000}
                 step={50}
-                value={priceRange}
-                onChange={(value) => {
-                  setPriceRange(value as [number, number]);
-                }}
-                onChangeComplete={handleFilterChange}
               />
               <div style={{ display: "flex", justifyContent: "space-between" }}>
                 <span>${priceRange[0]}</span>

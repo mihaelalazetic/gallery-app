@@ -2,7 +2,6 @@ import {
   AppstoreAddOutlined,
   AppstoreOutlined,
   CalendarOutlined,
-  CalendarTwoTone,
   HomeOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -18,8 +17,8 @@ import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import ArtworkUploadForm from "../../forms/ArtworkUploadForm";
-import { useThemeToggle } from "../../providers/AppThemeProvider";
 import CreateEventExhibitionForm from "../../forms/CreateEventExhibitionForm";
+import { useThemeToggle } from "../../providers/AppThemeProvider";
 
 const { Sider } = Layout;
 
@@ -40,9 +39,7 @@ const AppSider: React.FC<{
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [formType, setFormType] = useState<"artwork" | "event" | null>(null);
 
-  const showModal = () => {
-    setIsModalVisible(true);
-  };
+
 
   const handleCancel = () => {
     setIsModalVisible(false);
@@ -58,7 +55,6 @@ const AppSider: React.FC<{
           height: "100vh",
           position: "fixed",
           left: 0,
-          top: 64,
           bottom: 0,
           zIndex: 1000,
           backgroundColor: darkMode ? undefined : "#e6e9ef",
@@ -77,7 +73,7 @@ const AppSider: React.FC<{
         <Menu
           mode="inline"
           selectedKeys={[location.pathname]}
-          style={{ height: "100%", borderRight: 0 }}
+          style={{ height: "100%", borderRight: 0, marginTop: 65 }}
         >
           {/* Public Links */}
           <Menu.Item key="/" icon={<HomeOutlined />}>
@@ -86,7 +82,9 @@ const AppSider: React.FC<{
           <Menu.Item key="/explore" icon={<AppstoreOutlined />}>
             <Link to="/explore">{t("explore")}</Link>
           </Menu.Item>
-
+          <Menu.Item key="/events" icon={<CalendarOutlined />}>
+            <Link to="/events">{t("events")}</Link>
+          </Menu.Item>
           {isLoggedIn && <Divider />}
 
           {/* Authenticated Links */}
@@ -139,7 +137,7 @@ const AppSider: React.FC<{
                     setIsModalVisible(true);
                   }}
                 >
-                  {t("createEvent")}
+                  {t("event")}
                 </Menu.Item>
               </SubMenu>
               <Menu.Item key="/upload-category" icon={<AppstoreAddOutlined />}>

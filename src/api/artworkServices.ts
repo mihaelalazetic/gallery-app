@@ -83,3 +83,8 @@ export const currentUserArtworks = async (): Promise<Artwork> => {
   const response = await apiInstance.get(`${prefix}/currentUserArtworks`);
   return response.data;
 };
+
+export const userPublicArtworks = async (slug: string): Promise<Artwork> => {
+  const response = await apiInstance.get(`${prefix}/userPublicArtworks/${slug}`);
+  return response.data;
+};

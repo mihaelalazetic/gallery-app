@@ -1,11 +1,17 @@
-import React, { useEffect, useRef } from "react";
-import { Carousel } from "antd";
-import CategoryCard from "./CategoryCard";
-import "../styles/CategoryCarousel.css";
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
+import { Carousel } from "antd";
+import React, { useEffect, useRef } from "react";
 import { getCategories } from "../api/featured";
+import "../styles/CategoryCarousel.css";
+import CategoryCard from "./CategoryCard";
 
-const CategoryCarousel: React.FC = () => {
+interface CategoryCarouselProps {
+  slidesToShow: number;
+}
+
+const CategoryCarousel: React.FC<CategoryCarouselProps> = ({
+  slidesToShow,
+}) => {
   const [categories, setCategories] = React.useState<any[]>([]);
 
   useEffect(() => {
@@ -29,14 +35,14 @@ const CategoryCarousel: React.FC = () => {
 
   return (
     <div className="carousel-wrapper">
-      <button className="arrow left" onClick={prev}>
+      <button className="arrowc leftc" onClick={prev}>
         <LeftOutlined />
       </button>
       <Carousel
         dots={false}
         infinite
         autoplaySpeed={5000}
-        slidesToShow={4}
+        slidesToShow={slidesToShow}
         slidesToScroll={1}
         autoplay
         ref={carouselRef}
@@ -52,7 +58,7 @@ const CategoryCarousel: React.FC = () => {
           />
         ))}
       </Carousel>
-      <button className="arrow right" onClick={next}>
+      <button className="arrowc rightc" onClick={next}>
         <RightOutlined />
       </button>
     </div>

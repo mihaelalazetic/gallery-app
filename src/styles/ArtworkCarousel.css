@@ -1,5 +1,11 @@
+/* src/styles/ArtworkCarousel.css */
+
+/* ──────────────────────────────────────────────────────────────
+   Arrows: hidden by default, fade in on hover over .carousel-wrapper
+────────────────────────────────────────────────────────────── */
+
 .arrow {
-    position: absolute;
+    position: fixed;
     top: 50%;
     transform: translateY(-50%);
     z-index: 2;
@@ -11,10 +17,14 @@
     border-radius: 50%;
     cursor: pointer;
     display: flex;
+    /* allow center alignment of the icon */
     align-items: center;
     justify-content: center;
-    opacity: 0.8;
-    transition: opacity 0.2s ease-in-out;
+
+    /* hide until hover */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease-in-out, visibility 0.2s;
 }
 
 .arrow:hover {
@@ -23,14 +33,53 @@
 
 .arrow.left {
     left: -0.5rem;
+    /* you can adjust if needed */
 }
 
 .arrow.right {
     right: -0.5rem;
+    /* you can adjust if needed */
 }
 
 .carousel-wrapper {
     position: relative;
     max-width: 100%;
     margin: auto;
-  }
+}
+
+/* Show the arrows only when hovering .carousel-wrapper */
+.carousel-wrapper:hover .arrow {
+    opacity: 0.8;
+    visibility: visible;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   Price Tag: hidden by default, fade in on hover over .carousel-wrapper
+────────────────────────────────────────────────────────────── */
+
+.price-tag {
+    position: relative;
+    top: -16px;
+    right: -16px;
+    color: #fff;
+    font-size: 0.9rem;
+
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Show price-tag on hover of .carousel-wrapper */
+.carousel-wrapper:hover .price-tag {
+    opacity: 1;
+
+    visibility: visible;
+}
+
+/* ──────────────────────────────────────────────────────────────
+   (optional) inner text styling—if you want to tweak price text
+────────────────────────────────────────────────────────────── */
+
+.price-text {
+    /* e.g. make sure text doesn't wrap if it’s too long */
+    white-space: nowrap;
+}

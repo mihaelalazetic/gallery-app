@@ -1,0 +1,248 @@
+/* EventCard.css */
+
+/* ───────────────────────────────────────────────────────────────
+   Container / 3D Flip Setup
+────────────────────────────────────────────────────────────── */
+
+.event-flip-card-container {
+  width: 200px;
+  height: 15rem;
+  perspective: 1000px;
+  margin: 1rem;
+  cursor: pointer;
+  position: relative;
+}
+
+.event-flip-card {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.6s ease-in-out;
+}
+
+.event-flip-card-container.flipped .event-flip-card {
+  transform: rotateY(180deg);
+}
+
+.event-flip-front,
+.event-flip-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   ==== FRONT SIDE (light‐mode defaults, now darker) ====
+────────────────────────────────────────────────────────────── */
+
+.event-flip-front {
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  border: 2px solid #a98bd6;
+  /* slightly deeper purple border */
+  background-color: #e2d6f0;
+  /* darker lavender (was #f9f4fc) */
+  color: #000;
+  /* light‐mode text (if any) */
+  position: relative;
+}
+
+/* Dark‐mode override: even darker charcoal */
+.dark .event-flip-front {
+  border-color: #5f4b8b;
+  /* same darker purple border */
+  background-color: #1e1e1e;
+  /* deeper charcoal */
+  color: #f0f0f0;
+  /* light text */
+}
+
+/* ───────────────────────────────────────────────────────────────
+   ==== Calendar Tabs (the “spiral + punch holes” area) ====
+────────────────────────────────────────────────────────────── */
+
+.event-calendar-tabs {
+  height: 34px;
+  background-color: #a98bd6;
+  /* darker purple tab (was #d3bce8) */
+  position: relative;
+}
+
+/* Dark‐mode override for the tab background */
+.dark .event-calendar-tabs {
+  background-color: #5f4b8b;
+  /* same as before */
+}
+
+/* Punch‐hole circles (light mode = white) */
+.event-calendar-tabs::before,
+.event-calendar-tabs::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px #a98bd6;
+  /* match light‐mode border */
+  background-color: #fff;
+  /* white hole in light mode */
+}
+
+.event-calendar-tabs::before {
+  left: 40px;
+}
+
+.event-calendar-tabs::after {
+  right: 40px;
+}
+
+/* Dark‐mode punch holes: dark fill + matching dark border */
+.dark .event-calendar-tabs::before,
+.dark .event-calendar-tabs::after {
+  background-color: #222;
+  /* same as before */
+  box-shadow: 0 0 0 2px #5f4b8b;
+  /* unchanged */
+}
+
+/* Spiral lines (same color in both modes) */
+.event-calendar-tabs .spiral {
+  position: absolute;
+  width: 2px;
+  height: 12px;
+  background-color: #5f4b8b;
+  top: 0;
+}
+
+.event-calendar-tabs .spiral.left {
+  left: 46px;
+}
+
+.event-calendar-tabs .spiral.right {
+  right: 46px;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   ==== Main body (image blurred + overlay) ====
+────────────────────────────────────────────────────────────── */
+
+.event-calendar-body {
+  flex: 1;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  isolation: isolate;
+}
+
+/* semi‐transparent overlay (same for both themes) */
+.event-calendar-body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(86, 74, 95, 0.6);
+  z-index: 0;
+}
+
+/* Overlaid content: always white on top of the darkened image */
+.event-dates,
+.event-title-centered,
+.event-location {
+  z-index: 1;
+}
+
+/* Date text & icon (always white) */
+.event-dates {
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  font-size: 13px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Centered title (always white) */
+.event-title-centered {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.event-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
+}
+
+/* Location text & icon (always white) */
+.event-location {
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  font-size: 13px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ───────────────────────────────────────────────────────────────
+   ==== BACK SIDE (light‐mode defaults, now richer) ====
+────────────────────────────────────────────────────────────── */
+
+.event-flip-back {
+  transform: rotateY(180deg);
+  background-color: #d8c0e8;
+  /* richer mauve (was #f4ecfa) */
+  border: 2px solid #a98bd6;
+  /* deeper purple border */
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #333;
+  /* light‐mode text */
+}
+
+/* Dark‐mode override for the back side */
+.dark .event-flip-back {
+  background-color: #282828;
+  /* deeper slate */
+  border-color: #5f4b8b;
+  color: #eee;
+  /* light text on dark bg */
+}
+
+/* event-info container holds title / description / postedBy / tags */
+.event-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+}
+
+/* In light mode, .event-info text inherits #333 from .event-flip-back */
+/* In dark mode, it inherits #eee from .dark .event-flip-back */
+.event-info>* {
+  color: inherit;
+}
+
+/* Tag container—no overrides, unchanged in both modes */
+.event-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}

@@ -12,6 +12,7 @@ import fish from "../assets/moving-fish.webp";
 import landscape from "../assets/moving-landscape.gif";
 import pic from "../assets/moving-pic.gif";
 import { useThemeToggle } from "../providers/AppThemeProvider";
+import { useSearchParams } from "react-router-dom";
 
 const { Content } = Layout;
 const { Title } = Typography;
@@ -20,7 +21,11 @@ const images = [pic, fish, landscape];
 
 const AuthLanding = () => {
   const { darkMode } = useThemeToggle();
-  const [mode, setMode] = useState<"login" | "signup">("login");
+  const [searchParams] = useSearchParams();
+  const modeParam = searchParams.get("modeState");
+  const [mode, setMode] = useState<"login" | "signup">(
+    modeParam === "login" || modeParam === "signup" ? modeParam : "login"
+  );
   const { t } = useTranslation();
   return (
     <Layout>

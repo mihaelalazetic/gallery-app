@@ -11,7 +11,8 @@ const ArtworkCard: React.FC<{
   artwork: Artwork;
   onClick: () => void;
   onLikeChange: (id: string, liked: boolean, newCount: number) => void;
-}> = ({ artwork, onClick, onLikeChange }) => {
+  preview?: boolean;
+}> = ({ artwork, onClick, onLikeChange, preview }) => {
   return (
     <Card
       hoverable
@@ -25,7 +26,11 @@ const ArtworkCard: React.FC<{
         padding: 0,
       }}
     >
-      <ArtworkCarousel imageUrls={artwork.imageUrls} price={artwork.price} />
+      <ArtworkCarousel
+        imageUrls={artwork.imageUrls}
+        price={artwork.price}
+        preview={preview}
+      />
 
       <div>
         <div

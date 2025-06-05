@@ -26,7 +26,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <Layout
         style={{
           marginLeft: collapsed ? 80 : 200, // static widths
-          marginTop: 64, // header height
+          // marginTop: 64, // header height
           transition: "margin-left 0.3s ease",
           background: token.colorBgBase,
         }}
@@ -39,7 +39,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             transition: "background-color 0.3s ease",
           }}
         >
-          {children}
+          <div style={{ marginTop: 64 }}>{children}</div>
         </Content>
         <AppFooter />
       </Layout>

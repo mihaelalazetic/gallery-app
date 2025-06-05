@@ -1,5 +1,3 @@
-// src/components/AppHeader.tsx
-
 import { Layout, Space } from "antd";
 import React from "react";
 import { Link } from "react-router-dom";
@@ -13,12 +11,10 @@ const { Header } = Layout;
 
 interface Props {
   collapsed: boolean;
-  // toggleCollapsed: () => void;
 }
 
 const AppHeader: React.FC<Props> = () => {
   const { darkMode } = useThemeToggle();
-  // const isLoggedIn = Boolean(localStorage.getItem("token"));s
 
   return (
     <Header
@@ -28,18 +24,31 @@ const AppHeader: React.FC<Props> = () => {
         left: 0,
         width: "100%",
         zIndex: 1000,
-        // backgroundColor: darkMode ? "#1e1e2f" : "#f5f5f7",
-        background: darkMode ? "#1e1e2f" : "#ffffff",
-
+        height: 64,
         padding: "0 16px",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        height: 64,
-        boxShadow: "0 2px 4px rgba(0, 0, 0, 0.06)",
+
+        // ✨ Modern blur effect
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
+
+        // ✨ Semi-transparent background
+        backgroundColor: darkMode
+          ? "rgba(30, 30, 47, 0.7)"
+          : "rgba(255, 255, 255, 0.75)",
+
+        // ✨ Smooth shadow
+        boxShadow: darkMode
+          ? "0 2px 6px rgba(0,0,0,0.4)"
+          : "0 2px 6px rgba(0,0,0,0.08)",
+
+        // Optional: smooth transition
+        transition: "background-color 300ms ease, backdrop-filter 300ms ease",
       }}
     >
-      {/* Left: sidebar toggle + logo */}
+      {/* Left: Logo */}
       <div style={{ display: "flex", alignItems: "center" }}>
         <Link to="/">
           <img
@@ -55,7 +64,7 @@ const AppHeader: React.FC<Props> = () => {
         <SearchBar />
       </div>
 
-      {/* Right: actions */}
+      {/* Right: Actions */}
       <Space align="center" size="middle" style={{ flex: "0 0 auto" }}>
         <ThemeToggle />
         <UserProfilePopover />

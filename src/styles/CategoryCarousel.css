@@ -14,7 +14,7 @@
 }
 
 /* Arrows */
-.arrow {
+.arrowc {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -31,14 +31,14 @@
     justify-content: center;
 }
 
-.arrow.left {
+.arrowc.leftc {
     left: -5rem;
 }
 
-.arrow.right {
+.arrowc.rightc {
     right: -5rem;
 }
 
-.arrow:hover {
+.arrowc:hover {
     background-color: rgba(0, 0, 0, 0.7);
 }

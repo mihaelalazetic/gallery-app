@@ -1,0 +1,91 @@
+@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&display=swap");
+
+.welcome-banner {
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* === Left Side === */
+.welcome-left {
+  width: 50%;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: #fdf8f2;
+  position: relative;
+  overflow: hidden;
+}
+
+.typing-title,
+.typing-body {
+  font-family: "Playfair Display", serif;
+  overflow: hidden;
+  display: block;
+  animation: fadeInSlide 1.4s ease-out forwards;
+  opacity: 0;
+}
+
+.typing-title {
+  font-size: 2rem;
+  color: #4b2e83;
+  animation-delay: 0.3s;
+}
+
+.typing-body {
+  font-size: 1.2rem;
+  color: #333;
+  margin-top: 1.2rem;
+  animation-delay: 1s;
+}
+
+@keyframes fadeInSlide {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === Right Side === */
+.welcome-right {
+  width: 50%;
+  background: linear-gradient(135deg, #e0c3fc, #8ec5fc);
+  color: #fff;
+  padding: 2rem;
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.cta-text {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.cta-button {
+  margin-top: 0.5rem;
+  width: 120px;
+  z-index: 1;
+}
+
+/* Decorative background (optional) */
+.svg-art {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 150px;
+  height: 150px;
+  background-image: url("https://www.transparenttextures.com/patterns/symphony.png");
+  background-size: cover;
+  opacity: 0.15;
+}

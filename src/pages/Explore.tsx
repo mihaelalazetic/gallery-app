@@ -2,6 +2,7 @@ import { ArrowUpOutlined } from "@ant-design/icons";
 import Masonry from "@mui/lab/Masonry";
 import { Button, Layout, Skeleton } from "antd";
 import React, { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { getPaginatedArtworks } from "../api/artworkServices";
 import ArtworkCard from "../components/artwork/ArtworkCard";
 import FilterDrawer from "../components/artwork/FilterDrawer";
@@ -20,35 +21,57 @@ const Explore: React.FC = () => {
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showScroll, setShowScroll] = useState(false);
+  const [searchParams] = useSearchParams();
+
   const { darkMode } = useThemeToggle();
-  const { searchQuery, selectedCategories, priceRange } = useFilterContext();
+  const { searchQuery, selectedCategories, priceRange, setSelectedCategories } =
+    useFilterContext();
 
   const [debouncedSearchQuery] = useDebounce(searchQuery, 300);
-
-  const fetchArtworks = async () => {
-    setLoading(true);
-    try {
-      const params: Record<string, any> = {
-        search: debouncedSearchQuery || "",
-        categories:
-          selectedCategories.length > 0 ? selectedCategories.join(",") : "",
-        priceMin: priceRange[0],
-        priceMax: priceRange[1],
-        size: "*", // fetch all
-      };
-
-      const data = await getPaginatedArtworks(params);
-      setArtworks(data || []);
-    } catch (error) {
-      console.error("Failed to load artworks:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [debouncedCategories] = useDebounce(selectedCategories, 300);
+  const [debouncedPriceRange] = useDebounce(priceRange, 300);
 
   useEffect(() => {
+    const categoryParam = searchParams.get("category");
+    const parsed = categoryParam
+      ? categoryParam
+          .split(",")
+          .map((v) => parseInt(v))
+          .filter((v) => !isNaN(v))
+      : [];
+
+    const isDifferent =
+      parsed.length !== selectedCategories.length ||
+      parsed.some((val, i) => val !== selectedCategories[i]);
+
+    if (isDifferent) {
+      setSelectedCategories(parsed);
+    }
+  }, [searchParams.get("category")]);
+
+  useEffect(() => {
+    const fetchArtworks = async () => {
+      setLoading(true);
+      try {
+        const params: Record<string, any> = {
+          search: debouncedSearchQuery || "",
+          categories:
+            debouncedCategories.length > 0 ? debouncedCategories.join(",") : "",
+          priceMin: debouncedPriceRange[0],
+          priceMax: debouncedPriceRange[1],
+          size: "*",
+        };
+        const data = await getPaginatedArtworks(params);
+        setArtworks(data || []);
+      } catch (error) {
+        console.error("Failed to load artworks:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchArtworks();
-  }, [debouncedSearchQuery, selectedCategories, priceRange]);
+  }, [debouncedSearchQuery, debouncedCategories, debouncedPriceRange]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -75,10 +98,7 @@ const Explore: React.FC = () => {
           }}
         >
           {loading ? (
-            <Masonry
-              columns={{ xs: 2, sm: 2, md: 4, lg: 4, xl: 4 }}
-              spacing={1}
-            >
+            <Masonry columns={{ xs: 2, sm: 2, md: 4 }} spacing={1}>
               {Array.from({ length: 12 }).map((_, i) => (
                 <div
                   key={i}
@@ -89,27 +109,20 @@ const Explore: React.FC = () => {
                     boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
                   }}
                 >
-                  <Skeleton.Image
-                    active
-                    style={{
-                      marginBottom: 12,
-                    }}
-                  />
+                  <Skeleton.Image active style={{ marginBottom: 12 }} />
                   <Skeleton active title={false} paragraph={{ rows: 2 }} />
                 </div>
               ))}
             </Masonry>
           ) : artworks.length > 0 ? (
-            <Masonry
-              columns={{ xs: 2, sm: 2, md: 4, lg: 4, xl: 4 }}
-              spacing={1}
-            >
+            <Masonry columns={{ xs: 2, sm: 2, md: 4 }} spacing={1}>
               {artworks.map((artwork) => (
                 <ArtworkCard
                   key={artwork.id}
                   artwork={artwork}
                   onClick={() => setSelectedArtwork(artwork)}
                   onLikeChange={() => {}}
+                  preview={false}
                 />
               ))}
             </Masonry>

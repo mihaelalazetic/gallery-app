@@ -16,7 +16,7 @@ import {
   Input,
   Layout,
   Row,
-  Spin,
+  Skeleton,
   Typography,
   Upload,
   message,
@@ -25,14 +25,13 @@ import { motion } from "framer-motion";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { toggleFollow } from "../api/artists";
-import { currentUserArtworks } from "../api/artworkServices";
 import { uploadProfilePictureToSupabase } from "../api/uploadProfilePictureToSupabase";
 import { getUserBySlug, updateUserProfile } from "../api/usersService";
 import ArtworkCard from "../components/artwork/ArtworkCard";
 import { useAuth } from "../context/AuthContext";
 import { useThemeToggle } from "../providers/AppThemeProvider";
 import { Artwork } from "../types/IObjectTypes";
-import { Skeleton } from "antd";
+import { userPublicArtworks } from "../api/artworkServices";
 
 const { Content } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -142,7 +141,7 @@ const UserProfile: React.FC = () => {
         setEditableBio(data.bio);
         setUserProfile(data);
 
-        const fetchedArtworks = await currentUserArtworks(); // 🔁 Replace this with the correct service call
+        const fetchedArtworks = await userPublicArtworks(slug); // 🔁 Replace this with the correct service call
         setArtworks(
           Array.isArray(fetchedArtworks) ? fetchedArtworks : [fetchedArtworks]
         );

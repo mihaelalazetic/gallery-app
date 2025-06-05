@@ -1,75 +1,110 @@
-// ArtworkCarousel.tsx
-import React, { useRef } from "react";
-import { Carousel } from "antd";
+// src/components/ArtworkCarousel.tsx
+
 import { LeftOutlined, RightOutlined } from "@ant-design/icons";
-import "../../styles/ArtworkCarousel.css"; // Assuming you have some CSS for styling
+import { Carousel, Image } from "antd";
+import React, { useRef } from "react";
+import "../../styles/ArtworkCarousel.css";
 import PriceTag from "../PriceTag";
 
 interface ArtworkCarouselProps {
   imageUrls: string[];
-  price: number;
+  price?: number;
+  preview?: boolean; // Optional prop to make the carousel clickable
 }
 
 const ArtworkCarousel: React.FC<ArtworkCarouselProps> = ({
   imageUrls,
   price,
+  preview,
 }) => {
   const carouselRef = useRef<any>(null);
 
   const next = (e: React.MouseEvent) => {
     e.stopPropagation();
-    carouselRef.current.next();
+    carouselRef.current?.next();
   };
 
   const prev = (e: React.MouseEvent) => {
     e.stopPropagation();
-    carouselRef.current.prev();
+    carouselRef.current?.prev();
   };
 
   return (
-    <div className="carousel-wrapper">
-      <button className="arrow left" onClick={prev}>
+    <div
+      className="carousel-wrapper"
+      style={{ position: "relative", textAlign: "center", padding: 16 }}
+    >
+      {/* Price tag overlay (hidden by default; shown on hover) */}
+      <div className="price-tag">
+        <PriceTag visible={!!price} price={price ?? 0} />
+      </div>
+
+      {/* ← Previous button */}
+      <button
+        className="arrow left"
+        onClick={prev}
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: 10,
+          transform: "translateY(-50%)",
+          zIndex: 10,
+          background: "rgba(0,0,0,0.5)",
+          color: "white",
+          border: "none",
+          borderRadius: "50%",
+          width: 40,
+          height: 40,
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+        }}
+      >
         <LeftOutlined />
       </button>
-      <Carousel arrows={false} draggable ref={carouselRef}>
-        {imageUrls.map((url, index) => (
-          <div
-            key={index}
-            style={{
-              height: "400px",
-              backgroundColor: "#f0f0f0",
-              position: "relative", // ✅ Needed for PriceTag to position correctly
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {/* Image wrapper */}
-            <div
+
+      {/* Next button → */}
+      <button
+        className="arrow right"
+        onClick={next}
+        style={{
+          position: "absolute",
+          top: "50%",
+          right: 10,
+          transform: "translateY(-50%)",
+          zIndex: 10,
+          background: "rgba(0,0,0,0.5)",
+          color: "white",
+          border: "none",
+          borderRadius: "50%",
+          width: 40,
+          height: 40,
+          alignItems: "center",
+          justifyContent: "center",
+          cursor: "pointer",
+        }}
+      >
+        <RightOutlined />
+      </button>
+
+      {/* The actual carousel slides */}
+      <Carousel ref={carouselRef} dots={true}>
+        {imageUrls.map((url: string, index: number) => (
+          <div key={index}>
+            <Image
+              src={url}
+              alt={`Artwork ${index + 1}`}
               style={{
-                height: "100%",
-                width: "100%",
-                position: "relative",
+                maxWidth: "100%",
+                maxHeight: "50vh",
+                objectFit: "contain",
+                margin: "0 auto",
               }}
-            >
-              <img
-                alt={`Artwork ${index + 1}`}
-                src={url}
-                style={{
-                  height: "100%",
-                  width: "100%",
-                  objectFit: "contain",
-                }}
-              />
-              {/* ✅ Price Tag inside the image wrapper */}
-              <PriceTag price={price} visible={true} />
-            </div>
+              preview={preview}
+            />
           </div>
         ))}
       </Carousel>
-      <button className="arrow right" onClick={next}>
-        <RightOutlined />
-      </button>
     </div>
   );
 };

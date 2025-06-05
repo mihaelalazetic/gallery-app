@@ -1,14 +1,12 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
-import Home from "../pages/Home";
-import Explore from "../pages/Explore";
-import LoginPage from "../pages/Login";
-import AuthLanding from "../pages/AuthLanding";
+import { AuthProvider } from "../context/AuthContext";
 import ArtworkUploadForm from "../forms/ArtworkUploadForm";
 import CategoryUploadForm from "../forms/CategoryUploadForm";
+import AuthLanding from "../pages/AuthLanding";
+import Explore from "../pages/Explore";
+import Home from "../pages/Home";
 import UserProfile from "../pages/UserProfile";
-import { AuthProvider } from "../context/AuthContext";
-import CreateEventExhibitionForm from "../forms/CreateEventExhibitionForm";
 
 const router = createBrowserRouter([
   {
@@ -38,7 +36,6 @@ const router = createBrowserRouter([
         path: "profile/:slug",
         element: <UserProfile />,
       },
-
     ],
   },
 ]);

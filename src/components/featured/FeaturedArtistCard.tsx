@@ -45,7 +45,8 @@ const FeaturedArtistCard: React.FC<FeaturedArtistCardProps> = ({ artist }) => {
 
   useEffect(() => {
     setFollowingMap({ [artist.id]: artist.isFollowing });
-  }, [artist.id, artist.isFollowing]);
+    setFollowerCounts({ [artist.id]: artist.followerCount }); // <-- Add this line
+  }, [artist.id, artist.isFollowing, artist.followerCount]);
 
   return (
     <div className={`featured-artist-grid ${darkMode ? "dark" : ""}`}>
@@ -88,8 +89,9 @@ const FeaturedArtistCard: React.FC<FeaturedArtistCardProps> = ({ artist }) => {
           </span>
           <span>
             <TeamOutlined style={{ color: "#9254de", marginRight: 6 }} />
-            {artist.followerCount}
+            {followerCounts[artist.id] ?? artist.followerCount}
           </span>
+
           <span>
             <PictureOutlined style={{ color: "#69c0ff", marginRight: 6 }} />
             {artist.artCount}
