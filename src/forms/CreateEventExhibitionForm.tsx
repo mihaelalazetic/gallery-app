@@ -1,133 +1,138 @@
-// --- FILE: CreateEventExhibitionForm.tsx ---
 import { useMutation } from "@tanstack/react-query";
-import { Card, Col, Row, Typography } from "antd";
-import { createEvent } from "../api/evenrServices";
+import { Card, Row } from "antd";
+import { t } from "i18next";
+import { createEvent } from "../api/eventsServices";
 import { uploadEventToSupabase } from "../api/uploadEventToSupabase";
 import { useAuth } from "../context/AuthContext";
 import { FieldConfig, useGeneratedAntForm } from "../hooks/useGeneratedAntForm";
 import { useGlobalNotification } from "../providers/GlobalNotificationProvider";
 
-const { Title } = Typography;
-
-export default function CreateEventExhibitionForm() {
+export default function CreateEventExhibitionForm({
+  onUploadSuccess,
+}: {
+  onUploadSuccess?: (eventSlug: string) => void;
+}) {
   const notification = useGlobalNotification();
+
   const { user } = useAuth();
   const slug = user?.slug;
 
   const mutation = useMutation({
-    mutationFn: async (formData: FormData) => {
-      // 1) Upload banner image to Supabase
-      const imageUrl = await uploadEventToSupabase(
-        formData.get("bannerImage") as File
-      );
-      formData.set("bannerImage", imageUrl);
+    mutationFn: async (formData: any) => {
+      const {
+        dateRange: [startDate, endDate] = [null, null],
+        imageFile,
+        ...restFields
+      } = formData;
 
-      // 2) Create the event using your API
-      const res = await createEvent(formData);
-      if (!res.ok) throw new Error("Failed to create event");
-      return res.json();
+      // upload banner if present
+      let bannerImage = "";
+      const file = imageFile?.fileList?.[0]?.originFileObj as File | undefined;
+      if (file) {
+        bannerImage = await uploadEventToSupabase(file);
+      }
+
+      // build payload
+      const payload = {
+        ...restFields,
+        startDate,
+        endDate,
+        bannerImage,
+        createdByUUID: user?.id,
+      };
+
+      // call the service (which returns JSON directly)
+      const createdEvent = await createEvent(payload);
+      return createdEvent;
     },
-    onSuccess: () => {
+
+    onMutate: () => {
+      notification.info({ message: "Creating event...", duration: 2 });
+    },
+
+    onSuccess: (event) => {
       notification.success({ message: "Event created successfully!" });
+      onUploadSuccess?.(event.slug);
     },
-    onError: () => {
-      notification.error({ message: "Error creating event" });
+
+    onError: (err: any) => {
+      notification.error({
+        message: "Error creating event",
+        description: err.message || String(err),
+      });
     },
   });
 
-  //
-  // 1) Define all your form fields here:
-  //
   const fields: FieldConfig[] = [
+    {
+      name: "imageFile",
+      label: t("createEvent"),
+      type: "upload",
+      uploadTitle: t("createEvent"),
+    },
     { name: "title", label: "Title", type: "input", required: true },
     { name: "description", label: "Description", type: "textarea" },
     { name: "dateRange", label: "Date & Time", type: "customDateRange" },
+    { name: "isPublic", label: "isPublic", type: "switch" },
+    {
+      name: "eventType",
+      label: "eventType",
+      type: "select",
+      options: [
+        { label: "Exhibition", value: "EXHIBITION" },
+        { label: "Workshop", value: "WORKSHOP" },
+        { label: "Meetup", value: "MEETUP" },
+        { label: "Other", value: "OTHER" },
+      ],
+    },
     { name: "mapPicker", label: "Pick Venue", type: "customMapPicker" },
     { name: "venueName", label: "Venue Name", type: "input" },
     { name: "venueAddress", label: "Venue Address", type: "input" },
-    { name: "links", label: "Links", type: "customDynamicLinks" },
-    { name: "bannerImage", label: "Banner Image", type: "upload" },
+    {
+      name: "tags",
+      label: "Tags",
+      type: "autocomplete",
+      options: [
+        { label: "modern", value: "modern" },
+        { label: "digital", value: "digital" },
+        { label: "paint", value: "paint" },
+        { label: "acryl", value: "acryl" },
+      ],
+    },
     { name: "artworkIds", label: "Artworks", type: "customArtworkSelector" },
   ];
 
-  //
-  // 2) Split the form into two columns on md+ screens:
-  //
   const layoutConfig = {
     columns: [
-      // Column 1: spans 24 on xs, 12 on md+
       { key: "col1", span: { xs: 24, md: 12 } },
-      // Column 2: spans 24 on xs, 12 on md+
       { key: "col2", span: { xs: 24, md: 12 } },
     ],
     fieldGroups: {
       col1: [
+        "imageFile",
         "title",
         "description",
         "dateRange",
-        "links",
-        "bannerImage",
+        "eventType",
         "artworkIds",
       ],
-      col2: ["mapPicker", "venueName", "venueAddress"],
+      col2: ["isPublic", "tags", "mapPicker", "venueName", "venueAddress"],
     },
   };
 
-  //
-  // 3) Instantiate the generated form hook:
-  //
-  const { GeneratedForm, form } = useGeneratedAntForm({
+  const { GeneratedForm } = useGeneratedAntForm({
     fields,
     layoutConfig,
     buttonLabel: "Create Event / Exhibition",
-    slug: slug,
-    onSubmit: (values) => {
-      // Convert values into a FormData instance:
-      const body = new FormData();
-
-      for (const [key, value] of Object.entries(values)) {
-        // skip the internal fileList field—only append the raw file itself
-        if (key === "imageFile") continue;
-
-        if (Array.isArray(value)) {
-          value.forEach((v) => body.append(`${key}[]`, v));
-        } else if (typeof value === "string" || value instanceof Blob) {
-          body.append(key, value);
-        }
-      }
-
-      // Now append the actual bannerImage file(s):
-      values.imageFile?.fileList?.forEach((file: any) => {
-        body.append("bannerImage", file.originFileObj);
-      });
-
-      mutation.mutate(body);
-    },
+    slug,
+    onSubmit: (values) => mutation.mutate(values),
   });
 
   return (
     <Row justify="center">
-      {/*
-        - On very small screens (xs), the Col is 24 (full width).
-        - On small screens (sm), it shrinks slightly (e.g. 22/24).
-        - On medium screens (md), it’s 18/24.
-        - On large (lg) & xl, we cap it even more so it doesn’t stretch too wide.
-      */}
-      {/* <Col xs={24} sm={22} md={18} lg={14} xl={12}> */}
-      <Card
-        style={{
-          // maxWidth: 800, // Never exceed 800px wide
-          width: "100%", // Otherwise fill available width
-          borderRadius: 12,
-          padding: "2rem",
-        }}
-      >
-        <Title level={2} style={{ textAlign: "left", marginBottom: "1.5rem" }}>
-          Create Event
-        </Title>
+      <Card style={{ width: "100%", borderRadius: 12, padding: "2rem" }}>
         <GeneratedForm />
       </Card>
-      {/* </Col> */}
     </Row>
   );
 }

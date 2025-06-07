@@ -39,8 +39,6 @@ const AppSider: React.FC<{
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [formType, setFormType] = useState<"artwork" | "event" | null>(null);
 
-
-
   const handleCancel = () => {
     setIsModalVisible(false);
   };
@@ -153,9 +151,9 @@ const AppSider: React.FC<{
         onCancel={handleCancel}
         footer={null}
         centered
-        width={"85%"}
+        width={"90%"}
         bodyStyle={{
-          maxHeight: "80vh",
+          maxHeight: "90vh",
           overflowY: "auto",
           background: darkMode ? "#1c1c1e" : "#fff",
         }}
@@ -170,7 +168,15 @@ const AppSider: React.FC<{
             }}
           />
         )}
-        {formType === "event" && <CreateEventExhibitionForm />}
+        {formType === "event" && (
+          <CreateEventExhibitionForm
+            onUploadSuccess={(eventSlug) => {
+              navigate(`/events/${eventSlug}`);
+              setIsModalVisible(false);
+              setFormType(null);
+            }}
+          />
+        )}
       </Modal>
     </>
   );

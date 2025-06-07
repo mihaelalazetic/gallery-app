@@ -1,10 +1,13 @@
-// Updated ShowMoreCard.tsx to look like an EventCard
+// ShowMoreCard.tsx
 import React from "react";
 import { RightOutlined } from "@ant-design/icons";
-import "../styles/EventCard.css"; // Reuse same CSS
+import "../styles/EventCard.css"; // Reuse EventCard styles
 import { Button } from "antd";
+import { useThemeToggle } from "../providers/AppThemeProvider";
 
 const ShowMoreCard: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
+  const { darkMode } = useThemeToggle();
+
   return (
     <div
       className="event-flip-card-container"
@@ -12,8 +15,9 @@ const ShowMoreCard: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
       style={{ cursor: "pointer" }}
     >
       <div className="event-flip-card">
-        <div className="event-flip-front">
-          <div className="event-calendar-tabs">
+        {/* Front Side only (no flip) */}
+        <div className={`event-flip-front${darkMode ? " dark" : ""}`}>
+          <div className={`event-calendar-tabs${darkMode ? " dark" : ""}`}>
             <div className="spiral left" />
             <div className="spiral right" />
           </div>

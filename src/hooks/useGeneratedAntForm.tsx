@@ -22,6 +22,7 @@ import { getUserBySlug } from "../api/usersService";
 import DynamicLinksInput from "../components/DynamicLinksInput";
 import MapPicker from "../components/MapPicker";
 import ArtworkSelectorModal from "../components/modal/ArtworkSelectorModal";
+import { Typography } from "antd";
 
 const { TextArea } = Input;
 
@@ -32,6 +33,7 @@ type FieldType =
   | "number"
   | "select"
   | "multiSelect"
+  | "autocomplete"
   | "date"
   | "switch"
   | "checkbox"
@@ -40,7 +42,8 @@ type FieldType =
   | "customMapPicker"
   | "customDateRange"
   | "customDynamicLinks"
-  | "customArtworkSelector";
+  | "customArtworkSelector"
+  | "title";
 
 type OptionType = { label: string; value: string };
 
@@ -53,6 +56,7 @@ export type FieldConfig = {
   options?: OptionType[];
   rows?: number;
   multiple?: boolean;
+  uploadTitle?: string;
 };
 
 interface ColumnConfig {
@@ -74,7 +78,7 @@ type UseGeneratedAntFormProps = {
   onSubmit: (values: any) => void;
   withButton?: boolean;
   layoutConfig?: LayoutConfig;
-  slug?: string; // ✅ add this
+  slug?: string;
 };
 
 export const useGeneratedAntForm = ({
@@ -124,6 +128,14 @@ export const useGeneratedAntForm = ({
     }
 
     switch (field.type) {
+      case "title":
+        return (
+          <Form.Item key={field.name}>
+            <Typography.Title level={3} style={{ margin: "1rem 0" }}>
+              {field.label}
+            </Typography.Title>
+          </Form.Item>
+        );
       case "input":
         return (
           <Form.Item
@@ -181,6 +193,24 @@ export const useGeneratedAntForm = ({
             rules={rules}
           >
             <Select options={field.options} placeholder={field.placeholder} />
+          </Form.Item>
+        );
+
+      case "autocomplete":
+        return (
+          <Form.Item
+            key={field.name}
+            name={field.name}
+            label={field.label}
+            rules={rules}
+          >
+            <Select
+              mode="tags"
+              placeholder={field.placeholder}
+              options={field.options}
+              tokenSeparators={[","]}
+              style={{ width: "100%" }}
+            />
           </Form.Item>
         );
 
@@ -262,12 +292,17 @@ export const useGeneratedAntForm = ({
           <Form.Item
             key={field.name}
             name={field.name}
-            label={field.label}
+            label={field.uploadTitle ? "" : field.label}
             valuePropName="fileList"
             getValueFromEvent={(e) => (Array.isArray(e) ? e : e?.fileList)}
             rules={rules}
           >
-            <>
+            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+              {field.uploadTitle && (
+                <Typography.Title level={2} style={{ marginBottom: 8 }}>
+                  {field.uploadTitle}{" "}
+                </Typography.Title>
+              )}
               <Upload
                 listType="picture-card"
                 beforeUpload={() => false}
@@ -303,7 +338,7 @@ export const useGeneratedAntForm = ({
                 }}
                 src={previewImage}
               />
-            </>
+            </div>
           </Form.Item>
         );
 
@@ -386,7 +421,9 @@ export const useGeneratedAntForm = ({
                           />
                         }
                         style={{ width: 100 }}
-                      />
+                      >
+                        <Card.Meta title={art.title} />
+                      </Card>
                     </Col>
                   ))}
               </Row>

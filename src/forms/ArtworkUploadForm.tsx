@@ -1,7 +1,6 @@
 import { useMutation } from "@tanstack/react-query";
 import { Card, Col, notification, Row, Typography } from "antd";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
 import { uploadArtwork } from "../api/artworkServices";
 import { getCategories } from "../api/categoryServices";
 import { uploadArtworkToSupabase } from "../api/uploadArtworkToSupabase";
@@ -16,7 +15,7 @@ export default function ArtworkUploadForm({
   const [uploading, setUploading] = useState(false);
   const [artTypes, setArtTypes] = useState([]);
 
-  const { id } = useParams(); // Optional: For editing or context-specific uploads
+  // const { id } = useParams(); // Optional: For editing or context-specific uploads
   notification.config({
     placement: "topRight", // topLeft, bottomRight, bottomLeft
   });

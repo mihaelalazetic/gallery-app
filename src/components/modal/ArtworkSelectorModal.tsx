@@ -18,13 +18,15 @@ const ArtworkSelectorModal = ({
     onCancel={onClose}
     title="Select Artworks"
     centered
-    width="90%"
+    width="80%"
     footer={null}
+    // width={"90%"}
     bodyStyle={{
-      maxHeight: "80vh",
-      overflowY: "auto",
-      padding: "1rem",
+      maxHeight: "90vh",
+      // overflowY: "auto",
+      // background: darkMode ? "#1c1c1e" : "#fff",
     }}
+    destroyOnClose
   >
     <Row gutter={[16, 16]}>
       {artworks.map((art) => {
@@ -44,7 +46,7 @@ const ArtworkSelectorModal = ({
                       objectFit: "cover",
                       width: "100%",
                       border: isSelected
-                        ? "3px solid #1890ff"
+                        ? "3px solid purple"
                         : "1px solid #ccc",
                       transition: "all 0.3s",
                       borderRadius: 8,
@@ -57,7 +59,7 @@ const ArtworkSelectorModal = ({
                         position: "absolute",
                         top: 8,
                         right: 8,
-                        backgroundColor: "#1890ff",
+                        backgroundColor: "purple",
                         color: "#fff",
                         borderRadius: "50%",
                         width: 24,

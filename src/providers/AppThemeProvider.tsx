@@ -9,7 +9,7 @@ import { createContext, useContext, useState } from "react";
 const ThemeToggleContext = createContext({
   darkMode: false,
   toggleTheme: () => {},
-  colorPrimary: "#9254de", // 💜 default purple
+  colorPrimary: "#9254de",
 });
 
 

@@ -75,11 +75,6 @@
   position: relative;
 }
 
-/* Dark‐mode override for the tab background */
-.dark .event-calendar-tabs {
-  background-color: #5f4b8b;
-  /* same as before */
-}
 
 /* Punch‐hole circles (light mode = white) */
 .event-calendar-tabs::before,
@@ -107,7 +102,7 @@
 /* Dark‐mode punch holes: dark fill + matching dark border */
 .dark .event-calendar-tabs::before,
 .dark .event-calendar-tabs::after {
-  background-color: #222;
+  background-color: #2a2a3b;
   /* same as before */
   box-shadow: 0 0 0 2px #5f4b8b;
   /* unchanged */
@@ -124,10 +119,15 @@
 
 .event-calendar-tabs .spiral.left {
   left: 46px;
+  height: 8px;
+  width: 3px;
 }
 
 .event-calendar-tabs .spiral.right {
   right: 46px;
+  /* height: 20px; */
+  /* width: 3px; */
+
 }
 
 /* ───────────────────────────────────────────────────────────────
