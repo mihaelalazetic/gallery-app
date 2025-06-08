@@ -16,6 +16,11 @@ export const getUpcomingEvents = async (): Promise<any> => {
   return response.data;
 };
 export const getAllEvents = async (): Promise<any> => {
-  const response = await apiInstance.get(`${prefix}`);
+  const response = await apiInstance.get(`${prefix}/all`);
   return response.data;
+};
+
+export const getEventBySlug = async (slug: string): Promise<any> => {
+  const all = await getAllEvents();
+  return all.find((e: { slug: string }) => e.slug === slug);
 };

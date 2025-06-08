@@ -32,7 +32,8 @@ const ArtworkCarousel: React.FC<ArtworkCarouselProps> = ({
   return (
     <div
       className="carousel-wrapper"
-      style={{ position: "relative", textAlign: "center", padding: 16 }}
+      // style={{ position: "relative", textAlign: "center", padding: 16 }}
+      style={{ position: "relative", textAlign: "center", padding: 16, width: "100%" }}
     >
       {/* Price tag overlay (hidden by default; shown on hover) */}
       <div className="price-tag">

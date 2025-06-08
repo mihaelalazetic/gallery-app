@@ -28,6 +28,7 @@ import { toggleFollow } from "../api/artists";
 import { uploadProfilePictureToSupabase } from "../api/uploadProfilePictureToSupabase";
 import { getUserBySlug, updateUserProfile } from "../api/usersService";
 import ArtworkCard from "../components/artwork/ArtworkCard";
+import ImagePreviewDrawer from "../components/ImagePreviewDrawer";
 import { useAuth } from "../context/AuthContext";
 import { useThemeToggle } from "../providers/AppThemeProvider";
 import { Artwork } from "../types/IObjectTypes";
@@ -63,6 +64,7 @@ const UserProfile: React.FC = () => {
   );
 
   const [artworks, setArtworks] = useState<Artwork[]>([]);
+  const [selectedArtwork, setSelectedArtwork] = useState<Artwork | null>(null); // State for selected artwork
 
   const updateProfileMutation = useMutation({
     mutationFn: async () => {
@@ -128,6 +130,14 @@ const UserProfile: React.FC = () => {
     setNewProfilePicFile(file);
     setPreviewProfilePic(URL.createObjectURL(file));
     return false; // Prevent default upload behavior
+  };
+
+  const handleArtClick = (artwork: Artwork) => {
+    setSelectedArtwork(artwork); // Set the selected artwork
+  };
+
+  const handleCloseDrawer = () => {
+    setSelectedArtwork(null); // Clear the selected artwork
   };
 
   useEffect(() => {
@@ -525,14 +535,13 @@ const UserProfile: React.FC = () => {
                   <Col xs={24} sm={12} md={8} lg={6} key={artwork.id}>
                     <ArtworkCard
                       artwork={artwork}
-                      onClick={() =>
-                        console.log(`Artwork clicked: ${artwork.id}`)
-                      }
+                      onClick={() => handleArtClick(artwork)} // Pass the click handler
                       onLikeChange={(id, liked, newCount) =>
                         console.log(
                           `Artwork ${id} liked: ${liked}, new like count: ${newCount}`
                         )
                       }
+                      preview={false}
                     />
                   </Col>
                 ))}
@@ -544,6 +553,16 @@ const UserProfile: React.FC = () => {
             </Text>
           )}
         </div>
+
+        {/* Render ImagePreviewDrawer when an artwork is selected */}
+        {selectedArtwork && (
+          <ImagePreviewDrawer
+            id={selectedArtwork.id}
+            visible={!!selectedArtwork}
+            onClose={handleCloseDrawer} // Close the drawer
+            darkMode={darkMode}
+          />
+        )}
       </Content>
     </Layout>
   );

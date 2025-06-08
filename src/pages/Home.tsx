@@ -116,7 +116,7 @@ const Home: React.FC = () => {
                   endDate={dayjs(item.endDate).format("DD MMMM YYYY hh:mm")}
                   location={item.location}
                   description={item.description}
-                  postedBy={item.createdBy.fullName}
+                  postedBy={item.createdBy}
                   tags={item.tags}
                   slug={item.slug}
                 />

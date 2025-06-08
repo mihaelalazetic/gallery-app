@@ -1,5 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
+import EventDetail from "../components/event/EventDetail";
+import EventsList from "../components/event/EventsList";
 import { AuthProvider } from "../context/AuthContext";
 import ArtworkUploadForm from "../forms/ArtworkUploadForm";
 import CategoryUploadForm from "../forms/CategoryUploadForm";
@@ -23,6 +25,8 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       { path: "", element: <Home /> },
+      { path: "events", element: <EventsList /> },
+      { path: "events/:slug", element: <EventDetail /> },
       { path: "explore", element: <Explore /> },
       {
         path: "upload-artwork",

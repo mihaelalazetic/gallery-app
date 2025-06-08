@@ -1,10 +1,20 @@
 import {
   CloseOutlined,
   CommentOutlined,
+  LinkOutlined,
   SendOutlined,
 } from "@ant-design/icons";
-import { Avatar, Button, Drawer, Input, Typography } from "antd";
+import {
+  Avatar,
+  Button,
+  Drawer,
+  Input,
+  Modal,
+  Tooltip,
+  Typography,
+} from "antd";
 import { formatDistanceToNow } from "date-fns";
+import dayjs from "dayjs";
 import React, { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { createComment, getArtwork, getComments } from "../api/artworkServices";
@@ -36,9 +46,10 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
   const [newText, setNewText] = useState("");
   const [posting, setPosting] = useState(false);
   const [isJumping, setIsJumping] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false); // State for modal visibility
 
   const commentsRef = useRef<HTMLDivElement>(null);
-  const carouselRef = useRef<any>(null);
+  // const carouselRef = useRef<any>(null);
 
   // Replace this with your real authentication logic:
   const user = useAuth();
@@ -76,16 +87,26 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
     }
   };
 
+  const handleOpenModal = () => {
+    setIsModalVisible(true); // Open the modal
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false); // Close the modal
+  };
+
   if (!art) {
     return null; // Still loading
   }
 
   // Compute “time ago” from the artwork’s createdAt
   let postedAgo = "";
+  let fullDateTime = "";
   if (art.createdAt) {
     const parsed = new Date(art.createdAt);
     if (!isNaN(parsed.getTime())) {
       postedAgo = formatDistanceToNow(parsed, { addSuffix: true });
+      fullDateTime = dayjs(parsed).format("DD MMM YYYY HH:mm"); // Get the full date and time
     }
   }
 
@@ -94,7 +115,7 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
       placement="right"
       width={window.innerWidth < 768 ? "100%" : "80%"}
       onClose={onClose}
-      visible={visible}
+      open={visible}
       closeIcon={
         <CloseOutlined style={{ color: darkMode ? "#fff" : undefined }} />
       }
@@ -134,15 +155,17 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
                 </Link>
               </Title>
               {postedAgo && (
-                <Text
-                  type="secondary"
-                  style={{
-                    fontSize: 12,
-                    color: darkMode ? "#aaa" : "#888",
-                  }}
-                >
-                  {postedAgo}
-                </Text>
+                <Tooltip title={fullDateTime}>
+                  <Text
+                    type="secondary"
+                    style={{
+                      fontSize: 12,
+                      color: darkMode ? "#aaa" : "#888",
+                    }}
+                  >
+                    {postedAgo}
+                  </Text>
+                </Tooltip>
               )}
             </div>
           </div>
@@ -154,12 +177,31 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
                 level={5}
                 style={{
                   margin: 0,
-                  marginRight: "3.5rem",
+                  // marginRight: "3.5rem",
                   color: darkMode ? "#fff" : undefined,
                 }}
               >
                 {art.title}
               </Title>
+              <Tooltip title="Relevant links">
+                <Button
+                  style={{
+                    borderRadius: "50%",
+                    border: "1px solid",
+                    padding: "4px",
+                    width: "32px",
+                    height: "32px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                  type="link"
+                  size="small"
+                  onClick={handleOpenModal} // Open the modal on click
+                >
+                  <LinkOutlined style={{ fontSize: "16px" }} />
+                </Button>
+              </Tooltip>
             </div>
           )}
         </div>
@@ -178,8 +220,13 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
         {/* ─── LEFT: IMAGE CAROUSEL ─────────────────────────────────────────────────────────── */}
         <div
           style={{
-            flexBasis: "60%",
+            /* never grow or shrink, always exactly 60% of the drawer */
+            flex: "0 0 60%",
             maxWidth: "60%",
+
+            /* clip any child that sticks out */
+            overflow: "hidden",
+
             position: "relative",
             background: darkMode ? "#000" : "#f9f9f9",
             display: "flex",
@@ -366,6 +413,38 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Modal for displaying relevant links */}
+      <Modal
+        title="Relevant Links"
+        visible={isModalVisible}
+        onCancel={handleCloseModal}
+        footer={null}
+        centered
+        bodyStyle={{
+          background: darkMode ? "#1f1f2e" : "#fff",
+          color: darkMode ? "#fff" : "#000",
+        }}
+      >
+        {art.links && art.links.length > 0 ? (
+          <ul>
+            {art.links.map((link: string, index: number) => (
+              <li key={index}>
+                <a
+                  href={link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: darkMode ? "#40a9ff" : "#1890ff" }}
+                >
+                  {link}
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <Text>No relevant links available for this artwork.</Text>
+        )}
+      </Modal>
     </Drawer>
   );
 };
