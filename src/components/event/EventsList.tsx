@@ -42,7 +42,7 @@ const eventTypeColors: { [key: string]: string } = {
 };
 
 // Styles
-const CARD_HEIGHT = 450;
+const CARD_HEIGHT = "auto";
 const CARD_WIDTH = 320;
 
 const overlayStyle: React.CSSProperties = {
@@ -197,7 +197,7 @@ const EventList: React.FC = () => {
                     {item.tags.map((tag: string) => (
                       <Tag
                         key={tag}
-                        color={eventTypeColors[tag] || "cyan"}
+                        color={eventTypeColors[tag] || "blue"}
                         style={{ borderRadius: 4 }}
                       >
                         {tag}
