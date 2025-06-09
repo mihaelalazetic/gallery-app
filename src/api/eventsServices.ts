@@ -11,10 +11,17 @@ export const getEvent = async (id: any): Promise<any> => {
   const response = await apiInstance.get(`${prefix}/getById/${id}`);
   return response.data;
 };
+
 export const getUpcomingEvents = async (): Promise<any> => {
   const response = await apiInstance.get(`${prefix}/upcoming`);
   return response.data;
 };
+
+export const getMyEvents = async (): Promise<any> => {
+  const response = await apiInstance.get(`${prefix}/my-events`);
+  return response.data;
+};
+
 export const getAllEvents = async (): Promise<any> => {
   const response = await apiInstance.get(`${prefix}/all`);
   return response.data;

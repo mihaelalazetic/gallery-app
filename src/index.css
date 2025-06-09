@@ -293,3 +293,7 @@ a:hover {
 .ant-divider {
   margin: 0 !important;
 }
+
+:where(.css-dev-only-do-not-override-ec6tkc).ant-modal .ant-modal-content{
+  background-color: #2a2a3b;
+}

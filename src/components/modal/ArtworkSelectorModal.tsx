@@ -1,4 +1,5 @@
-import { Card, Col, Modal, Row } from "antd";
+import { Col, Modal, Row } from "antd";
+import { useThemeToggle } from "../../providers/AppThemeProvider";
 
 const ArtworkSelectorModal = ({
   visible,
@@ -12,77 +13,103 @@ const ArtworkSelectorModal = ({
   artworks: any[];
   selectedIds: string[];
   onToggleSelect: (id: string) => void;
-}) => (
-  <Modal
-    open={visible}
-    onCancel={onClose}
-    title="Select Artworks"
-    centered
-    width="80%"
-    footer={null}
-    // width={"90%"}
-    bodyStyle={{
-      maxHeight: "90vh",
-      // overflowY: "auto",
-      // background: darkMode ? "#1c1c1e" : "#fff",
-    }}
-    destroyOnClose
-  >
-    <Row gutter={[16, 16]}>
-      {artworks.map((art) => {
-        const isSelected = selectedIds.includes(String(art.id));
-        return (
-          <Col span={8} key={art.id}>
-            <Card
-              hoverable
-              onClick={() => onToggleSelect(String(art.id))}
-              cover={
-                <div style={{ position: "relative" }}>
-                  <img
-                    src={art.imageUrls?.[0]}
-                    alt={art.title}
-                    style={{
-                      maxHeight: 200,
-                      objectFit: "cover",
-                      width: "100%",
-                      border: isSelected
-                        ? "3px solid purple"
-                        : "1px solid #ccc",
-                      transition: "all 0.3s",
-                      borderRadius: 8,
-                      filter: isSelected ? "brightness(70%)" : "none",
-                    }}
-                  />
-                  {isSelected && (
-                    <div
-                      style={{
-                        position: "absolute",
-                        top: 8,
-                        right: 8,
-                        backgroundColor: "purple",
-                        color: "#fff",
-                        borderRadius: "50%",
-                        width: 24,
-                        height: 24,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontWeight: "bold",
-                      }}
-                    >
-                      ✓
-                    </div>
-                  )}
+}) => {
+  const { colorPrimary } = useThemeToggle();
+
+  return (
+    <Modal
+      open={visible}
+      onCancel={onClose}
+      title="Select Artworks"
+      centered
+      width="80%"
+      footer={null}
+      bodyStyle={{
+        maxHeight: "90vh",
+        minHeight: "40vh",
+        // overflowY: "auto",
+      }}
+      destroyOnClose
+    >
+      <Row gutter={[16, 16]}>
+        {artworks.map((art) => {
+          const isSelected = selectedIds.includes(String(art.id));
+          return (
+            <Col span={8} key={art.id}>
+              <div
+                style={{
+                  position: "relative",
+                  width: "100%",
+                  height: "auto",
+                  borderRadius: 8,
+                  cursor: "pointer",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  transition: "transform 0.3s",
+                }}
+                onClick={() => onToggleSelect(String(art.id))}
+              >
+                {/* Artwork Image */}
+                <img
+                  src={art.imageUrls?.[0]}
+                  alt={art.title}
+                  style={{
+                    width: "100%",
+                    height: 200,
+                    objectFit: "cover",
+                    filter: isSelected ? "brightness(0.5)" : "none",
+                    border: isSelected ? `3px solid ${colorPrimary}` : "none",
+                    borderRadius: 8,
+                  }}
+                />
+
+                {/* Persistent Title Banner */}
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: 0,
+                    width: "100%",
+                    padding: "8px",
+                    background: "rgba(0, 0, 0, 0.7)",
+                    boxShadow: "0 -4px 8px rgba(0,0,0,0.5)",
+                    color: "#fff",
+                    textAlign: "center",
+                    fontWeight: 500,
+                    borderBottomLeftRadius: 8,
+                    borderBottomRightRadius: 8,
+                  }}
+                >
+                  {art.title}
                 </div>
-              }
-            >
-              <Card.Meta title={art.title} />
-            </Card>
-          </Col>
-        );
-      })}
-    </Row>
-  </Modal>
-);
+
+                {/* Selected Indicator */}
+                {isSelected && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: 8,
+                      right: 8,
+                      backgroundColor: colorPrimary,
+                      color: "#fff",
+                      borderRadius: "50%",
+                      width: 24,
+                      height: 24,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontWeight: "bold",
+                    }}
+                  >
+                    ✓
+                  </div>
+                )}
+              </div>
+            </Col>
+          );
+        })}
+      </Row>
+    </Modal>
+  );
+};
 
 export default ArtworkSelectorModal;

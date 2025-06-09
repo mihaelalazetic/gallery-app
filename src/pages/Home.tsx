@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 
 import FeaturedArtCard from "../components/featured/FeaturedArtCard";
-import { getFeaturedArtworks } from "../api/featured";
+import { getFeaturedArtworks, getUpcomingEvents } from "../api/featured";
 import CategoryCarousel from "../components/CategoryCarousel";
 import EventCard from "../components/EventCard";
 import ShowMoreCard from "../components/ShowMoreCard";
@@ -19,7 +19,6 @@ import FeaturedArtists from "../components/featured/FeaturedArtists";
 import ImagePreviewDrawer from "../components/ImagePreviewDrawer";
 
 import { Artwork } from "../types/IObjectTypes";
-import { getUpcomingEvents } from "../api/eventsServices";
 
 const { Title } = Typography;
 

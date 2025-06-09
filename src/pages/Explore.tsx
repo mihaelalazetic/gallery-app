@@ -3,7 +3,6 @@ import Masonry from "@mui/lab/Masonry";
 import { Button, Layout, Skeleton } from "antd";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { getPaginatedArtworks } from "../api/artworkServices";
 import ArtworkCard from "../components/artwork/ArtworkCard";
 import FilterDrawer from "../components/artwork/FilterDrawer";
 import FilterBar from "../components/FilterBar";
@@ -12,6 +11,7 @@ import { useFilterContext } from "../context/FilterContext";
 import { useThemeToggle } from "../providers/AppThemeProvider";
 import { Artwork } from "../types/IObjectTypes";
 import { useDebounce } from "use-debounce";
+import { getPaginatedArtworks } from "../api/featured";
 
 const { Content } = Layout;
 

@@ -94,8 +94,8 @@ const AppSider: React.FC<{
               >
                 <Link to={`/profile/${user?.slug}`}>{t("myProfile")}</Link>
               </Menu.Item>
-              <Menu.Item key="/my-exhibitions" icon={<CalendarOutlined />}>
-                <Link to="/my-exhibitions">{t("myExhibitions")}</Link>
+              <Menu.Item key="/my-events" icon={<CalendarOutlined />}>
+                <Link to="/my-events">{t("myEvents")}</Link>
               </Menu.Item>
 
               <SubMenu
@@ -147,7 +147,7 @@ const AppSider: React.FC<{
       </Sider>
 
       <Modal
-        visible={isModalVisible}
+        open={isModalVisible}
         onCancel={handleCancel}
         footer={null}
         centered
@@ -155,7 +155,7 @@ const AppSider: React.FC<{
         bodyStyle={{
           maxHeight: "90vh",
           overflowY: "auto",
-          background: darkMode ? "#1c1c1e" : "#fff",
+          // background: darkMode ? "#1c1c1e" : "#fff",
         }}
         destroyOnClose
       >

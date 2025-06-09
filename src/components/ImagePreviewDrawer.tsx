@@ -171,7 +171,14 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
           </div>
 
           {art.price && (
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                marginRight: "4.5rem",
+              }}
+            >
               <PriceTag price={art.price} visible={true} />
               <Title
                 level={5}
@@ -209,7 +216,6 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
     >
       {/* ─── HEADER: Artist Avatar, Name, “Time Ago” ───────────────────────────────────── */}
 
-      {/* ─── MAIN CONTENT ───────────────────────────────────────────────────────────────────── */}
       <div
         style={{
           flex: 1,
@@ -217,71 +223,19 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
           overflow: "hidden",
         }}
       >
-        {/* ─── LEFT: IMAGE CAROUSEL ─────────────────────────────────────────────────────────── */}
         <div
           style={{
             /* never grow or shrink, always exactly 60% of the drawer */
             flex: "0 0 60%",
             maxWidth: "60%",
-
-            /* clip any child that sticks out */
             overflow: "hidden",
-
             position: "relative",
-            background: darkMode ? "#000" : "#f9f9f9",
+            // background: darkMode ? "#000" : "#f9f9f9",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
           }}
         >
-          {/* ← PREV BUTTON → */}
-          {/* <button
-            onClick={() => carouselRef.current?.prev()}
-            style={{
-              position: "absolute",
-              top: "50%",
-              left: 16,
-              transform: "translateY(-50%)",
-              zIndex: 10,
-              background: "rgba(0,0,0,0.5)",
-              color: "white",
-              border: "none",
-              borderRadius: "50%",
-              width: 40,
-              height: 40,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-            }}
-          >
-            <LeftOutlined />
-          </button> */}
-
-          {/* → NEXT BUTTON → */}
-          {/* <button
-            onClick={() => carouselRef.current?.next()}
-            style={{
-              position: "absolute",
-              top: "50%",
-              right: 16,
-              transform: "translateY(-50%)",
-              zIndex: 10,
-              background: "rgba(0,0,0,0.5)",
-              color: "white",
-              border: "none",
-              borderRadius: "50%",
-              width: 40,
-              height: 40,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-            }}
-          >
-            <RightOutlined />
-          </button> */}
-
           <ArtworkCarousel imageUrls={art.imageUrls} preview />
         </div>
 
@@ -416,7 +370,16 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
 
       {/* Modal for displaying relevant links */}
       <Modal
-        title="Relevant Links"
+        title={
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <LinkOutlined
+              style={{ fontSize: 20, color: darkMode ? "#40a9ff" : "#1890ff" }}
+            />
+            <Text style={{ fontSize: 18, color: darkMode ? "#fff" : "#000" }}>
+              Relevant Links
+            </Text>
+          </div>
+        }
         visible={isModalVisible}
         onCancel={handleCloseModal}
         footer={null}
@@ -424,25 +387,61 @@ const ImagePreviewDrawer: React.FC<ImagePreviewDrawerProps> = ({
         bodyStyle={{
           background: darkMode ? "#1f1f2e" : "#fff",
           color: darkMode ? "#fff" : "#000",
+          padding: "24px",
         }}
       >
         {art.links && art.links.length > 0 ? (
-          <ul>
-            {art.links.map((link: string, index: number) => (
-              <li key={index}>
-                <a
-                  href={link}
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {art.links.map((link: any, index: number) => (
+              <div
+                key={index}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "12px 16px",
+                  border: darkMode ? "1px solid #444" : "1px solid #f0f0f0",
+                  borderRadius: 8,
+                  background: darkMode ? "#2a2a3d" : "#fafafa",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 16,
+                    color: darkMode ? "#40a9ff" : "#1890ff",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {link.label || link.url}
+                </Text>
+                <Button
+                  type="link"
+                  href={link.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  style={{ color: darkMode ? "#40a9ff" : "#1890ff" }}
+                  style={{
+                    color: darkMode ? "#40a9ff" : "#1890ff",
+                    fontWeight: "bold",
+                  }}
                 >
-                  {link}
-                </a>
-              </li>
+                  Open
+                </Button>
+              </div>
             ))}
-          </ul>
+          </div>
         ) : (
-          <Text>No relevant links available for this artwork.</Text>
+          <div
+            style={{
+              textAlign: "center",
+              padding: "16px",
+              background: darkMode ? "#2a2a3d" : "#fafafa",
+              borderRadius: 8,
+            }}
+          >
+            <Text style={{ fontSize: 16, color: darkMode ? "#aaa" : "#666" }}>
+              No relevant links available for this artwork.
+            </Text>
+          </div>
         )}
       </Modal>
     </Drawer>
