@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { Row, Col, Card, Typography, Tag, Button, Badge, Skeleton } from "antd";
 import {
   CalendarOutlined,
   EnvironmentOutlined,
   LinkOutlined,
 } from "@ant-design/icons";
+import { Badge, Button, Card, Col, Row, Skeleton, Tag, Typography } from "antd";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getMyEvents } from "../../api/eventsServices";
 import { useFilterContext } from "../../context/FilterContext";
 import EventFilterBar from "../EventFilterBar";
-import { getUpcomingEvents } from "../../api/featured";
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -84,19 +84,17 @@ const contentStyle: React.CSSProperties = {
 };
 const footerStyle: React.CSSProperties = { marginTop: "auto", flexShrink: 0 };
 
-const EventList: React.FC = () => {
+const MyEventsList: React.FC = () => {
   const [events, setEvents] = useState<EventDto[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  const { searchQuery, selectedCategories, priceRange, dimensions, dateRange } =
-    useFilterContext();
+  const { searchQuery, selectedCategories, dateRange } = useFilterContext();
 
   useEffect(() => {
-    getUpcomingEvents()
+    getMyEvents()
       .then((all) => {
-        const now = new Date();
-        setEvents(all.filter((e: EventDto) => new Date(e.startDate) >= now));
+        setEvents(all);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -126,21 +124,6 @@ const EventList: React.FC = () => {
       if (eventStartDate < dateRange[0] || eventStartDate > dateRange[1]) {
         return false;
       }
-    }
-
-    // Add additional filters (e.g., price range, dimensions) if needed
-    if (priceRange[0] > 0 || priceRange[1] < 10000) {
-      // Example: Filter by price range (if events have a price property)
-      // if (event.price < priceRange[0] || event.price > priceRange[1]) {
-      //   return false;
-      // }
-    }
-
-    if (dimensions) {
-      // Example: Filter by dimensions (if events have a dimensions property)
-      // if (!event.dimensions.includes(dimensions)) {
-      //   return false;
-      // }
     }
 
     return true;
@@ -311,4 +294,4 @@ const EventList: React.FC = () => {
   );
 };
 
-export default EventList;
+export default MyEventsList;

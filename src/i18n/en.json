@@ -37,5 +37,11 @@
   "exploreByCategory": "Explore by Category",
   "event": "Event",
   "createEvent": "Create Event",
-  "events": "Events"
+  "events": "Events",
+  "myProfile": "My Profile",
+  "myEvents": "My Events",
+  "eventType": "Event Type",
+  "public": "Public",
+  "relevantLinks": "Relevant Links",
+  "upcomingEvents": "Upcoming Events"
 }

@@ -1,4 +1,3 @@
-// ✅ Updated src/context/FilterContext.tsx
 import React, { createContext, useState, useContext } from "react";
 
 interface FilterContextProps {
@@ -10,6 +9,8 @@ interface FilterContextProps {
   setPriceRange: (value: [number, number]) => void;
   dimensions: string;
   setDimensions: (value: string) => void;
+  dateRange: [Date | null, Date | null];
+  setDateRange: (value: [Date | null, Date | null]) => void;
 }
 
 const FilterContext = createContext<FilterContextProps | undefined>(undefined);
@@ -21,6 +22,10 @@ export const FilterProvider: React.FC<React.PropsWithChildren<{}>> = ({
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
   const [dimensions, setDimensions] = useState("");
+  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([
+    null,
+    null,
+  ]);
 
   return (
     <FilterContext.Provider
@@ -33,6 +38,8 @@ export const FilterProvider: React.FC<React.PropsWithChildren<{}>> = ({
         setPriceRange,
         dimensions,
         setDimensions,
+        dateRange,
+        setDateRange,
       }}
     >
       {children}

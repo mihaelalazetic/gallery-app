@@ -9,6 +9,7 @@ import AuthLanding from "../pages/AuthLanding";
 import Explore from "../pages/Explore";
 import Home from "../pages/Home";
 import UserProfile from "../pages/UserProfile";
+import MyEventsList from "../components/event/MyEventsList";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,7 @@ const router = createBrowserRouter([
     children: [
       { path: "", element: <Home /> },
       { path: "events", element: <EventsList /> },
+      { path: "my-events", element: <MyEventsList /> },
       { path: "events/:slug", element: <EventDetail /> },
       { path: "explore", element: <Explore /> },
       {

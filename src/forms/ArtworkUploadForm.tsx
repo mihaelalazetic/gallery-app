@@ -5,6 +5,7 @@ import { uploadArtwork } from "../api/artworkServices";
 import { getCategories } from "../api/categoryServices";
 import { uploadArtworkToSupabase } from "../api/uploadArtworkToSupabase";
 import { useGeneratedAntForm } from "../hooks/useGeneratedAntForm";
+import { useTranslation } from "react-i18next";
 
 const { Title } = Typography;
 export default function ArtworkUploadForm({
@@ -14,6 +15,7 @@ export default function ArtworkUploadForm({
 }) {
   const [uploading, setUploading] = useState(false);
   const [artTypes, setArtTypes] = useState([]);
+  const { t } = useTranslation();
 
   // const { id } = useParams(); // Optional: For editing or context-specific uploads
   notification.config({
@@ -42,6 +44,7 @@ export default function ArtworkUploadForm({
         visibility: "public",
         imageUrl: imageUrls, // Pass the array of URLs here
         categoryIds: values.artType?.map((id: any) => Number(id)) || [1],
+        relevantLinks: values.relevantLinks,  
       });
     },
     onMutate: () => {
@@ -114,6 +117,11 @@ export default function ArtworkUploadForm({
       required: true,
       multiple: true,
     },
+    {
+      name: "relevantLinks",
+      label: t("relevantLinks"),
+      type: "customDynamicLinks" as const,
+    },
   ];
 
   const layoutConfig = {
@@ -130,7 +138,7 @@ export default function ArtworkUploadForm({
       row1b: ["dimensions"],
       row2: ["price"],
       row2b: ["artType"],
-      row3: ["description"],
+      row3: ["description", "relevantLinks"],
       row3b: ["imageFile"],
     },
   };

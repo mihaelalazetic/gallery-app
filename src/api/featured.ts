@@ -27,6 +27,11 @@ export const getCategories = async (): Promise<any> => {
   return response.data;
 };
 
+export const getUpcomingEvents = async (): Promise<any> => {
+  const response = await apiInstance.get(`${prefix}/upcoming-events`);
+  return response.data;
+};
+
 // Example API call
 export const getNewArtworks = async (params: any) => {
   const query = new URLSearchParams(params).toString();
@@ -39,5 +44,13 @@ export const getNewArtworks = async (params: any) => {
 export const getMostLikedArtists = async (): Promise<any> => {
   const response = await apiInstance.get<any>(`${prefix}/most-liked-artists`);
 
+  return response.data;
+};
+
+export const getPaginatedArtworks = async (params: any) => {
+  const query = new URLSearchParams(params).toString();
+  const response = await apiInstance.get(`${prefix}/all-artworks?${query}`);
+  if (response.status < 200 || response.status >= 300)
+    throw new Error("Failed to fetch artworks");
   return response.data;
 };

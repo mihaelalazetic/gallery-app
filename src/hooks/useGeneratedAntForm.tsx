@@ -21,8 +21,9 @@ import { useEffect, useState } from "react";
 import { getUserBySlug } from "../api/usersService";
 import DynamicLinksInput from "../components/DynamicLinksInput";
 import MapPicker from "../components/MapPicker";
-import ArtworkSelectorModal from "../components/modal/ArtworkSelectorModal";
+// import ArtworkSelectorModal from "../components/modal/ArtworkSelectorModal";
 import { Typography } from "antd";
+import ArtworkSelectorModal from "../components/modal/ArtworkSelectorModal";
 
 const { TextArea } = Input;
 
@@ -250,6 +251,7 @@ export const useGeneratedAntForm = ({
             name={field.name}
             label={field.label}
             valuePropName="checked"
+            initialValue={true}
             rules={rules}
           >
             <Switch />
@@ -372,6 +374,7 @@ export const useGeneratedAntForm = ({
                 }
               }}
               style={{ width: "100%" }}
+              required={field.required}
             />
           </Form.Item>
         );
@@ -391,8 +394,15 @@ export const useGeneratedAntForm = ({
         );
 
       case "customArtworkSelector":
+        // only render the button (and preview bar) here;
+        // the modal itself is rendered below in GeneratedForm
         return (
-          <Form.Item key={field.name} label={field.label} name={field.name}>
+          <Form.Item
+            key={field.name}
+            label={field.label}
+            name={field.name}
+            rules={rules}
+          >
             <Button
               onClick={() => setArtModalVisible(true)}
               style={{ marginBottom: 16 }}
@@ -406,31 +416,55 @@ export const useGeneratedAntForm = ({
                   .filter((a) => selectedArtworks.includes(String(a.id)))
                   .map((art) => (
                     <Col key={art.id}>
-                      <Card
-                        hoverable
-                        cover={
-                          <img
-                            src={art.imageUrls?.[0]}
-                            alt={art.title}
-                            style={{
-                              height: 100,
-                              width: 100,
-                              objectFit: "cover",
-                              borderRadius: 8,
-                            }}
-                          />
+                      <div
+                        style={{
+                          position: "relative",
+                          width: 120,
+                          height: 120,
+                          borderRadius: 8,
+                          overflow: "hidden",
+                          cursor: "pointer",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                          transition: "transform 0.3s",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.transform = "scale(1.05)")
                         }
-                        style={{ width: 100 }}
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.transform = "scale(1)")
+                        }
                       >
-                        <Card.Meta title={art.title} />
-                      </Card>
+                        <img
+                          src={art.imageUrls?.[0]}
+                          alt={art.title}
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            filter: "brightness(0.7)",
+                          }}
+                        />
+                        <div
+                          style={{
+                            position: "absolute",
+                            bottom: 0,
+                            left: 0,
+                            width: "100%",
+                            padding: "8px",
+                            background: "rgba(0,0,0,0.6)",
+                            color: "#fff",
+                            textAlign: "center",
+                          }}
+                        >
+                          {art.title}
+                        </div>
+                      </div>
                     </Col>
                   ))}
               </Row>
             )}
           </Form.Item>
         );
-
       default:
         return null;
     }
@@ -492,14 +526,15 @@ export const useGeneratedAntForm = ({
       {/* Always mounted modal */}
       <ArtworkSelectorModal
         visible={artModalVisible}
+        // disable all built-in close behavior inside the modal:
         onClose={() => setArtModalVisible(false)}
         artworks={artworkOptions}
         selectedIds={selectedArtworks}
-        onToggleSelect={(id: string) => {
+        onToggleSelect={(id) =>
           setSelectedArtworks((prev) =>
             prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-          );
-        }}
+          )
+        }
       />
     </>
   );

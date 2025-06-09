@@ -1,21 +1,21 @@
-import { Button, Input, Popover, Select, Slider, Space } from "antd";
+import { DatePicker, Input, Select, Space } from "antd";
 import React, { useEffect, useState } from "react";
-import { getCategories } from "../api/categoryServices";
 import { useFilterContext } from "../context/FilterContext";
 import { useThemeToggle } from "../providers/AppThemeProvider";
 
 const { Option } = Select;
+const { RangePicker } = DatePicker;
+import dayjs from "dayjs";
 
-const FilterBar: React.FC<{ onOpenDrawer: () => void }> = ({
-  onOpenDrawer,
-}) => {
+const EventFilterBar: React.FC = () => {
   const {
     searchQuery,
     setSearchQuery,
     selectedCategories,
     setSelectedCategories,
-    priceRange,
-    setPriceRange,
+
+    dateRange,
+    setDateRange,
   } = useFilterContext();
 
   const { darkMode } = useThemeToggle();
@@ -24,8 +24,13 @@ const FilterBar: React.FC<{ onOpenDrawer: () => void }> = ({
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const data = await getCategories();
-        setCategories(data);
+        // const data = await getCategories();
+        setCategories([
+          { label: "Exhibition", value: "EXHIBITION" },
+          { label: "Workshop", value: "WORKSHOP" },
+          { label: "Meetup", value: "MEETUP" },
+          { label: "Other", value: "OTHER" },
+        ]);
       } catch (error) {
         console.error("Failed to fetch categories:", error);
       }
@@ -53,14 +58,16 @@ const FilterBar: React.FC<{ onOpenDrawer: () => void }> = ({
         borderBottom: darkMode ? "1px solid #444" : "1px solid #d9d9d9",
       }}
     >
-      <Space>
+      <Space size="large" wrap>
+        {/* Search by Name */}
         <Input
-          placeholder="Search by title or artist"
+          placeholder="Search by event name"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           style={{ ...filterButtonStyle, width: 200 }}
         />
 
+        {/* Filter by Categories */}
         <Select
           mode="multiple"
           placeholder="Select Categories"
@@ -69,45 +76,30 @@ const FilterBar: React.FC<{ onOpenDrawer: () => void }> = ({
           style={{ ...filterButtonStyle, minWidth: 200 }}
         >
           {categories.map((category) => (
-            <Option key={category.name} value={category.id}>
-              {category.name}
+            <Option key={category.value} value={category.value}>
+              {category.label}
             </Option>
           ))}
         </Select>
 
-        <Popover
-          content={
-            <div style={{ padding: "10px 20px" }}>
-              <Slider
-                range
-                value={priceRange}
-                onChange={(value) => setPriceRange(value as [number, number])}
-                min={0}
-                max={10000}
-                step={50}
-              />
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <span>${priceRange[0]}</span>
-                <span>${priceRange[1]}</span>
-              </div>
-            </div>
+        {/* Filter by Date Range */}
+        <RangePicker
+          value={
+            dateRange
+              ? [
+                  dateRange[0] ? dayjs(dateRange[0]) : null,
+                  dateRange[1] ? dayjs(dateRange[1]) : null,
+                ]
+              : [null, null]
           }
-          title="Price Range"
-          trigger="click"
-        >
-          <Button style={filterButtonStyle}>Price</Button>
-        </Popover>
-
-        {/* <Button
-          icon={<FilterOutlined />}
-          onClick={onOpenDrawer}
-          style={filterButtonStyle}
-        >
-          All Filters
-        </Button> */}
+          onChange={(dates) =>
+            setDateRange(dates as [Date | null, Date | null])
+          }
+          style={{ ...filterButtonStyle }}
+        />
       </Space>
     </div>
   );
 };
 
-export default FilterBar;
+export default EventFilterBar;

@@ -6,6 +6,8 @@ import { uploadEventToSupabase } from "../api/uploadEventToSupabase";
 import { useAuth } from "../context/AuthContext";
 import { FieldConfig, useGeneratedAntForm } from "../hooks/useGeneratedAntForm";
 import { useGlobalNotification } from "../providers/GlobalNotificationProvider";
+import React, { useEffect } from "react";
+import { getCategories } from "../api/categoryServices";
 
 export default function CreateEventExhibitionForm({
   onUploadSuccess,
@@ -16,6 +18,17 @@ export default function CreateEventExhibitionForm({
 
   const { user } = useAuth();
   const slug = user?.slug;
+
+  const [categories, setCategories] = React.useState<any[]>([]);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  async function fetchCategories() {
+    const data = await getCategories();
+    setCategories(data);
+  }
 
   const mutation = useMutation({
     mutationFn: async (formData: any) => {
@@ -72,11 +85,16 @@ export default function CreateEventExhibitionForm({
     },
     { name: "title", label: "Title", type: "input", required: true },
     { name: "description", label: "Description", type: "textarea" },
-    { name: "dateRange", label: "Date & Time", type: "customDateRange" },
-    { name: "isPublic", label: "isPublic", type: "switch" },
+    {
+      name: "dateRange",
+      label: "Date & Time",
+      type: "customDateRange",  
+      required: true,
+    },
+    { name: "isPublic", label: t("public"), type: "switch" },
     {
       name: "eventType",
-      label: "eventType",
+      label: t("eventType"),
       type: "select",
       options: [
         { label: "Exhibition", value: "EXHIBITION" },
@@ -84,6 +102,7 @@ export default function CreateEventExhibitionForm({
         { label: "Meetup", value: "MEETUP" },
         { label: "Other", value: "OTHER" },
       ],
+      required: true,
     },
     { name: "mapPicker", label: "Pick Venue", type: "customMapPicker" },
     { name: "venueName", label: "Venue Name", type: "input" },
@@ -92,12 +111,10 @@ export default function CreateEventExhibitionForm({
       name: "tags",
       label: "Tags",
       type: "autocomplete",
-      options: [
-        { label: "modern", value: "modern" },
-        { label: "digital", value: "digital" },
-        { label: "paint", value: "paint" },
-        { label: "acryl", value: "acryl" },
-      ],
+      options: categories.map((category) => ({
+        label: category.name,
+        value: category.id,
+      })),
     },
     { name: "artworkIds", label: "Artworks", type: "customArtworkSelector" },
   ];
@@ -123,7 +140,7 @@ export default function CreateEventExhibitionForm({
   const { GeneratedForm } = useGeneratedAntForm({
     fields,
     layoutConfig,
-    buttonLabel: "Create Event / Exhibition",
+    buttonLabel: "Create Event",
     slug,
     onSubmit: (values) => mutation.mutate(values),
   });
