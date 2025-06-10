@@ -28,6 +28,6 @@ export const getAllEvents = async (): Promise<any> => {
 };
 
 export const getEventBySlug = async (slug: string): Promise<any> => {
-  const all = await getAllEvents();
-  return all.find((e: { slug: string }) => e.slug === slug);
+  const response = await apiInstance.get(`${prefix}/slug/${slug}`);
+  return response.data;
 };

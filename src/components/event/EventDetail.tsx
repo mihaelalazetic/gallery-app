@@ -253,7 +253,7 @@ export default function EventDetail() {
         <div style={{ marginBottom: 24 }}>
           {event.tags.map((tag) => (
             <Tag
-              key={tag}
+              key={tag[0]}
               style={{
                 backgroundColor: "#e6f7ff",
                 color: "#1890ff",

@@ -97,12 +97,15 @@ const Home: React.FC = () => {
             justifyContent: window.innerWidth >= 992 ? "flex-start" : undefined,
           }}
         >
-          {[...events.slice(0, 4), "show-more"].map((item, idx) => (
+          {[
+            ...events.slice(0, window.innerWidth >= 1709 ? 5 : 4),
+            "show-more",
+          ].map((item, idx) => (
             <div
               key={idx}
               style={{
                 flex: "0 0 auto",
-                width: window.innerWidth >= 992 ? "240px" : "200px",
+                // width: window.innerWidth >= 992 ? "240px" : "250px",
               }}
             >
               {item === "show-more" ? (

@@ -113,7 +113,7 @@ export default function CreateEventExhibitionForm({
       type: "autocomplete",
       options: categories.map((category) => ({
         label: category.name,
-        value: category.id,
+        value: category.name,
       })),
     },
     { name: "artworkIds", label: "Artworks", type: "customArtworkSelector" },
