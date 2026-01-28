@@ -34,5 +34,9 @@
   "explore": "Истражи",
   "exhibition": "Изложба",
   "exhibitions": "Изложби",
-  "exploreByCategory": "Истражи по категорија"
+  "exploreByCategory": "Истражи по категорија",
+    "uploading": "Uploading category...",
+  "uploadSuccess": "Category uploaded successfully!",
+  "uploadFailed": "Upload failed",
+  "selectImage": "Please select an image file."
 }

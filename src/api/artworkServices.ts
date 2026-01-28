@@ -1,11 +1,25 @@
-import { Artwork, CommentDto } from "../types/IObjectTypes";
+import { Artwork, CommentDto, UploadArtworkPayload } from "../types/IObjectTypes";
 import { apiInstance } from "./apiConfig";
 
 const prefix = "/api/artworks";
 
-export const uploadArtwork = async (artData: any): Promise<any> => {
-  const response = await apiInstance.post(`${prefix}/upload`, artData);
-  return response.data;
+export const uploadArtwork = async (
+  payload: UploadArtworkPayload,
+  files: File[]
+): Promise<void> => {
+  const formData = new FormData();
+  formData.append(
+    "data",
+    new Blob([JSON.stringify(payload)], { type: "application/json" })
+  );
+
+  files.forEach((file) => {
+    formData.append("images", file);
+  });
+
+  await apiInstance.post(`${prefix}/upload`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
 };
 
 export const getArtwork = async (id: any): Promise<any> => {

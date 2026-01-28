@@ -2,18 +2,28 @@
 
 .carousel-wrapper {
     position: relative;
-    max-width: 80vw;
+    width: 100%;
+    max-width: 100%;
     margin: auto;
     padding: 20px 0;
+}
+
+.carousel {
+    width: 100%;
 }
 
 .carousel .slick-slide {
     padding: 10px;
     width: 100%;
-    justify-items: center;
+    display: flex;
+    justify-content: center;
 }
 
-/* Arrows */
+.carousel .slick-slide > div {
+    width: 100%;
+}
+
+/* Arrows - hidden on small screens if not needed */
 .arrowc {
     position: absolute;
     top: 50%;
@@ -29,16 +39,28 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: background-color 0.3s ease;
 }
 
 .arrowc.leftc {
-    left: -5rem;
+    left: 10px;
 }
 
 .arrowc.rightc {
-    right: -5rem;
+    right: 10px;
 }
 
 .arrowc:hover {
     background-color: rgba(0, 0, 0, 0.7);
+}
+
+/* Responsive arrow positioning */
+@media (min-width: 768px) {
+    .arrowc.leftc {
+        left: -5rem;
+    }
+
+    .arrowc.rightc {
+        right: -5rem;
+    }
 }

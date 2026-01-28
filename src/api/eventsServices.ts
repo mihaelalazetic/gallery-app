@@ -2,10 +2,13 @@ import { apiInstance } from "./apiConfig";
 
 const prefix = "/api/events";
 
-export const createEvent = async (eventData: any): Promise<any> => {
-  const response = await apiInstance.post(`${prefix}/create`, eventData);
+export const createEvent = async (formData: FormData): Promise<any> => {
+  const response = await apiInstance.post(`${prefix}/create`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
   return response.data;
 };
+
 
 export const getEvent = async (id: any): Promise<any> => {
   const response = await apiInstance.get(`${prefix}/getById/${id}`);

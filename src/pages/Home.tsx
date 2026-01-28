@@ -81,57 +81,73 @@ const Home: React.FC = () => {
   return (
     <div style={{ maxWidth: "95%", margin: "0 auto", padding: "1rem" }}>
       <WelcomeBanner />
-
-      <section style={{ marginBottom: "2rem" }}>
-        <Title level={2} style={{ marginBottom: 24 }}>
-          {t("upcomingEvents")}
-        </Title>
-        <div
-          style={{
-            display: "flex",
-            gap: "16px",
-            overflowX: "auto",
-            paddingBottom: "8px",
-            WebkitOverflowScrolling: "touch",
-            flexWrap: window.innerWidth >= 992 ? "wrap" : "nowrap",
-            justifyContent: window.innerWidth >= 992 ? "flex-start" : undefined,
-          }}
-        >
-          {[
-            ...events.slice(0, window.innerWidth >= 1709 ? 5 : 4),
-            "show-more",
-          ].map((item, idx) => (
-            <div
-              key={idx}
-              style={{
-                flex: "0 0 auto",
-                // width: window.innerWidth >= 992 ? "240px" : "250px",
-              }}
-            >
-              {item === "show-more" ? (
-                <ShowMoreCard onClick={() => navigate("/events")} />
-              ) : (
-                <EventCard
-                  bannerUrl={item.bannerImageUrl}
-                  title={item.name}
-                  startDate={dayjs(item.startDate).format("DD MMMM YYYY hh:mm")}
-                  endDate={dayjs(item.endDate).format("DD MMMM YYYY hh:mm")}
-                  location={item.location}
-                  description={item.description}
-                  postedBy={item.createdBy}
-                  tags={item.tags}
-                  slug={item.slug}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-      </section>
-
       <section>
         <Title level={2}>{t("exploreByCategory")}</Title>
         <CategoryCarousel slidesToShow={columns} />
       </section>
+      <section style={{ marginBottom: "2rem" }}>
+        <Title level={2} style={{ marginBottom: 24 }}>
+          {t("upcomingEvents")}
+        </Title>
+        {events.length === 0 ? (
+          <div
+            style={{
+              padding: "2rem",
+              textAlign: "center",
+              backgroundColor: darkMode ? "#1f1f1f" : "#f5f5f5",
+              borderRadius: "8px",
+              border: `2px dashed ${darkMode ? "#444" : "#ccc"}`,
+            }}
+          >
+            <Typography.Text style={{ fontSize: "16px" }}>
+              {t("noEvents") || "No upcoming events at the moment"}
+            </Typography.Text>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: "flex",
+              gap: "16px",
+              overflowX: "auto",
+              paddingBottom: "8px",
+              WebkitOverflowScrolling: "touch",
+              flexWrap: window.innerWidth >= 992 ? "wrap" : "nowrap",
+              justifyContent: window.innerWidth >= 992 ? "flex-start" : undefined,
+            }}
+          >
+            {[
+              ...events.slice(0, window.innerWidth >= 1709 ? 5 : 4),
+              "show-more",
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                style={{
+                  flex: "0 0 auto",
+                  // width: window.innerWidth >= 992 ? "240px" : "250px",
+                }}
+              >
+                {item === "show-more" ? (
+                  <ShowMoreCard onClick={() => navigate("/events")} />
+                ) : (
+                  <EventCard
+                    bannerUrl={item.bannerImageUrl}
+                    title={item.name}
+                    startDate={dayjs(item.startDate).format("DD MMMM YYYY hh:mm")}
+                    endDate={dayjs(item.endDate).format("DD MMMM YYYY hh:mm")}
+                    location={item.location}
+                    description={item.description}
+                    postedBy={item.createdBy}
+                    tags={item.tags}
+                    slug={item.slug}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+
 
       <section style={{ padding: "2rem 1rem" }}>
         <Row>

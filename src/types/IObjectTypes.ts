@@ -84,3 +84,18 @@ export interface ArtworkDto {
   imageUrls: string[];
   likes: number;
 }
+
+export type UploadArtworkPayload = {
+  title: string;
+  description: string;
+  price: number;
+  dimensions?: string;
+  visibility: string;
+  categoryIds: number[];
+  relevantLinks?: string[];
+};
+
+export type CategoryCreatePayload = {
+  name: string;
+  description: string;
+};

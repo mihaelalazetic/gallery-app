@@ -1,9 +1,8 @@
 import { useMutation } from "@tanstack/react-query";
 import { Card, Col, notification, Row, Typography } from "antd";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getCategories, uploadCategory } from "../api/categoryServices";
-import { uploadCategoryToSupabase } from "../api/uploadCategoryToSupabase";
 import { useGeneratedAntForm } from "../hooks/useGeneratedAntForm";
 
 const { Title } = Typography;
@@ -11,70 +10,51 @@ const { Title } = Typography;
 export default function CategoryUploadForm() {
   const [uploading, setUploading] = useState(false);
   const [artTypes, setArtTypes] = useState([]);
+  const { t } = useTranslation();
 
-  const { id } = useParams(); // Optional: For editing or context-specific uploads
-  notification.config({
-    placement: "topRight", // topLeft, bottomRight, bottomLeft
-  });
+  notification.config({ placement: "topRight" });
+
   const mutation = useMutation({
     mutationFn: async (values: any) => {
-      console.log(values);
-      const file = values.imageFile?.fileList[0].originFileObj;
-      if (!file) throw new Error("Please select an image file.");
+      const fileList = values.imageFile?.fileList ?? [];
+      const file: File | undefined = fileList[0]?.originFileObj;
 
-      const imageUrl = await uploadCategoryToSupabase(file);
+      if (!file) {
+        throw new Error(t("validation.selectImage"));
+      }
 
-      return uploadCategory({
-        name: values.name,
-        description: values.description,
-        imageUrl,
-      });
+      return uploadCategory(
+        { name: values.name, description: values.description },
+        file
+      );
     },
     onMutate: () => {
-      notification.info({ message: "Uploading category...", duration: 2 });
+      notification.info({ message: t("category.uploading"), duration: 2 });
       setUploading(true);
     },
     onSuccess: () => {
-      notification.success({ message: "Category uploaded successfully!" });
+      notification.success({ message: t("category.uploadSuccess") });
     },
     onError: (error: any) => {
-      console.error(error);
       notification.error({
-        message: "Upload failed",
-        description: error.message,
+        message: t("category.uploadErrorTitle"),
+        description: error?.message ?? t("common.error"),
       });
     },
     onSettled: () => setUploading(false),
   });
 
   useEffect(() => {
-    fetchCategories();
+    (async () => {
+      const data = await getCategories();
+      setArtTypes(data);
+    })();
   }, []);
 
-  async function fetchCategories() {
-    const data = await getCategories();
-    setArtTypes(data);
-  }
-
   const fields = [
-    {
-      name: "name",
-      label: "Name",
-      type: "input" as const,
-      required: true,
-    },
-    {
-      name: "description",
-      label: "Description",
-      type: "textarea" as const,
-      required: true,
-    },
-    {
-      name: "imageFile",
-      label: "Image File",
-      type: "upload" as const,
-      required: true,
-    },
+    { name: "name", label: t("category.name"), type: "input" as const, required: true },
+    { name: "description", label: t("category.description"), type: "textarea" as const, required: true },
+    { name: "imageFile", label: t("category.image"), type: "upload" as const, required: true },
   ];
 
   const layoutConfig = {
@@ -91,7 +71,7 @@ export default function CategoryUploadForm() {
   const { GeneratedForm } = useGeneratedAntForm({
     fields,
     layoutConfig,
-    buttonLabel: uploading ? "Uploading..." : "Submit",
+    buttonLabel: uploading ? t("common.uploading") : t("common.submit"),
     onSubmit: (values) => mutation.mutate(values),
   });
 
@@ -100,7 +80,7 @@ export default function CategoryUploadForm() {
       <Col xs={24} sm={20} md={16} lg={24}>
         <Card bordered style={{ borderRadius: 12, padding: "0 2rem" }}>
           <Title level={2} style={{ textAlign: "start", marginBottom: "2rem" }}>
-            Upload New Category
+            {t("category.uploadTitle")}
           </Title>
           <GeneratedForm />
         </Card>

@@ -3,7 +3,6 @@ import { Card, Col, notification, Row, Typography } from "antd";
 import { useEffect, useState } from "react";
 import { uploadArtwork } from "../api/artworkServices";
 import { getCategories } from "../api/categoryServices";
-import { uploadArtworkToSupabase } from "../api/uploadArtworkToSupabase";
 import { useGeneratedAntForm } from "../hooks/useGeneratedAntForm";
 import { useTranslation } from "react-i18next";
 
@@ -23,46 +22,42 @@ export default function ArtworkUploadForm({
   });
   const mutation = useMutation({
     mutationFn: async (values: any) => {
-      const files = values.imageFile?.fileList;
-      if (!files || files.length === 0) {
-        throw new Error("Please select image files.");
+      const fileList = values.imageFile?.fileList;
+      const files: File[] =
+        fileList?.map((f: any) => f.originFileObj).filter(Boolean) ?? [];
+
+      if (files.length === 0) {
+        throw new Error(t("validation.selectImages")); // or your own translation key
       }
 
-      // 🔄 Upload all images to Supabase and get back the URLs
-      const imageUrls = await Promise.all(
-        files.map(async (file: any) => {
-          const imageUrl = await uploadArtworkToSupabase(file.originFileObj);
-          return imageUrl;
-        })
-      );
-
-      return uploadArtwork({
+      const payload = {
         title: values.title,
         description: values.description,
         price: values.price,
         dimensions: values.dimensions || "50x50cm",
         visibility: "public",
-        imageUrl: imageUrls, // Pass the array of URLs here
-        categoryIds: values.artType?.map((id: any) => Number(id)) || [1],
-        relevantLinks: values.relevantLinks,  
-      });
+        categoryIds: values.artType?.map((id: any) => Number(id)) ?? [],
+        relevantLinks: values.relevantLinks ?? [],
+      };
+      
+
+      await uploadArtwork(payload, files);
     },
     onMutate: () => {
-      notification.info({ message: "Uploading artwork...", duration: 2 });
+      notification.info({ message: t("artwork.uploading"), duration: 2 });
       setUploading(true);
     },
     onSuccess: () => {
-      notification.success({ message: "Artwork uploaded successfully!" });
-      onUploadSuccess?.(); // 👈 Close modal if callback is provided
+      notification.success({ message: t("artwork.uploadSuccess") });
+      onUploadSuccess?.();
     },
-
     onError: (error: any) => {
-      console.error(error);
       notification.error({
-        message: "Upload failed",
-        description: error.message,
+        message: t("artwork.uploadErrorTitle"),
+        description: error?.message ?? t("common.error"),
       });
     },
+
     onSettled: () => setUploading(false),
   });
 
@@ -146,7 +141,8 @@ export default function ArtworkUploadForm({
   const { GeneratedForm } = useGeneratedAntForm({
     fields,
     layoutConfig,
-    buttonLabel: uploading ? "Uploading..." : "Submit",
+    buttonLabel: uploading ? t("common.uploading") : t("common.submit"),
+
     onSubmit: (values) => mutation.mutate(values),
   });
 

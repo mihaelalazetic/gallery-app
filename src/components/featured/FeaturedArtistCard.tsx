@@ -63,10 +63,10 @@ const FeaturedArtistCard: React.FC<FeaturedArtistCardProps> = ({ artist }) => {
           {artist.fullName}
         </h2>
         <p>
-          {isExpanded || artist.bio.length <= 150
-            ? artist.bio
-            : `${artist.bio.slice(0, 150)}...`}
-          {artist.bio.length > 150 && (
+          {isExpanded || artist?.bio?.length <= 150
+            ? artist?.bio
+            : `${artist.bio?.slice(0, 150)}...`}
+          {artist?.bio?.length > 150 && (
             <button
               onClick={() => setIsExpanded(!isExpanded)}
               style={{

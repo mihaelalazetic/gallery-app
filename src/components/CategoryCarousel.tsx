@@ -33,18 +33,29 @@ const CategoryCarousel: React.FC<CategoryCarouselProps> = ({
     carouselRef.current.prev();
   };
 
+  // Determine how many slides to show based on category count
+  const effectiveSlidesToShow = Math.min(
+    Math.max(1, categories.length),
+    slidesToShow
+  );
+
+  // Show carousel controls only if there are more categories than can be displayed
+  const showControls = categories.length > effectiveSlidesToShow;
+
   return (
     <div className="carousel-wrapper">
-      <button className="arrowc leftc" onClick={prev}>
-        <LeftOutlined />
-      </button>
+      {showControls && (
+        <button className="arrowc leftc" onClick={prev}>
+          <LeftOutlined />
+        </button>
+      )}
       <Carousel
         dots={false}
-        infinite
+        infinite={categories.length > 1}
         autoplaySpeed={5000}
-        slidesToShow={slidesToShow}
+        slidesToShow={effectiveSlidesToShow}
         slidesToScroll={1}
-        autoplay
+        autoplay={categories.length > 1}
         ref={carouselRef}
         className="carousel"
       >
@@ -58,9 +69,11 @@ const CategoryCarousel: React.FC<CategoryCarouselProps> = ({
           />
         ))}
       </Carousel>
-      <button className="arrowc rightc" onClick={next}>
-        <RightOutlined />
-      </button>
+      {showControls && (
+        <button className="arrowc rightc" onClick={next}>
+          <RightOutlined />
+        </button>
+      )}
     </div>
   );
 };

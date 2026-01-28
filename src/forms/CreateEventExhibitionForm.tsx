@@ -1,13 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
 import { Card, Row } from "antd";
 import { t } from "i18next";
+import React, { useEffect } from "react";
+import { getCategories } from "../api/categoryServices";
 import { createEvent } from "../api/eventsServices";
-import { uploadEventToSupabase } from "../api/uploadEventToSupabase";
 import { useAuth } from "../context/AuthContext";
 import { FieldConfig, useGeneratedAntForm } from "../hooks/useGeneratedAntForm";
 import { useGlobalNotification } from "../providers/GlobalNotificationProvider";
-import React, { useEffect } from "react";
-import { getCategories } from "../api/categoryServices";
 
 export default function CreateEventExhibitionForm({
   onUploadSuccess,
@@ -38,24 +37,21 @@ export default function CreateEventExhibitionForm({
         ...restFields
       } = formData;
 
-      // upload banner if present
-      let bannerImage = "";
-      const file = imageFile?.fileList?.[0]?.originFileObj as File | undefined;
-      if (file) {
-        bannerImage = await uploadEventToSupabase(file);
-      }
-
+      const bannerFile = imageFile?.fileList?.[0]?.originFileObj as File | undefined;
       // build payload
       const payload = {
         ...restFields,
         startDate,
         endDate,
-        bannerImage,
         createdByUUID: user?.id,
       };
 
-      // call the service (which returns JSON directly)
-      const createdEvent = await createEvent(payload);
+
+      const fd = new FormData();
+      fd.append("data", new Blob([JSON.stringify(payload)], { type: "application/json" }));
+      if (bannerFile) fd.append("banner", bannerFile);
+
+      const createdEvent = await createEvent(fd);
       return createdEvent;
     },
 
@@ -88,7 +84,7 @@ export default function CreateEventExhibitionForm({
     {
       name: "dateRange",
       label: "Date & Time",
-      type: "customDateRange",  
+      type: "customDateRange",
       required: true,
     },
     { name: "isPublic", label: t("public"), type: "switch" },
